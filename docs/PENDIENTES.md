@@ -91,6 +91,14 @@ quede pendiente y vuelve a pasar los tests.
   - [ ] Noche: en gráficos de 5 líneas, las series 2 y 4 (magenta y violeta) se distinguen poco sobre el fondo
   - [ ] e3-03: la comprobación del reto muestra las cifras antes de escribir nada (revisar el patrón en otros retos)
 
+## Etapa 5 · Migración
+- [x] Datos `faro-e5.sql` (CRM antiguo sucio + fichas de empleados; pista falsa contra Iván, decisión del usuario), temario (11 niveles) y **etapa completa** (2 agentes `profesor-sql`; verificador 58/58). Cifras de los profesores comprobadas con PGlite
+- [ ] Revisión del bloque etapas 5 (+6): `qa-estres` + `alumno-novato` cuando haya 2–3 expedientes sin revisar
+
+## Versión publicada
+- [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)
+- [ ] Test inestable: `esc-laboratorio` F3 (lista de sugerencias dentro del editor) falla de vez en cuando por tiempos
+
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)
 - [ ] Prólogo con movimiento reducido: ¿frase a frase con fundido (sin movimiento) en vez de todo de golpe? (el Windows del usuario lo tiene activado)

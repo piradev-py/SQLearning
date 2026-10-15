@@ -8,6 +8,9 @@
 (function () {
   const CLAVE = "sqlearning-progreso-v1";
   const CLAVE_PRUEBA = "sqlearning-prueba-v1";
+  // Modo prueba y «desbloquear todo»: solo para el equipo, con la web servida en local (npm run servir, tests).
+  // En la versión publicada no existen: nadie puede saltar a una diligencia sin hacer las anteriores.
+  const SOLO_LOCAL = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
   const CREDITOS_POR_BLOQUE = 10;
 
   const AUTORIZACION = [
@@ -49,7 +52,7 @@
   }
 
   // En modo prueba NUNCA se escribe el progreso real (aunque falle sessionStorage)
-  let modoPrueba = (() => { try { return sessionStorage.getItem(CLAVE_PRUEBA) !== null; } catch (e) { return false; } })();
+  let modoPrueba = SOLO_LOCAL && (() => { try { return sessionStorage.getItem(CLAVE_PRUEBA) !== null; } catch (e) { return false; } })();
 
   function cargar() {
     try {
@@ -80,7 +83,7 @@
           ultimo: /^\d{4}-\d{2}-\d{2}$/.test(d.turnos?.ultimo) ? d.turnos.ultimo : null
         },
         ultimo: typeof d.ultimo === "string" && completados[d.ultimo] ? d.ultimo : null,
-        ajustes: { desbloquearTodo: d.ajustes?.desbloquearTodo === true }
+        ajustes: { desbloquearTodo: SOLO_LOCAL && d.ajustes?.desbloquearTodo === true }
       };
     } catch (e) {
       return vacio();           // JSON roto o almacenamiento bloqueado: se empieza de cero sin romper nada
@@ -195,7 +198,9 @@
     recargar() { datos = cargar(); },
     CLAVE,
     /** Modo prueba: progreso de usar y tirar (sessionStorage), con todo desbloqueado. */
+    pruebaDisponible: () => SOLO_LOCAL,
     entrarPrueba() {
+      if (!SOLO_LOCAL) return;
       try { sessionStorage.setItem(CLAVE_PRUEBA, JSON.stringify(Object.assign(vacio(), { ajustes: { desbloquearTodo: true } }))); } catch (e) { /* solo en memoria */ }
       modoPrueba = true;
       datos = Object.assign(vacio(), { ajustes: { desbloquearTodo: true } });

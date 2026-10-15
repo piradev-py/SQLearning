@@ -85,7 +85,7 @@ Igual que `faro-e3.sql` (mismas filas y cifras) + `empleados.jefe_id` + `almacen
 ## Etapa 5 · `faro-e5.sql` (semilla 5005 para lo nuevo)
 Igual que `faro-e4.sql` + `crm_clientes` (el CRM antiguo, **todo en texto y sucio**) + `fichas_empleados` (RR. HH.).
 - `crm_clientes` (**332** filas): `crm_id`, `nombre`, `email`, `telefono`, `direccion`, `cp`, `ciudad`, `fecha_alta`, `gasto_total`, `socio`
-  (todas `text`). Son los 300 clientes + **20 duplicados** (la misma persona dos veces, con otro formato y gasto 0) + **12 clientes
+  (todas `text` salvo `crm_id`). Son los 300 clientes + **20 duplicados** (la misma persona dos veces, con otro formato y gasto 0) + **12 clientes
   viejos** (`@antiguo.example`) que nunca pasaron a `clientes`. Orden barajado.
   - `nombre`/`email`/`ciudad` con mayúsculas y espacios de más: **44** emails distintos de `lower(trim(email))`; 42 ciudades distintas
     tal cual, **10** con `initcap(trim(ciudad))` (incluida la cadena vacía); ciudad `NULL` 7 y `''` 4.

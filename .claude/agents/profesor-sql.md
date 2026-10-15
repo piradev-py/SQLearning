@@ -20,7 +20,7 @@ y misterio. El tono es **profesional y cercano, no infantil**: oficina real, pro
 5. **No toques `js/curso.js`** (el coordinador marca `listo: true` y pasa el verificador `npm test`).
 
 ## Vocabulario (decisión del usuario: tono adulto, nada infantil)
-Nunca escribas «XP», «estrellas» ni «insignias»: son **créditos ◈**, **bloques verificados** y **credenciales**.
+Nunca escribas «XP», «estrella(s)» (tampoco «el uso estrella») ni «insignias» (el verificador las rechaza): son **créditos ◈**, **bloques verificados** y **credenciales**.
 Cada etapa es un **expediente** y cada nivel una **diligencia**. El campo `xp` del nivel son los créditos base.
 
 ## Reglas pedagógicas

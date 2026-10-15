@@ -6,7 +6,7 @@
    ============================================================ */
 (function () {
   // Versión de la web (la escribe herramientas/version.mjs): evita mezclar archivos viejos de la caché
-  const VERSION = "202610151921";
+  const VERSION = "202610152213";
 
   // Diligencias aún sin título (expedientes que se escribirán más adelante)
   const pendientes = (etapa, n) => Array.from({ length: n }, (_, i) => {
@@ -88,7 +88,21 @@
         { id: "e4-10", archivo: "e4-10-caso-pedidos-fantasma.js", titulo: "Caso: Pedidos fantasma", listo: true, caso: true }
       ]
     },
-    { n: 5, carpeta: "5-migracion", titulo: "Migración", departamento: "Sistemas · Migración", datos: "faro-e5", niveles: pendientes(5, 11) },
+    { n: 5, carpeta: "5-migracion", titulo: "Migración", departamento: "Sistemas · Migración", datos: "faro-e5",
+      niveles: [
+        { id: "e5-01", archivo: "e5-01-datos-que-llegan-como-texto.js", titulo: "Datos que llegan como texto: CAST", listo: true },
+        { id: "e5-02", archivo: "e5-02-mayusculas-y-espacios.js", titulo: "Mayúsculas y espacios: UPPER, LOWER, INITCAP y TRIM", listo: true },
+        { id: "e5-03", archivo: "e5-03-trocear-texto.js", titulo: "Trocear texto: LEFT, SUBSTRING y SPLIT_PART", listo: true },
+        { id: "e5-04", archivo: "e5-04-sustituir-y-componer.js", titulo: "Sustituir y componer: REPLACE, CONCAT y LPAD", listo: true },
+        { id: "e5-05", archivo: "e5-05-patrones-expresiones-regulares.js", titulo: "Patrones: expresiones regulares", listo: true },
+        { id: "e5-06", archivo: "e5-06-decidir-fila-a-fila-case.js", titulo: "Decidir fila a fila: CASE", listo: true },
+        { id: "e5-07", archivo: "e5-07-fechas-de-verdad.js", titulo: "Fechas de verdad: to_date, EXTRACT y date_trunc", listo: true },
+        { id: "e5-08", archivo: "e5-08-intervalos-y-to-char.js", titulo: "Cuánto tarda y cómo se ve: intervalos y to_char", listo: true },
+        { id: "e5-09", archivo: "e5-09-rellenar-vacios-coalesce-nullif.js", titulo: "Rellenar vacíos: COALESCE y NULLIF", listo: true },
+        { id: "e5-10", archivo: "e5-10-duplicados-y-valores-imposibles.js", titulo: "Duplicados y valores imposibles", listo: true },
+        { id: "e5-11", archivo: "e5-11-caso-una-sola-direccion.js", titulo: "Caso: Una sola dirección", listo: true, caso: true }
+      ]
+    },
     { n: 6, carpeta: "6-it", titulo: "IT", departamento: "Sistemas", datos: "faro-e6", niveles: pendientes(6, 10) },
     { n: 7, carpeta: "7-direccion", titulo: "Dirección", departamento: "Dirección general", datos: "faro-e7", niveles: pendientes(7, 11) },
     { n: 8, carpeta: "8-analitica", titulo: "Analítica", departamento: "Datos · El desenlace", datos: "faro-e8", niveles: pendientes(8, 12) }

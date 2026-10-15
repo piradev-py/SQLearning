@@ -22,7 +22,7 @@ const TIPOS = {
   16: "boolean", 17: "bytea", 19: "name", 20: "bigint", 21: "smallint", 23: "integer", 25: "text", 26: "oid",
   114: "json", 600: "point", 700: "real", 701: "double precision", 869: "inet", 1042: "char", 1043: "varchar",
   1082: "date", 1083: "time", 1114: "timestamp", 1184: "timestamptz", 1186: "interval", 1560: "bit",
-  1700: "numeric", 2950: "uuid", 3615: "tsquery", 3802: "jsonb",
+  1700: "numeric", 2206: "regtype", 2950: "uuid", 3615: "tsquery", 3802: "jsonb",
   3904: "int4range", 3926: "int8range", 3906: "numrange", 3912: "daterange", 3910: "tstzrange", 3908: "tsrange",
   1000: "boolean[]", 1005: "smallint[]", 1007: "integer[]", 1009: "text[]", 1015: "varchar[]", 1016: "bigint[]",
   1021: "real[]", 1022: "double precision[]", 1182: "date[]", 1231: "numeric[]"

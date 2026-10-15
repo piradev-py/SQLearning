@@ -17,7 +17,7 @@
     integer: "entero", bigint: "entero", smallint: "entero", numeric: "decimal", real: "decimal",
     "double precision": "decimal", text: "texto", varchar: "texto", "character varying": "texto", char: "texto",
     boolean: "sí/no", date: "fecha", timestamp: "fecha y hora", "timestamp without time zone": "fecha y hora",
-    timestamptz: "fecha y hora", "timestamp with time zone": "fecha y hora", time: "hora", interval: "intervalo"
+    timestamptz: "fecha y hora", "timestamp with time zone": "fecha y hora", time: "hora", interval: "intervalo", regtype: "tipo"
   };
   const tipoCorto = t => TIPO_CORTO[t] || t;
 

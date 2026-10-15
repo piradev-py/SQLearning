@@ -208,6 +208,10 @@
       ? "Estás en modo prueba: todo está desbloqueado y nada de lo que hagas se guarda en tu progreso real."
       : "El modo prueba desbloquea todo y usa un progreso aparte que se borra al cerrar la pestaña.";
     const bPrueba = $("[data-prueba]");
+    // Fuera de local (versión publicada) el modo prueba no existe: se ocultan el botón y su explicación
+    const sinPrueba = !PROGRESO.pruebaDisponible();
+    bPrueba.parentElement.hidden = $("[data-prueba-estado]").hidden = sinPrueba;
+    if (bPrueba.parentElement.nextElementSibling?.tagName === "HR") bPrueba.parentElement.nextElementSibling.hidden = sinPrueba;
     bPrueba.textContent = prueba ? "Salir del modo prueba" : "Entrar en modo prueba";
     bPrueba.onclick = () => { prueba ? PROGRESO.salirPrueba() : PROGRESO.entrarPrueba(); $("[data-dialogo-ajustes]").close(); pintar(); };
     const bReiniciar = $("[data-reiniciar]");
