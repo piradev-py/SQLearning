@@ -99,6 +99,11 @@ Igual que `faro-e4.sql` + `crm_clientes` (el CRM antiguo, **todo en texto y suci
   `regexp_replace(replace(lower(direccion), 'c/', 'calle '), '[^a-z0-9]', '', 'g')` (las tildes desaparecen, da igual).
   Con `lower(trim(...))` solo, las de los falsos siguen siendo 9 distintas.
 - `fichas_empleados` (23): dirección, cp, ciudad, `nacimiento` (date) y teléfono de cada empleado.
+- Comprobado para el temario: PGlite tiene `DateStyle` = `ISO, MDY` → `'04/03/2026'::date` es el **3 de abril** y `'20/04/2026'::date`
+  da error 22008 (de ahí `to_date(…, 'DD/MM/YYYY')`). `initcap('MÁLAGA')` = «Málaga». Ciudades con `initcap(trim(ciudad))`:
+  Madrid 93 · Sevilla 48 · Valencia 45 · Bilbao 36 · Valladolid 28 · Barcelona 24 · Zaragoza 20 · Málaga 18 · Getafe 9 · NULL 7 · '' 4.
+  Atípicos: crm_id **31** (`fecha_alta` 1900-01-01), **122** (31/12/2099), **260** (`gasto_total` 999999.00). Teléfono vacío
+  (`NULL`, `''` o `'N/D'`): 42.
 
 ### Lo que siembra el Fantasma en la etapa 5 (caso «Una sola dirección») — pista FALSA contra Iván
 - Las direcciones de los **9 clientes falsos** están escritas de 9 formas distintas («Calle Olmo 7, 3ºB», «C/ Olmo, 7 3ºB»,
