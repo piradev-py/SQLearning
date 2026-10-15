@@ -113,4 +113,40 @@ Igual que `faro-e4.sql` + `crm_clientes` (el CRM antiguo, **todo en texto y suci
 - En `fichas_empleados`, esa dirección es la de **Iván Soler** (empleado 7): «Calle Olmo, 7, 3ºB», 28901 Getafe.
 - Decisión del usuario: es una **pista falsa** puesta por Héctor (ver HISTORIA). Iván debe parecer culpable en las etapas 5–6.
 
+## Etapa 6 · `faro-e6.sql` (semilla 6006 para lo nuevo)
+Igual que `faro-e5.sql` + `cuentas` (usuarios de la base de datos) + `auditoria` (registro de cambios que Iván guarda desde 2024)
++ `stock_tiendas` (stock de cada tienda física). Comprobado con PGlite.
+- `cuentas` (**29**): `id`, `usuario` (UNIQUE), `empleado_id` (→ empleados; NULL en las de servicio), `rol` (CHECK `lectura`/`escritura`/`admin`),
+  `creada` (date), `creada_por` (text), `activa`, `ultimo_acceso`. Ids 1–23 = el empleado del mismo id (`ivan.soler` 7, `hector.vidal` 5…;
+  admin: Nuria e Iván). De servicio: 24 `app_web`, 25 `app_tienda`, 26 `copias_seguridad`, 27 `migracion_2019` (admin, **inactiva**),
+  **28 `admin_temp`** (admin, sin empleado, creada **2019-11-04** por **`ivan.soler`**, **activa**, último acceso 2026-09-27 02:38:38),
+  29 `becario.2023` (inactiva). Creadas por ivan.soler 14, nuria.campos 14, ana.beltran 1.
+- `auditoria` (**497**, ids por orden de `momento`, 2024 → 2026-09-27): `id`, `momento`, `usuario` (→ cuentas.usuario), `tabla`,
+  `operacion` (CHECK INSERT/UPDATE/DELETE), `registro_id`, `columna`, `valor_antes`, `valor_despues` (texto).
+  - clientes INSERT 300 (`valor_despues` = email; `app_web` 291, `admin_temp` 9) · pedidos UPDATE `estado` 123 (entregado → reembolsado;
+    Atención al cliente de 9 a 18 h, 54) · productos UPDATE `stock` 55 (Logística de 8 a 19 h: beatriz.soto, hector.vidal, iker.salas,
+    oscar.medina) y `precio` 17 (Ventas) · cuentas 2 (`ivan.soler`: desactiva `migracion_2019` el 2024-02-12 y da de alta a iker.salas en 2025).
+  - El último cambio de stock/precio de cada producto acaba en su valor actual de `productos` (0 descuadres).
+  - Por usuario: app_web 291 · admin_temp 85 · laura.pena 23 · beatriz.soto 17 · marcos.gil 16 · diego.castano 15 · hector.vidal 15 ·
+    iker.salas 11 · oscar.medina 9 · elena.ruiz 6 · tomas.rivas 6 · ivan.soler 2 · claudia.reyes 1. 16 cuentas sin cambios.
+- `stock_tiendas` (**144**): PK (`tienda_id`, `producto_id`), CHECK `unidades >= 0`; tiendas 1–4 × los 36 productos activos, 0–25 uds.
+  (Madrid 450, Valencia 417, Sevilla 386, Bilbao 398). **Barcelona (6) no tiene filas**: se da de alta en la etapa 6.
+  Madrid con menos de 5 uds: productos 4 (3), 5 (0), 8 (1), 17 (0), 18 (2), 27 (0), 33 (4), 40 (0).
+- Sin índices aparte de PK/UNIQUE. `productos` no tiene CHECK: `ALTER TABLE productos ADD CHECK (stock >= 0)` falla (23514) por el −12.
+- CRM (de la etapa 5): 9 ciudades limpias no vacías (`initcap(trim(ciudad))`), 21 filas con gasto 0.
+- Motor: CREATE/INSERT/UPDATE/DELETE, vistas, índices, identity, `CREATE TABLE … AS`, SAVEPOINT funcionan dentro de la transacción
+  de práctica. Si el alumno escribe `COMMIT` o `ROLLBACK`, sale de ella y el motor recarga los datos (~0,7 s); el resultado es correcto.
+  `EXPLAIN` sin índice: `Seq Scan`; con `CREATE INDEX … (cliente_id)`: `Bitmap Index Scan`; por `id`: `Index Scan using pedidos_pkey`.
+
+### Lo que siembra el Fantasma en la etapa 6 (caso «La cuenta admin_temp») — Iván parece culpable
+- Cambios de madrugada (hora < 6): **admin_temp 85** y app_web 10 (altas reales de clientes de noche). Nadie más.
+- admin_temp: las **9 altas** de los `@correo-rapido.example` (2026-03-04 … 04-30), los **69 reembolsos** del Fantasma (68 de los falsos
+  + el **2210** de Iratxe, 2026-08-15 03:54:48; 10 clientes, **36 470,20 €**; 1–2 días después del pedido, de 2 a 4 h), **3 stocks**
+  (Smartphone Nexo A5 31→78 el 2026-05-21, Portátil Lumen 16 Pro 22→42 el 2026-07-09, **Auriculares Sonora Pulse 18→−12** el
+  2026-08-16 03:51) y **2 precios bajados y restaurados en la misma noche** (Portátil Lumen 16 Pro 1199→599→1199 el 2026-04-17,
+  Monitor Nexo 27" 4K 329→129→329 el 2026-08-21). Por mes: mar 12 · abr 16 · may 13 · jun 7 · jul 7 · **ago 18** · sep 12.
+- **Para la etapa 7** (coartada): las vacaciones de Iván y los fichajes de Héctor deben construirse sobre estos momentos
+  (p. ej. agosto, el mes con más actividad, con Iván de vacaciones; cada acción, minutos después de un fichaje de Héctor en Getafe).
+- No se nombra a Héctor: sus 15 cambios de stock son de día y normales.
+
 Las cifras exactas se consultan con el propio motor (laboratorio o `tests/`), nunca a ojo.

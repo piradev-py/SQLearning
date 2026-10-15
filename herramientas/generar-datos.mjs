@@ -674,3 +674,162 @@ function etapa5() {
 
 writeFileSync(SALIDA + "faro-e5.sql", etapa5());
 console.log("✅ datos/faro-e5.sql");
+
+// --- Etapa 6 (IT): lo de la etapa 5 + cuentas del sistema, auditoría y stock de las tiendas físicas ----------
+// Semilla propia (6006). Iván guarda desde 2024 un registro de cambios (`auditoria`) de clientes, pedidos, productos
+// y cuentas. Pista del Fantasma: todo lo raro (altas de los falsos, sus reembolsos, el stock de −12 y dos cambios de
+// precio de madrugada) lo hace `admin_temp`, una cuenta de 2019 que creó Iván y nadie desactivó (Iván parece culpable).
+// ⚠️ Etapa 7: los momentos de `admin_temp` deben cuadrar con las vacaciones de Iván y los fichajes de Héctor.
+const esquemaIT = `
+CREATE TABLE cuentas (
+  id integer PRIMARY KEY,
+  usuario text NOT NULL UNIQUE,
+  empleado_id integer REFERENCES empleados (id),
+  rol text NOT NULL CHECK (rol IN ('lectura', 'escritura', 'admin')),
+  creada date NOT NULL,
+  creada_por text NOT NULL,
+  activa boolean NOT NULL DEFAULT TRUE,
+  ultimo_acceso timestamp
+);
+
+CREATE TABLE auditoria (
+  id integer PRIMARY KEY,
+  momento timestamp NOT NULL,
+  usuario text NOT NULL REFERENCES cuentas (usuario),
+  tabla text NOT NULL,
+  operacion text NOT NULL CHECK (operacion IN ('INSERT', 'UPDATE', 'DELETE')),
+  registro_id integer,
+  columna text,
+  valor_antes text,
+  valor_despues text
+);
+
+CREATE TABLE stock_tiendas (
+  tienda_id integer NOT NULL REFERENCES tiendas (id),
+  producto_id integer NOT NULL REFERENCES productos (id),
+  unidades integer NOT NULL CHECK (unidades >= 0),
+  PRIMARY KEY (tienda_id, producto_id)
+);
+`;
+
+function etapa6Tablas() {
+  const u = universo();
+  const r = azar(6006);
+  const ent = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const elegir = lista => lista[Math.floor(r() * lista.length)];
+  const dos = n => String(n).padStart(2, "0");
+  const HOY = "2026-09-30";
+  const dia = (txt, mas) => { const d = new Date(txt.slice(0, 10) + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + mas); return d.toISOString().slice(0, 10); };
+  const hora = (d, h) => `${d} ${dos(h)}:${dos(ent(0, 59))}:${dos(ent(0, 59))}`;
+  const diaEntre = (a, b) => dia(a, ent(0, Math.round((Date.parse(b) - Date.parse(a)) / 86400000)));
+
+  // Cuentas: una por empleado + las de servicio
+  const todosEmpleados = empleados.concat([["Iker Salas", "Logística", 1]]);
+  const usuarioDe = n => email(n).split("@")[0];
+  const ROL = { "Sistemas": "admin", "Datos": "lectura", "Dirección": "lectura" };
+  const cuentas = todosEmpleados.map(([n, dep], i) => {
+    const iker = n === "Iker Salas";
+    return [i + 1, usuarioDe(n), i + 1, ROL[dep] || "escritura", iker ? "2025-03-10" : diaEntre("2018-01-08", "2023-12-20"),
+      elegir(["ivan.soler", "nuria.campos"]), true, hora(diaEntre("2026-09-15", HOY), ent(8, 19))];
+  });
+  cuentas[6][4] = "2017-03-01"; cuentas[6][5] = "nuria.campos";   // la cuenta de Iván
+  cuentas[5][4] = "2016-09-12"; cuentas[5][5] = "ana.beltran";    // la de Nuria
+  cuentas[22][5] = "ivan.soler";                                  // la de Iker
+  const servicio = [
+    ["app_web", "escritura", "2017-11-15", "ivan.soler", true],
+    ["app_tienda", "escritura", "2018-02-01", "ivan.soler", true],
+    ["copias_seguridad", "lectura", "2018-02-01", "ivan.soler", true],
+    ["migracion_2019", "admin", "2019-11-04", "ivan.soler", false],
+    ["admin_temp", "admin", "2019-11-04", "ivan.soler", true],
+    ["becario.2023", "lectura", "2023-06-01", "nuria.campos", false]
+  ];
+  for (const [usuario, rol, creada, por, activa] of servicio)
+    cuentas.push([cuentas.length + 1, usuario, null, rol, creada, por, activa, null]);
+
+  const eventos = [];   // [momento, usuario, tabla, operacion, registro_id, columna, antes, despues]
+  const ev = (...e) => eventos.push(e);
+
+  // Altas de clientes
+  for (const c of u.clientes) ev(c.alta, c.falso ? "admin_temp" : "app_web", "clientes", "INSERT", c.id, null, null, c.email);
+
+  // Reembolsos: los normales, Atención al cliente en horario de oficina; los del Fantasma, admin_temp de madrugada
+  const falsos = new Set(u.clientes.filter(c => c.falso).map(c => c.id));
+  for (const p of u.pedidos.filter(p => p.estado === "reembolsado")) {
+    if (falsos.has(p.cliente_id) || p.id === u.pedidoReclamado) {
+      let d = dia(p.fecha, ent(1, 2)); if (d > HOY) d = HOY;
+      ev(hora(d, ent(2, 4)), "admin_temp", "pedidos", "UPDATE", p.id, "estado", "entregado", "reembolsado");
+    } else {
+      let d = dia(p.fecha, ent(1, 10)); if (d > HOY) d = dia(p.fecha, 1) > HOY ? p.fecha.slice(0, 10) : HOY;
+      ev(hora(d, d === p.fecha.slice(0, 10) ? 21 : ent(9, 18)), elegir(["marcos.gil", "diego.castano", "laura.pena"]),
+        "pedidos", "UPDATE", p.id, "estado", "entregado", "reembolsado");
+    }
+  }
+
+  // Ajustes de stock: cadenas que acaban en el stock actual. Logística de día; admin_temp, de madrugada, en 3 productos
+  const LOGISTICA = ["oscar.medina", "beatriz.soto", "iker.salas", "hector.vidal"];
+  const idDe = nombre => filasProductos.find(f => f[1] === nombre)[0];
+  const ADMIN_STOCK = [
+    [idDe(STOCK_IMPOSIBLE.nombre), "2026-08-16 03:51:07", 18],
+    [idDe("Smartphone Nexo A5"), "2026-05-21 02:37:44", 31],
+    [idDe("Portátil Lumen 16 Pro"), "2026-07-09 04:12:19", 22]
+  ];
+  for (const f of filasProductos.filter(f => f[6])) {
+    const admin = ADMIN_STOCK.find(a => a[0] === f[0]);
+    const n = admin ? 3 : ent(0, 3);
+    const dias = Array.from({ length: n }, () => diaEntre("2024-01-15", admin ? dia(admin[1], -1) : HOY)).sort();
+    let valor = admin ? admin[2] : f[4];
+    const cadena = [];
+    for (let k = n - 1; k >= 0; k--) {           // de la última hacia atrás: «antes» de cada una es el «después» de la anterior
+      const antes = Math.max(0, valor + ent(-25, 15));
+      cadena.unshift([hora(dias[k], ent(8, 19)), elegir(LOGISTICA), antes, valor]);
+      valor = antes;
+    }
+    if (admin) cadena.push([admin[1], "admin_temp", admin[2], f[4]]);
+    for (const [m, us, a, d] of cadena) ev(m, us, "productos", "UPDATE", f[0], "stock", String(a), String(d));
+  }
+
+  // Cambios de precio: Ventas de día (acaban en el precio actual); admin_temp baja y restaura dos precios de madrugada
+  const VENTAS = ["elena.ruiz", "tomas.rivas", "claudia.reyes"];
+  const ADMIN_PRECIO = [["Portátil Lumen 16 Pro", "599.00", "2026-04-17 02:48:12", "2026-04-17 03:56:40"],
+                        ["Monitor Nexo 27\" 4K", "129.00", "2026-08-21 03:05:33", "2026-08-21 04:21:09"]];
+  for (const f of filasProductos.filter(f => f[6] && !ADMIN_PRECIO.some(a => a[0] === f[1]))) {
+    if (r() >= 0.4) continue;
+    const antes = (Math.round(f[3] * (1 + ent(-15, 15) / 100)) - 0.1).toFixed(2);
+    if (antes !== f[3].toFixed(2)) ev(hora(diaEntre("2024-02-01", HOY), ent(9, 18)), elegir(VENTAS), "productos", "UPDATE", f[0], "precio", antes, f[3].toFixed(2));
+  }
+  for (const [nombre, baja, desde, hasta] of ADMIN_PRECIO) {
+    const f = filasProductos.find(x => x[1] === nombre);
+    ev(desde, "admin_temp", "productos", "UPDATE", f[0], "precio", f[3].toFixed(2), baja);
+    ev(hasta, "admin_temp", "productos", "UPDATE", f[0], "precio", baja, f[3].toFixed(2));
+  }
+
+  // Cuentas: Iván desactiva migracion_2019… pero no admin_temp; y da de alta a Iker
+  ev("2024-02-12 11:34:20", "ivan.soler", "cuentas", "UPDATE", cuentas.find(c => c[1] === "migracion_2019")[0], "activa", "true", "false");
+  ev("2025-03-10 09:41:02", "ivan.soler", "cuentas", "INSERT", 23, null, null, "iker.salas");
+
+  eventos.sort((a, b) => a[0].localeCompare(b[0]));
+  const auditoria = eventos.map((e, i) => [i + 1, ...e]);
+  const ultimo = us => auditoria.filter(a => a[2] === us).map(a => a[1]).sort().pop() || null;
+  for (const c of cuentas) if (!c[2]) c[7] = !c[6] ? hora(diaEntre("2023-09-01", "2024-02-10"), ent(9, 18))
+    : c[1] === "admin_temp" ? ultimo(c[1]) : c[1] === "copias_seguridad" ? hora(HOY, 3) : hora(HOY, ent(19, 21));
+  cuentas.find(c => c[1] === "becario.2023")[7] = "2023-08-31 17:58:03";
+
+  // Stock de las tiendas físicas 1–4 (Barcelona, la 6, aún no tiene: se da de alta en la etapa 6)
+  const stockTiendas = [];
+  for (const t of [1, 2, 3, 4]) for (const f of filasProductos.filter(f => f[6])) stockTiendas.push([t, f[0], ent(0, 25)]);
+  return { cuentas, auditoria, stockTiendas };
+}
+
+function etapa6() {
+  const t = etapa6Tablas();
+  return [
+    etapa5().replace("datos de la etapa 5", "datos de la etapa 6"),
+    esquemaIT,
+    insertar("cuentas", ["id", "usuario", "empleado_id", "rol", "creada", "creada_por", "activa", "ultimo_acceso"], t.cuentas),
+    insertar("auditoria", ["id", "momento", "usuario", "tabla", "operacion", "registro_id", "columna", "valor_antes", "valor_despues"], t.auditoria),
+    insertar("stock_tiendas", ["tienda_id", "producto_id", "unidades"], t.stockTiendas)
+  ].join("\n");
+}
+
+writeFileSync(SALIDA + "faro-e6.sql", etapa6());
+console.log("✅ datos/faro-e6.sql");
