@@ -51,20 +51,34 @@
                : `<div role="group" aria-label="${etiqueta}">${dentro}</div>`}</li>`;
   }
 
+  // --- Expedientes plegables -------------------------------------------------
+  // Por defecto: abiertos desplegados; cerrados y clasificados plegados. Lo que la persona
+  // pliega o despliega a mano se recuerda (localStorage).
+  const CLAVE_PLEGADOS = "sqlearning-tablero-plegados";
+  const leerPlegados = () => { try { return JSON.parse(localStorage.getItem(CLAVE_PLEGADOS) || "{}") || {}; } catch (e) { return {}; } };
+  const guardarPlegados = p => { try { localStorage.setItem(CLAVE_PLEGADOS, JSON.stringify(p)); } catch (e) { /* sin guardado */ } };
+  const plegado = (etapa, est) => {
+    const p = leerPlegados();
+    return typeof p[etapa.n] === "boolean" ? p[etapa.n] : est !== "abierto";
+  };
+
   function expedienteHTML(etapa, cols) {
     const est = estadoEtapa(etapa);
     const hechas = etapa.niveles.filter(n => PROGRESO.completado(n.id)).length;
     const total = etapa.niveles.length;
     const filas = Math.ceil(total / cols);
     const estadoTxt = { clasificado: "CLASIFICADO", cerrado: "CERRADO", abierto: "ABIERTO" }[est];
-    return `<section class="exp exp--${est}${etapa.opcional ? " exp--opcional" : ""}" aria-labelledby="exp-${etapa.n}">
-      <header class="exp-cabecera">
+    const cerrado = plegado(etapa, est);
+    return `<section class="exp exp--${est}${etapa.opcional ? " exp--opcional" : ""}${cerrado ? " exp--plegado" : ""}" aria-labelledby="exp-${etapa.n}" data-exp="${etapa.n}">
+      <header class="exp-cabecera" data-plegar="${etapa.n}">
+        <button type="button" class="exp-flecha" aria-expanded="${!cerrado}" aria-controls="exp-cuerpo-${etapa.n}"
+          aria-label="${cerrado ? "Desplegar" : "Plegar"} el expediente ${etapa.n}">${cerrado ? "▸" : "▾"}</button>
         <span class="exp-num">EXP.${etapa.n}</span>
         <h2 id="exp-${etapa.n}">${est === "clasificado" ? `<span class="tachado">${esc(etapa.titulo).replace(/\S/g, "█")}</span><span class="solo-lector">Expediente clasificado</span>` : esc(etapa.titulo)}</h2>
         <span class="exp-dep">${etapa.opcional ? "Formación previa · opcional" : est === "clasificado" ? "Acceso restringido" : esc(etapa.departamento)}</span>
         <span class="exp-estado">${estadoTxt}${est !== "clasificado" ? ` · ${hechas}/${total}` : ""}</span>
       </header>
-      <div class="exp-cuerpo">
+      <div class="exp-cuerpo" id="exp-cuerpo-${etapa.n}"${cerrado ? " hidden" : ""}>
         <svg class="exp-hilos" aria-hidden="true"></svg>
         <ol class="exp-nodos" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${filas},auto)">
           ${etapa.niveles.map((n, i) => nodoHTML(n, i, etapa, est, cols)).join("")}
@@ -135,6 +149,23 @@
       </li>`).join("");
   }
 
+  // Pliega o despliega un expediente sin repintar todo (y recuerda la elección)
+  function alternar(n, abrir) {
+    const sec = document.querySelector(`[data-exp="${n}"]`);
+    if (!sec) return;
+    const cuerpo = sec.querySelector(".exp-cuerpo"), flecha = sec.querySelector(".exp-flecha");
+    const abrirlo = abrir ?? cuerpo.hidden;
+    cuerpo.hidden = !abrirlo;
+    sec.classList.toggle("exp--plegado", !abrirlo);
+    flecha.setAttribute("aria-expanded", String(abrirlo));
+    flecha.setAttribute("aria-label", `${abrirlo ? "Plegar" : "Desplegar"} el expediente ${n}`);
+    flecha.textContent = abrirlo ? "▾" : "▸";
+    const p = leerPlegados();
+    p[n] = !abrirlo;
+    guardarPlegados(p);
+    if (abrirlo) requestAnimationFrame(dibujarHilos);
+  }
+
   function pintar() {
     const cols = columnas();
     $("[data-expedientes]").innerHTML = CURSO.ETAPAS.map(e => expedienteHTML(e, cols)).join("");
@@ -153,6 +184,14 @@
       if (columnas() !== ultimoCols) { ultimoCols = columnas(); pintar(); }
       else dibujarHilos();
     }).observe($("[data-expedientes]"));
+
+    // Plegar / desplegar: clic en la cabecera o en su flecha (Enter y Espacio en la flecha, que es un botón)
+    $("[data-expedientes]").addEventListener("click", ev => {
+      const cab = ev.target.closest("[data-plegar]");
+      if (cab) alternar(Number(cab.dataset.plegar));
+    });
+    $("[data-desplegar-todo]")?.addEventListener("click", () => CURSO.ETAPAS.forEach(e => alternar(e.n, true)));
+    $("[data-plegar-todo]")?.addEventListener("click", () => CURSO.ETAPAS.forEach(e => alternar(e.n, false)));
 
     const abrir = (sel, rellenar) => () => { rellenar?.(); $(sel).showModal(); };
     $("[data-abrir-expediente]").addEventListener("click", abrir("[data-dialogo-expediente]", dialogoExpediente));

@@ -209,7 +209,16 @@ body { background: transparent; min-height: 100vh; }
 .exp--clasificado { opacity: 0.72; }
 .exp--opcional { border-style: dashed; }
 
-.exp-cabecera { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 16px; }
+.exp-cabecera { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 16px; cursor: pointer; user-select: none; }
+.exp--plegado { padding-bottom: 18px; }
+.exp--plegado .exp-cabecera { margin-bottom: 0; }
+.exp-flecha {
+  align-self: center; width: 28px; height: 28px; padding: 0; display: grid; place-items: center;
+  font-size: 14px; color: var(--texto-suave); background: transparent; border-color: var(--borde);
+}
+.exp-cabecera:hover .exp-flecha { color: var(--cian); border-color: var(--cian); }
+.tablero-plegar { display: flex; gap: 8px; margin-top: 14px; }
+.tablero-plegar button { font-size: 13px; padding: 4px 12px; }
 .exp-num { font: 900 13px var(--fuente-titulo); letter-spacing: 0.16em; color: var(--acento); text-shadow: var(--texto-neon-magenta); }
 .exp-cabecera h2 { margin: 0; font-size: 20px; text-transform: uppercase; }
 .exp-dep { color: var(--texto-suave); font-size: 13px; }

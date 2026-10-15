@@ -42,6 +42,23 @@ export default async function (b) {
   comprobar("Los clasificados no muestran títulos", await b.eval("![...document.querySelectorAll('.exp--clasificado h2')].some(h => /[a-z]/i.test(h.firstElementChild.textContent))"));
   comprobar("Primera diligencia de EXP.1 disponible, la segunda bloqueada", await b.eval("document.querySelector('[data-nodo=e1-01]').classList.contains('nodo--disponible') && document.querySelector('[data-nodo=e1-02]').classList.contains('nodo--bloqueado')"));
   comprobar("Hilos dibujados (8 entre las 9 diligencias de EXP.1)", (await b.eval("document.querySelectorAll('.exp')[1].querySelectorAll('.exp-hilos path').length")) === 8);
+  // Expedientes plegables
+  comprobar("Plegables: abiertos desplegados, clasificados plegados", await b.eval("!document.querySelector('#exp-cuerpo-1').hidden && document.querySelector('#exp-cuerpo-3').hidden && document.querySelector('[data-exp=\"3\"] .exp-flecha').getAttribute('aria-expanded') === 'false'"));
+  await b.eval("document.querySelector('[data-exp=\"1\"] .exp-cabecera').click()");
+  comprobar("Clic en la cabecera pliega el expediente 1", await b.eval("document.querySelector('#exp-cuerpo-1').hidden && document.querySelector('[data-exp=\"1\"] .exp-flecha').textContent === '▸'"));
+  await b.ir("about:blank");
+  await b.ir("index.html#ruta");
+  await b.esperar(300);
+  comprobar("El plegado se recuerda al volver", await b.eval("document.querySelector('#exp-cuerpo-1').hidden"));
+  await b.eval("document.querySelector('[data-desplegar-todo]').click()");
+  comprobar("«Desplegar todo» abre los 9", await b.eval("[...document.querySelectorAll('.exp-cuerpo')].every(c => !c.hidden)"));
+  await b.eval("document.querySelector('[data-plegar-todo]').click()");
+  comprobar("«Plegar todo» los cierra", await b.eval("[...document.querySelectorAll('.exp-cuerpo')].every(c => c.hidden)"));
+  await b.eval("localStorage.removeItem('sqlearning-tablero-plegados')");
+  await b.ir("about:blank");
+  await b.ir("index.html#ruta");
+  await b.esperar(300);
+
   comprobar("Cabecera: L1 Becario y 0 ◈", await b.eval("/L1/.test(document.querySelector('[data-autorizacion]').textContent) && /Becario/.test(document.querySelector('[data-autorizacion]').textContent) && /^0/.test(document.querySelector('[data-creditos]').textContent.trim())"));
   await b.foto("inicio-tablero");
   await b.eval("scrollTo(0, 900)");
