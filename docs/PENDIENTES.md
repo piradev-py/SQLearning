@@ -38,7 +38,9 @@ quede pendiente y vuelve a pasar los tests.
   (`herramientas/generar-ciudad.mjs` → `recursos/ciudad-neon.svg`) con el faro; fuentes Orbitron + JetBrains Mono
 
 ## Fase 3 · Interfaz
-- [ ] Inicio + mapa + progreso + expediente (adaptados de CSS-HTML, identidad visual nueva)
+- [x] Inicio: **prólogo obligatorio** (`js/prologo.js`, «Anteriormente en el caso…») → **hoja de ruta** como tablero holográfico (`js/tablero.js`, expedientes CLASIFICADOS, hilos de neón)
+- [x] Progreso con **créditos ◈, bloques verificados, credenciales, autorización L1–L6**, turnos, expediente de pistas, modo prueba, reinicio (`js/progreso.js`); índice `js/curso.js`; prueba `esc-inicio.mjs`
+- [ ] Página de lección (`leccion.html`): pasos historia/explicación/ejercicio/predicción/arreglar/quiz/interpretar/reto/caso + recompensas al terminar
 - [ ] Pasos «sobre el papel»: `clasificar`, `seleccionar`, `ordenar`, `diagrama`
 
 ## Fase 4 · Primer hito jugable

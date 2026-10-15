@@ -4,37 +4,6 @@
    ============================================================ */
 body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: transparent; }
 
-.solo-lector {
-  position: absolute; width: 1px; height: 1px; overflow: hidden;
-  clip: rect(0 0 0 0); white-space: nowrap;
-}
-
-/* --- Marca (la luz del faro) ----------------------------------- */
-.marca {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--cian);
-  text-decoration: none;
-  font: 900 20px/1 var(--fuente-titulo);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-shadow: var(--texto-neon-cian);
-}
-.marca strong { color: var(--acento); font-weight: 900; text-shadow: var(--texto-neon-magenta); }
-.marca-faro {
-  position: relative;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #c9a66b;
-  box-shadow: 0 0 0 3px rgb(201 166 107 / 0.15), 0 0 12px 3px rgb(201 166 107 / 0.35);
-}
-.marca-faro.grande { width: 26px; height: 26px; animation: destello 3s ease-in-out infinite; }
-@keyframes destello {
-  50% { box-shadow: 0 0 0 7px rgb(201 166 107 / 0.1), 0 0 36px 12px rgb(201 166 107 / 0.3); }
-}
-
 /* --- Cabecera -------------------------------------------------- */
 .lab-cabecera {
   display: flex;

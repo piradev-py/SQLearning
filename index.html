@@ -10,55 +10,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
   <link rel="stylesheet" href="css/tema.css">
   <link rel="stylesheet" href="css/fondo.css">
-  <style>
-    /* Portada provisional (fase 3: inicio con mapa de etapas) */
-    body { display: grid; place-items: center; min-height: 100vh; background: transparent; overflow: hidden; }
-    /* La ciudad baja: el título queda en el cielo */
-    .escena { --horizonte-y: 76%; }
-    .escena-ciudad { height: 42%; }
-    .portada {
-      text-align: center;
-      padding: 40px 64px;
-      margin-top: -26vh;
-      /* Halo oscuro para que el texto se lea aunque roce la ciudad */
-      background: radial-gradient(closest-side, rgb(4 3 10 / 0.85), rgb(4 3 10 / 0.6) 70%, transparent);
-    }
-    :root[data-theme="light"] .portada { background: radial-gradient(ellipse 60% 55% at 50% 55%, rgb(246 239 255 / 0.9), transparent 80%); }
-    .portada-marca {
-      margin: 0;
-      font: 900 clamp(40px, 7vw, 88px)/1 var(--fuente-titulo);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--cian);
-      text-shadow: var(--texto-neon-cian);
-    }
-    .portada-marca strong { color: var(--acento); font-weight: 900; text-shadow: var(--texto-neon-magenta); }
-    .portada-sub {
-      margin: 18px 0 6px;
-      font: 600 clamp(14px, 1.6vw, 18px) var(--fuente-titulo);
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--texto);
-    }
-    .portada-lema { margin: 0 auto 32px; max-width: 520px; color: var(--texto-suave); }
-    .portada-botones { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    .portada-botones a, .portada-botones span {
-      padding: 10px 22px;
-      border-radius: var(--radio);
-      font: 700 14px var(--fuente-titulo);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-    .portada-botones a {
-      color: var(--primario-texto);
-      background: var(--primario);
-      box-shadow: var(--neon-cian);
-    }
-    .portada-botones a:hover { background: var(--primario-hover); }
-    .portada-botones span { color: var(--texto-suave); border: 1px dashed var(--borde); }
-    .boton-tema { position: fixed; top: 16px; right: 16px; }
-  </style>
+  <link rel="stylesheet" href="css/inicio.css">
 </head>
 <body>
   <div class="escena" aria-hidden="true">
@@ -66,18 +18,74 @@
     <img class="escena-ciudad" src="recursos/ciudad-neon.svg" alt="">
     <div class="escena-suelo"></div>
   </div>
-  <button type="button" class="boton-tema" data-tema aria-label="Cambiar tema">🌙 Noche</button>
 
-  <main class="portada">
-    <h1 class="portada-marca">SQL<strong>earning</strong></h1>
-    <p class="portada-sub">El Fantasma de Faro</p>
-    <p class="portada-lema">Alguien está manipulando los datos. Aprende SQL de cero a Data Analyst y descubre quién.</p>
-    <div class="portada-botones">
-      <a href="laboratorio.html">Laboratorio</a>
-      <span>Historia · próximamente</span>
-    </div>
-  </main>
+  <!-- 1. Prólogo: siempre al entrar -->
+  <section class="prologo" data-prologo tabindex="-1" aria-labelledby="prologo-titulo">
+    <h1 class="prologo-marca" id="prologo-titulo">SQL<strong>earning</strong></h1>
+    <div class="prologo-texto" data-lineas aria-live="polite"></div>
+    <p class="prologo-sello" data-sello hidden>
+      <span data-sello-texto>CASO ABIERTO</span>
+      <small>El Fantasma de Faro</small>
+    </p>
+    <button type="button" class="boton-principal prologo-continuar" data-continuar hidden>Continuar a la hoja de ruta ›</button>
+    <p class="prologo-ayuda" data-ayuda>Haz clic para avanzar</p>
+  </section>
+
+  <!-- 2. Hoja de ruta del caso -->
+  <div class="tablero" data-tablero hidden>
+    <header class="tablero-cabecera">
+      <a class="marca" href="index.html" aria-label="SQLearning, volver al prólogo">
+        <span class="marca-faro" aria-hidden="true"></span><span>SQL<strong>earning</strong></span>
+      </a>
+      <div class="aut" data-autorizacion></div>
+      <ul class="stats" aria-label="Tu progreso">
+        <li class="stat" data-creditos title="Créditos ◈: la moneda interna de Faro"></li>
+        <li class="stat" data-bloques title="Bloques verificados (1 a 3 por diligencia)"></li>
+        <li class="stat" data-turnos title="Días seguidos trabajando en el caso"></li>
+      </ul>
+      <nav class="acciones" aria-label="Herramientas">
+        <button type="button" data-abrir-expediente>📁 Expediente</button>
+        <button type="button" data-abrir-credenciales>🪪 Credenciales</button>
+        <a class="boton-enlace" href="laboratorio.html">⌨ Laboratorio</a>
+        <button type="button" data-abrir-ajustes aria-label="Ajustes">⚙</button>
+        <button type="button" class="boton-tema" data-tema aria-label="Cambiar tema">🌙 Noche</button>
+      </nav>
+    </header>
+    <p class="aviso-prueba" data-modo-prueba hidden>MODO PRUEBA · todo desbloqueado · no se guarda nada</p>
+
+    <main class="tablero-main">
+      <div class="tablero-intro">
+        <h1 tabindex="-1" data-tablero-titulo>Hoja de ruta del caso</h1>
+        <p>Cada expediente es una línea de investigación; cada diligencia, una herramienta de SQL que vas a necesitar.
+          Ciérralas en orden: los expedientes siguientes siguen <strong>clasificados</strong> hasta entonces.</p>
+      </div>
+      <div class="expedientes" data-expedientes></div>
+    </main>
+
+    <dialog class="dialogo" data-dialogo-expediente aria-labelledby="titulo-expediente">
+      <header><h2 id="titulo-expediente">📁 Expediente del caso</h2><button type="button" data-cerrar aria-label="Cerrar">✕</button></header>
+      <ol class="pistas" data-lista-pistas></ol>
+    </dialog>
+    <dialog class="dialogo" data-dialogo-credenciales aria-labelledby="titulo-credenciales">
+      <header><h2 id="titulo-credenciales">🪪 Credenciales</h2><button type="button" data-cerrar aria-label="Cerrar">✕</button></header>
+      <ul class="credenciales" data-lista-credenciales></ul>
+    </dialog>
+    <dialog class="dialogo dialogo--estrecho" data-dialogo-ajustes aria-labelledby="titulo-ajustes">
+      <header><h2 id="titulo-ajustes">⚙ Ajustes</h2><button type="button" data-cerrar aria-label="Cerrar">✕</button></header>
+      <p data-prueba-estado></p>
+      <p><button type="button" data-prueba></button></p>
+      <hr>
+      <p><button type="button" class="boton-peligro" data-reiniciar></button></p>
+    </dialog>
+  </div>
 
   <script src="js/tema.js"></script>
+  <script src="js/curso.js"></script>
+  <script src="js/progreso.js"></script>
+  <script src="js/prologo.js"></script>
+  <script src="js/tablero.js"></script>
+  <script>
+    PROLOGO.iniciar(() => TABLERO.mostrar());
+  </script>
 </body>
 </html>

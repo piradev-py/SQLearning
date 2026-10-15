@@ -11,6 +11,23 @@ Bilbao y la tienda online**. Tiene almacén central en Getafe (Madrid). Vende pr
 El alumno entra como **becario/a de datos** en el equipo de Lucía. No tiene nombre en la historia: los personajes
 le hablan de tú («Oye, ¿puedes mirar…?»).
 
+## Prólogo (se ve SIEMPRE al entrar, antes de la hoja de ruta)
+Secuencia breve (~30–40 s): las frases aparecen una a una sobre la ciudad de neón; al final, el botón
+«Continuar a la hoja de ruta». Hacer clic adelanta la frase siguiente (se leen todas igualmente). Con movimiento
+reducido aparecen todas a la vez y el botón llega a los pocos segundos. Texto (en `js/prologo.js`):
+
+1. La ciudad nunca duerme. Sus luces, a veces, parpadean.
+2. **Faro** vende tecnología en cinco tiendas y en la red. Cada venta, cada cliente, cada caja que sale del almacén deja un rastro: un dato.
+3. Hace semanas que algunos rastros no cuadran. Un stock imposible. Clientes que nadie recuerda. Reembolsos de madrugada.
+4. En los pasillos ya tiene nombre: **el Fantasma**.
+5. Lucía Mora, jefa de datos, necesita a alguien nuevo. Alguien a quien nadie conozca todavía.
+6. Mañana empiezas. Tu herramienta: **SQL**. Tu misión: encontrar la verdad en los datos.
+7. *(sello)* **CASO ABIERTO · EL FANTASMA DE FARO**
+
+**Si ya has avanzado**, tras la frase 4 se muestra «Anteriormente en el caso…» con las pistas del Expediente que
+ya tienes y el último nivel superado, y luego la frase 7 (el sello cambia a «CASO EN CURSO»; y a «CASO CERRADO» al
+terminar la etapa 8). Nunca muestra pistas que el alumno no haya descubierto.
+
 ## Prólogo opcional: la Etapa 0 «El archivo de papel»
 Antes del primer día, Lucía pone al candidato una prueba: ordenar el archivo de la **primera tienda de Faro (1998)**,
 que llevaba todo en fichas de papel y un Excel gigante. Es una historia **autónoma** (sin pistas del Fantasma),
@@ -56,9 +73,16 @@ Reglas para no romper el misterio:
 - Las cifras y nombres concretos los fija `herramientas/generar-datos.mjs` (semilla fija). Si una lección cita
   un número, debe salir de ahí.
 
-## Rangos del alumno (XP)
-Becario 🎒 → Analista junior 📊 → Analista 🔎 → Analista senior 🧠 → Lead de datos 🧭 → Head of Data 🏛️
-(umbrales en `js/progreso.js`).
+## Recompensas (decisión del usuario: nada de estrellas ni insignias infantiles)
+- **Créditos ◈** (la criptomoneda interna de Faro) en lugar de XP: `xp` del nivel + 10 por bloque.
+- **Bloques verificados** (1–3 por nivel) en lugar de estrellas: 3 = sin pistas · 2 = con pistas · 1 = viendo la
+  solución. Se dibujan como bloques encadenados ▰▰▱.
+- **Credenciales** (tarjetas de acceso) en lugar de insignias.
+- **Niveles de autorización** en lugar de rangos: L1 Becario → L2 Analista junior → L3 Analista → L4 Analista
+  senior → L5 Lead de datos → L6 Head of Data (umbrales de créditos en `js/progreso.js`).
+- **Hoja de ruta del caso** en lugar de mapa: un tablero holográfico de investigación. Cada etapa es un
+  **expediente** (EXP.0 … EXP.8); cada nivel, una **diligencia**; los hilos de neón las unen. Los expedientes aún
+  bloqueados aparecen **CLASIFICADOS** (títulos tachados), para no destripar el temario ni la trama.
 
 ## Epílogo (tras el caso final)
 Ana Beltrán te ofrece el puesto de Head of Data. Lucía te recomienda los siguientes pasos de un Data Analyst

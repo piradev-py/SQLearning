@@ -202,9 +202,11 @@ como un `reto`. Cada nivel de la Etapa 0 termina en uno de ellos.
 Se revisa la respuesta completa y se dice qué está mal («2 datos están en el grupo equivocado», «falta una relación»,
 «la relación Cliente–Pedido no es 1:1»), sin revelar cuáles hasta las pistas.
 
-## 5. Estrellas y XP (lo calcula el motor)
-- ⭐⭐⭐ reto superado sin pistas · ⭐⭐ usando pistas · ⭐ viendo la solución.
-- XP ganada = `xp` del nivel + 10 por estrella (+ bonus), solo la mejora respecto a intentos anteriores.
+## 5. Bloques y créditos (lo calcula el motor)
+El campo `xp` del nivel son los **créditos ◈** base (se mantiene el nombre del campo).
+- ▰▰▰ 3 bloques verificados: reto superado sin pistas · ▰▰▱ 2: usando pistas · ▰▱▱ 1: viendo la solución.
+- Créditos ganados = `xp` del nivel + 10 por bloque (+ bonus), solo la mejora respecto a intentos anteriores.
+- Nunca se habla de «estrellas», «XP» ni «insignias» en los textos: créditos, bloques, credenciales, autorización.
 
 ## 6. Personajes (`de`)
 `lucia` (Lucía Mora, datos), `marcos` (atención al cliente), `elena` (ventas), `hector` (logística),

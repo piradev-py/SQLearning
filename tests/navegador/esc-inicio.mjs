@@ -1,0 +1,113 @@
+// Inicio: prólogo obligatorio → hoja de ruta (tablero holográfico), progreso, diálogos y modo prueba.
+// Uso: node tests/navegador/cdp.mjs esc-inicio.mjs
+export default async function (b) {
+  const fallos = [];
+  const comprobar = (nombre, ok, extra = "") => {
+    b.log((ok ? "✅ " : "❌ ") + nombre + (ok || !extra ? "" : " — " + extra));
+    if (!ok) fallos.push(nombre);
+  };
+  const avanzarPrologo = async () => {
+    for (let i = 0; i < 20 && !(await b.eval("!document.querySelector('[data-continuar]').hidden")); i++) {
+      await b.eval("document.querySelector('[data-prologo]').click()");
+      await b.esperar(150);
+    }
+  };
+  const progresoDe = obj => b.eval(`localStorage.setItem('sqlearning-progreso-v1', ${JSON.stringify(JSON.stringify(obj))})`);
+
+  await b.tam(1366, 768);
+  await b.movimiento();
+  await b.ir("index.html");
+  await b.eval("localStorage.clear(); sessionStorage.clear()");
+  await b.ir("index.html");
+
+  // 1. Prólogo
+  comprobar("El prólogo aparece al entrar", await b.eval("!document.querySelector('[data-prologo]').hidden && document.querySelector('[data-tablero]').hidden"));
+  comprobar("Empieza por la primera frase y aún no hay botón", await b.eval("document.querySelectorAll('.prologo-frase').length === 1 && document.querySelector('[data-continuar]').hidden"));
+  await b.esperar(800);
+  await b.foto("inicio-prologo-1");
+  await avanzarPrologo();
+  comprobar("Clic a clic se ven las 6 frases, el sello y «Continuar»", await b.eval("document.querySelectorAll('.prologo-frase').length === 6 && !document.querySelector('[data-sello]').hidden && !document.querySelector('[data-continuar]').hidden"));
+  comprobar("Sello: CASO ABIERTO", (await b.eval("document.querySelector('[data-sello-texto]').textContent")) === "CASO ABIERTO");
+  await b.esperar(900);
+  await b.foto("inicio-prologo-fin");
+
+  // 2. Hoja de ruta
+  await b.eval("document.querySelector('[data-continuar]').click()");
+  await b.esperar(500);
+  comprobar("«Continuar» lleva a la hoja de ruta", await b.eval("document.querySelector('[data-prologo]').hidden && !document.querySelector('[data-tablero]').hidden"));
+  comprobar("9 expedientes y 90 diligencias", await b.eval("document.querySelectorAll('.exp').length === 9 && document.querySelectorAll('.nodo').length === 90"));
+  comprobar("EXP.0 y EXP.1 abiertos; EXP.2–8 clasificados", await b.eval("document.querySelectorAll('.exp--abierto').length === 2 && document.querySelectorAll('.exp--clasificado').length === 7"));
+  comprobar("Los clasificados no muestran títulos", await b.eval("![...document.querySelectorAll('.exp--clasificado h2')].some(h => /[a-z]/i.test(h.firstElementChild.textContent))"));
+  comprobar("Primera diligencia de EXP.1 disponible, la segunda bloqueada", await b.eval("document.querySelector('[data-nodo=e1-01]').classList.contains('nodo--disponible') && document.querySelector('[data-nodo=e1-02]').classList.contains('nodo--bloqueado')"));
+  comprobar("Hilos dibujados (8 entre las 9 diligencias de EXP.1)", (await b.eval("document.querySelectorAll('.exp')[1].querySelectorAll('.exp-hilos path').length")) === 8);
+  comprobar("Cabecera: L1 Becario y 0 ◈", await b.eval("/L1/.test(document.querySelector('[data-autorizacion]').textContent) && /Becario/.test(document.querySelector('[data-autorizacion]').textContent) && /^0/.test(document.querySelector('[data-creditos]').textContent.trim())"));
+  await b.foto("inicio-tablero");
+  await b.eval("scrollTo(0, 900)");
+  await b.esperar(300);
+  await b.foto("inicio-tablero-clasificados");
+
+  // 3. Diálogos
+  await b.eval("document.querySelector('[data-abrir-credenciales]').click()");
+  comprobar("Credenciales: 14 tarjetas, ninguna activa", await b.eval("document.querySelector('[data-dialogo-credenciales]').open && document.querySelectorAll('.credencial').length === 14 && !document.querySelector('.credencial--activa')"));
+  await b.eval("document.querySelector('[data-dialogo-credenciales] [data-cerrar]').click()");
+  await b.eval("document.querySelector('[data-abrir-expediente]').click()");
+  comprobar("Expediente vacío al empezar", await b.eval("document.querySelector('[data-dialogo-expediente]').open && !!document.querySelector('.pista-vacia')"));
+  await b.eval("document.querySelector('[data-dialogo-expediente] [data-cerrar]').click()");
+
+  // 4. Con avance: «Anteriormente en el caso…»
+  await progresoDe({
+    creditos: 450, completados: { "e1-01": { bloques: 3, fecha: "2026-10-14" }, "e1-02": { bloques: 2, fecha: "2026-10-15" } },
+    credenciales: ["acceso", "limpia"], expediente: [{ id: "inventario-imposible", titulo: "El inventario imposible", texto: "Un producto tiene stock -12." }],
+    turnos: { dias: 2, ultimo: "2026-10-15" }, ultimo: "e1-02", ajustes: {}
+  });
+  await b.ir("index.html");
+  comprobar("Con avance, el prólogo vuelve a salir", await b.eval("!document.querySelector('[data-prologo]').hidden"));
+  await avanzarPrologo();
+  comprobar("«Anteriormente en el caso…» con la pista y la última diligencia", await b.eval("/Anteriormente/.test(document.querySelector('.prologo-antes')?.textContent) && /inventario imposible/i.test(document.querySelector('.prologo-antes').textContent) && /1\\.2/.test(document.querySelector('.prologo-antes').textContent)"));
+  comprobar("Sello: CASO EN CURSO", (await b.eval("document.querySelector('[data-sello-texto]').textContent")) === "CASO EN CURSO");
+  await b.esperar(900);
+  await b.foto("inicio-prologo-anteriormente");
+  await b.eval("document.querySelector('[data-continuar]').click()");
+  await b.esperar(400);
+  comprobar("Autorización L2 con 450 ◈", await b.eval("/L2/.test(document.querySelector('[data-autorizacion]').textContent)"));
+  comprobar("1.1 y 1.2 hechas con sus bloques; 1.3 disponible", await b.eval("document.querySelector('[data-nodo=e1-01]').classList.contains('nodo--hecho') && document.querySelectorAll('[data-nodo=e1-01] .b-lleno').length === 3 && document.querySelectorAll('[data-nodo=e1-02] .b-lleno').length === 2 && document.querySelector('[data-nodo=e1-03]').classList.contains('nodo--disponible')"));
+  comprobar("Hilo encendido entre 1.1 y 1.2", (await b.eval("document.querySelectorAll('.exp')[1].querySelectorAll('.hilo--hecho').length")) === 1);
+  await b.foto("inicio-tablero-avance");
+
+  // 5. Modo prueba
+  await b.eval("document.querySelector('[data-abrir-ajustes]').click()");
+  await b.eval("document.querySelector('[data-prueba]').click()");
+  comprobar("Modo prueba: todo desbloqueado y aviso visible", await b.eval("document.querySelectorAll('.exp--clasificado').length === 0 && !document.querySelector('[data-modo-prueba]').hidden"));
+  comprobar("Modo prueba no toca el progreso real", await b.eval("JSON.parse(localStorage.getItem('sqlearning-progreso-v1')).creditos === 450"));
+  await b.eval("document.querySelector('[data-abrir-ajustes]').click()");
+  await b.eval("document.querySelector('[data-prueba]').click()");
+  comprobar("Al salir del modo prueba vuelve el progreso real", await b.eval("/L2/.test(document.querySelector('[data-autorizacion]').textContent)"));
+
+  // 6. Progreso corrupto
+  await b.eval("localStorage.setItem('sqlearning-progreso-v1', '{roto')");
+  await b.ir("index.html");
+  await avanzarPrologo();
+  comprobar("Con progreso corrupto arranca como nuevo", await b.eval("document.querySelector('[data-sello-texto]').textContent === 'CASO ABIERTO'"));
+
+  // 6b. Movimiento reducido: todo el texto a la vez y el botón a los 3 s
+  await b.reducido();
+  await b.ir("index.html");
+  comprobar("Reducido: las 6 frases a la vez, sin botón aún", await b.eval("document.querySelectorAll('.prologo-frase').length === 6 && document.querySelector('[data-continuar]').hidden"));
+  await b.esperar(3300);
+  comprobar("Reducido: el botón llega a los 3 s", await b.eval("!document.querySelector('[data-continuar]').hidden"));
+  await b.movimiento();
+
+  // 7. Tamaños y tema día
+  await b.eval("document.querySelector('[data-continuar]').click()");
+  for (const [w, h] of [[1920, 1080], [1280, 720], [1024, 768]]) {
+    await b.tam(w, h);
+    await b.esperar(400);
+    comprobar(`Sin scroll horizontal a ${w}×${h}`, !(await b.eval("document.documentElement.scrollWidth > innerWidth")));
+  }
+  await b.eval("document.querySelector('[data-tema]').click()");
+  await b.tam(1366, 768);
+  await b.esperar(400);
+  await b.foto("inicio-tablero-dia");
+
+  b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Inicio: todo correcto");
+}

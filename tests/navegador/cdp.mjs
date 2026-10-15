@@ -91,6 +91,8 @@ const api = {
     await enviar("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: si ? "dark" : "light" }] });
   },
   async reducido() { await enviar("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] }); },
+  // El Windows del usuario tiene el movimiento reducido: Edge lo hereda si no se fuerza lo contrario
+  async movimiento() { await enviar("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] }); },
   async foto(nombre) {
     const r = await enviar("Page.captureScreenshot", { format: "png" });
     mkdirSync(join(DIR, "salida"), { recursive: true });
