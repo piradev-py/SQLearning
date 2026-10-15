@@ -84,8 +84,8 @@ const api = {
     }
     return false;
   },
-  async tam(ancho, alto) {
-    await enviar("Emulation.setDeviceMetricsOverride", { width: ancho, height: alto, deviceScaleFactor: 1, mobile: false });
+  async tam(ancho, alto, escala = 1) {
+    await enviar("Emulation.setDeviceMetricsOverride", { width: ancho, height: alto, deviceScaleFactor: escala, mobile: false });
   },
   async oscuro(si) {
     await enviar("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: si ? "dark" : "light" }] });
@@ -93,10 +93,11 @@ const api = {
   async reducido() { await enviar("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] }); },
   // El Windows del usuario tiene el movimiento reducido: Edge lo hereda si no se fuerza lo contrario
   async movimiento() { await enviar("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] }); },
-  async foto(nombre) {
+  // foto("nombre") → salida/nombre.png · foto("docs/readme/x", { raiz: true }) → ruta relativa a la raíz del proyecto
+  async foto(nombre, { raiz = false } = {}) {
     const r = await enviar("Page.captureScreenshot", { format: "png" });
-    mkdirSync(join(DIR, "salida"), { recursive: true });
-    const ruta = join(DIR, "salida", nombre + ".png");
+    const ruta = raiz ? join(RAIZ, nombre + ".png") : join(DIR, "salida", nombre + ".png");
+    mkdirSync(dirname(ruta), { recursive: true });
     writeFileSync(ruta, Buffer.from(r.result.data, "base64"));
     console.log("📸 " + ruta);
   },

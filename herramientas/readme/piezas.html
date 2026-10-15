@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es" data-ambiente="historia" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>Piezas del README · SQLearning</title>
+  <!-- Página auxiliar: herramientas/readme/generar.mjs la fotografía para crear las imágenes del README.
+       ?pieza=banner (1280×420) · ?pieza=boton (560×120) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Sixtyfour&family=VT323&display=swap">
+  <link rel="stylesheet" href="../../css/tema.css">
+  <link rel="stylesheet" href="../../css/fondo.css">
+  <style>
+    html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+    .banner { position: relative; height: 100vh; display: grid; place-items: center; text-align: center; }
+    .banner .escena { position: absolute; z-index: 0; --horizonte-y: 80%; }
+    .banner .escena-ciudad { height: 62%; }
+    .banner-texto { position: relative; z-index: 1; margin-top: -60px; padding: 18px 56px;
+      background: radial-gradient(closest-side, rgb(4 3 10 / 0.85), rgb(4 3 10 / 0.55) 70%, transparent); }
+    .banner h1 { margin: 0; font: 400 64px/1 "Sixtyfour", monospace; letter-spacing: 0.02em; color: var(--cian); text-shadow: var(--texto-neon-cian); }
+    .banner h1 strong { color: var(--acento); font-weight: 400; text-shadow: var(--texto-neon-magenta); }
+    .banner p { margin: 14px 0 0; font: 30px/1.1 "VT323", monospace; letter-spacing: 0.3em; color: var(--texto); text-transform: uppercase; }
+    .banner small { display: block; margin-top: 8px; font: 22px "VT323", monospace; letter-spacing: 0.06em; color: var(--texto-suave); }
+
+    .boton { height: 100vh; display: grid; place-items: center; background: #04030a; }
+    .boton span {
+      display: inline-block; padding: 22px 46px; border: 2px solid var(--cian); border-radius: 6px;
+      font: 900 30px "Orbitron", sans-serif; letter-spacing: 0.14em; color: var(--cian);
+      text-shadow: var(--texto-neon-cian); box-shadow: var(--neon-cian), inset 0 0 22px rgb(79 192 210 / 0.18);
+      background: rgb(10 9 20 / 0.9);
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <section class="banner" data-pieza="banner" hidden>
+    <div class="escena" aria-hidden="true">
+      <div class="escena-cielo"></div>
+      <img class="escena-ciudad" src="../../recursos/ciudad-neon.svg" alt="">
+      <div class="escena-suelo"></div>
+    </div>
+    <div class="banner-texto">
+      <h1>SQL<strong>earning</strong></h1>
+      <p>El Fantasma de Faro</p>
+      <small>Aprende SQL de cero a Data Analyst resolviendo un misterio</small>
+    </div>
+  </section>
+  <section class="boton" data-pieza="boton" hidden><span>▶ ENTRAR AL CASO</span></section>
+  <script>
+    const pieza = new URLSearchParams(location.search).get("pieza") || "banner";
+    document.querySelector(`[data-pieza="${pieza}"]`).hidden = false;
+  </script>
+</body>
+</html>

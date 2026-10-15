@@ -495,6 +495,7 @@
   window.LECCION = {
     estado: () => ({ id, actual, superados: [...superados], ayudas: { ...ayudas }, total: lec?.pasos.length, terminado }),
     editor: () => editor,
+    ir: i => mostrarPaso(i),               // saltar a un paso (pruebas y capturas)
     revisar
   };
 

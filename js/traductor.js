@@ -54,10 +54,13 @@
     "42703": (e, sql) => {
       const n = entre(e.mensaje, /column "([^"]*)" does not exist/) ?? entre(e.mensaje, /column ([\w.]+) does not exist/);
       if (n === null) return "Usas una columna que no existe. Mira los nombres en la pestaña Esquema.";
-      const corto = n.split(".").pop();
       // Si en la consulta iba entre comillas dobles, era un texto mal escrito, no una columna
-      const conComillasDobles = sql && sql.includes(`"${corto}"`);
-      if (conComillasDobles) return `Has escrito \`"${corto}"\` entre comillas dobles y PostgreSQL lo toma por el nombre de una columna. Los textos van entre **comillas simples**: \`'${corto}'\`.`;
+      // (se mira el nombre entero antes de cortarlo por el punto: "julia.martinez@mail.example")
+      if (sql && sql.includes(`"${n}"`))
+        return `Has escrito \`"${n}"\` entre comillas dobles y PostgreSQL lo toma por el nombre de una columna. Los textos van entre **comillas simples**: \`'${n}'\`.`;
+      const corto = n.split(".").pop();
+      if (sql && sql.includes(`"${corto}"`))
+        return `Has escrito \`"${corto}"\` entre comillas dobles y PostgreSQL lo toma por el nombre de una columna. Los textos van entre **comillas simples**: \`'${corto}'\`.`;
       const sug = parecido(corto, columnas);
       let txt = `No existe ninguna columna llamada \`${corto}\`.`;
       if (sug) txt += ` ¿Querías decir \`${sug}\`?`;

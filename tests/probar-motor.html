@@ -79,6 +79,10 @@
         const r = await MOTOR.ejecutar('SELECT nombre || " - " || departamento FROM empleados;');
         return !r.ok && /comillas simples/.test(r.error.explicacion) && !/null/.test(r.error.explicacion) || r.error;
       });
+      await prueba("Error traducido: email entre comillas dobles → comillas simples (nombre entero)", async () => {
+        const r = await MOTOR.ejecutar('SELECT * FROM empleados WHERE email = "ana.beltran@faro.example";');
+        return !r.ok && /'ana\.beltran@faro\.example'/.test(r.error.explicacion) || r.error;
+      });
       await prueba("Error traducido: email sin comillas → es un texto", async () => {
         const r = await MOTOR.ejecutar("SELECT * FROM empleados WHERE email = ana.beltran@faro.example;");
         return !r.ok && !/null/.test(r.error.explicacion) || r.error;
