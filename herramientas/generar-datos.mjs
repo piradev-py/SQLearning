@@ -390,3 +390,110 @@ function etapa3() {
 
 writeFileSync(SALIDA + "faro-e3.sql", etapa3());
 console.log("✅ datos/faro-e3.sql");
+
+// --- Etapa 4 (Logística): lo de la etapa 3 + almacenes, transportistas, envíos y jefes ----------
+// Semilla propia (4004): no altera nada de las etapas anteriores.
+// Solo los pedidos ONLINE se envían (en tienda física el cliente se lo lleva).
+// Pista del Fantasma: sus pedidos reembolsados casi nunca tienen envío; los pocos que sí, salen de Getafe.
+const almacenes = [
+  // [id, nombre, ciudad, responsable_id (empleados.id), apertura]
+  [1, "Almacén central", "Getafe", 5, "2017-09-01"],   // Héctor Vidal, jefe de logística
+  [2, "Almacén Levante", "Valencia", 18, "2019-03-15"], // Óscar Medina
+  [3, "Almacén Sur", "Sevilla", 19, "2020-05-04"],      // Beatriz Soto
+  [4, "Almacén Norte", "Bilbao", null, "2021-10-11"],   // responsable vacante
+  [5, "Almacén Zaragoza", "Zaragoza", null, "2026-09-21"] // recién abierto: aún sin envíos
+];
+const transportistas = [
+  [1, "Rayo Express", "rayo.example"],
+  [2, "Paquetería Norte", "norte.example"],
+  [3, "Mensajería Sur", "sur.example"],
+  [4, "Logística Delta", "delta.example"]                 // contratada hace poco: aún sin envíos
+];
+// Jefe directo de cada empleado (por nombre); Ana Beltrán no tiene jefe
+const JEFES = {
+  "Lucía Mora": "Ana Beltrán", "Marcos Gil": "Ana Beltrán", "Elena Ruiz": "Ana Beltrán", "Héctor Vidal": "Ana Beltrán",
+  "Nuria Campos": "Ana Beltrán", "Iván Soler": "Ana Beltrán", "Rubén Ortega": "Lucía Mora",
+  "Diego Castaño": "Marcos Gil", "Laura Peña": "Marcos Gil", "Óscar Medina": "Héctor Vidal", "Beatriz Soto": "Héctor Vidal",
+  "Tomás Rivas": "Elena Ruiz", "Claudia Reyes": "Elena Ruiz",
+  "Pablo Herrero": "Elena Ruiz", "Carmen Llorente": "Pablo Herrero", "Jorge Navarro": "Elena Ruiz", "Sara Ferrer": "Jorge Navarro",
+  "Raúl Domínguez": "Elena Ruiz", "Inés Romero": "Raúl Domínguez", "Aitor Etxeberria": "Elena Ruiz", "Maite Urquijo": "Aitor Etxeberria"
+};
+
+const esquemaLogistica = `
+CREATE TABLE almacenes (
+  id integer PRIMARY KEY,
+  nombre text NOT NULL,
+  ciudad text NOT NULL,
+  responsable_id integer REFERENCES empleados (id),
+  apertura date NOT NULL
+);
+
+CREATE TABLE transportistas (
+  id integer PRIMARY KEY,
+  nombre text NOT NULL,
+  web text NOT NULL
+);
+
+CREATE TABLE envios (
+  id integer PRIMARY KEY,
+  pedido_id integer NOT NULL UNIQUE REFERENCES pedidos (id),
+  almacen_id integer NOT NULL REFERENCES almacenes (id),
+  transportista_id integer NOT NULL REFERENCES transportistas (id),
+  salida timestamp NOT NULL,
+  entrega timestamp,
+  estado text NOT NULL,
+  coste numeric(6, 2) NOT NULL
+);
+`;
+
+function envios() {
+  const u = universo();
+  const r = azar(4004);
+  const ent = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const elegir = lista => lista[Math.floor(r() * lista.length)];
+  const dos = n => String(n).padStart(2, "0");
+  const ALMACEN_DE = { Valencia: 2, Barcelona: 2, Sevilla: 3, "Málaga": 3, Bilbao: 4 };   // el resto, Getafe
+  const TRANSPORTISTAS_DE = { 1: [1, 3], 2: [1, 2], 3: [3], 4: [2] };
+  const ciudadDe = new Map(u.clientes.map(c => [c.id, c.ciudad]));
+  const falsos = new Set(u.clientes.filter(c => c.falso).map(c => c.id));
+  const delFantasma = p => falsos.has(p.cliente_id) || p.id === u.pedidoReclamado;
+  const masDias = (txt, dias, h) => {
+    const d = new Date(txt.slice(0, 10) + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() + dias);
+    return `${d.toISOString().slice(0, 10)} ${dos(h)}:${dos(ent(0, 59))}:${dos(ent(0, 59))}`;
+  };
+  const filas = [];
+  const fantasmaConEnvio = new Set();
+  // Unos pocos pedidos del Fantasma sí tienen envío (para disimular): siempre desde Getafe, devueltos sin entrega
+  const delF = u.pedidos.filter(delFantasma);
+  while (fantasmaConEnvio.size < 6) fantasmaConEnvio.add(elegir(delF).id);
+  for (const p of u.pedidos) {
+    if (p.tienda_id !== 5 || p.estado === "cancelado") continue;
+    if (delFantasma(p) && !fantasmaConEnvio.has(p.id)) continue;   // pedido fantasma: nunca salió del almacén
+    const almacen = delFantasma(p) ? 1 : (ALMACEN_DE[ciudadDe.get(p.cliente_id)] || 1);
+    const salida = masDias(p.fecha, ent(0, 2), ent(8, 19));
+    let entrega = null, estado;
+    if (p.estado === "entregado") { entrega = masDias(salida, ent(1, 4), ent(9, 20)); estado = "entregado"; }
+    else if (p.estado === "en camino") estado = "en reparto";
+    else { estado = "devuelto"; if (!delFantasma(p)) entrega = masDias(salida, ent(1, 3), ent(9, 20)); }   // reembolsado
+    filas.push([filas.length + 1, p.id, almacen, elegir(TRANSPORTISTAS_DE[almacen]), salida, entrega, estado,
+      (ent(39, 99) / 10).toFixed(2) * 1]);
+  }
+  return filas;
+}
+
+function etapa4() {
+  const idDe = new Map(empleados.map(([n], i) => [n, i + 1]));
+  return [
+    etapa3().replace("datos de la etapa 3", "datos de la etapa 4"),
+    "ALTER TABLE empleados ADD COLUMN jefe_id integer REFERENCES empleados (id);",
+    ...empleados.filter(([n]) => JEFES[n]).map(([n]) => `UPDATE empleados SET jefe_id = ${idDe.get(JEFES[n])} WHERE id = ${idDe.get(n)};`),
+    esquemaLogistica,
+    insertar("almacenes", ["id", "nombre", "ciudad", "responsable_id", "apertura"], almacenes),
+    insertar("transportistas", ["id", "nombre", "web"], transportistas),
+    insertar("envios", ["id", "pedido_id", "almacen_id", "transportista_id", "salida", "entrega", "estado", "coste"], envios())
+  ].join("\n");
+}
+
+writeFileSync(SALIDA + "faro-e4.sql", etapa4());
+console.log("✅ datos/faro-e4.sql");
