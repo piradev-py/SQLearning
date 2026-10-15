@@ -21,7 +21,7 @@ Estado: ✅ escrito · 🚧 pendiente
 | 3 · Ventas 💶 | 9 | ✅ |
 | 4 · Logística 📦 | 10 | ✅ |
 | 5 · Migración 🧹 | 11 | ✅ |
-| 6 · IT 🛠️ | 12 | 🚧 |
+| 6 · IT 🛠️ | 12 | ✅ |
 | 7 · Dirección 🧭 | 11 | 🚧 |
 | 8 · Analítica 📈 | 12 | 🚧 |
 | **Total** | **93** | |
@@ -606,7 +606,7 @@ cambiarlas y borrarlas con seguridad (`UPDATE`, `DELETE`, `TRUNCATE`, `RETURNING
 cambios en transacciones (`BEGIN`/`COMMIT`/`ROLLBACK`, `SAVEPOINT`, ACID), modificar tablas (`ALTER TABLE`, `DROP`),
 diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índices y leer `EXPLAIN`, y guardar consultas como vistas.
 
-### e6-01 · Crear una tabla: CREATE TABLE · 30 ◈ 🚧
+### e6-01 · Crear una tabla: CREATE TABLE · 30 ◈ ✅
 - **Conceptos nuevos:** consultar (`SELECT`) frente a construir (DDL: `CREATE`, `ALTER`, `DROP`) y cambiar datos
   (DML: `INSERT`, `UPDATE`, `DELETE`); `CREATE TABLE nombre (columna tipo, …);` repasando los tipos de e1-03
   (`integer`, `numeric(8, 2)`, `text`, `date`, `timestamp`, `boolean`); nombres sin tildes ni espacios, en minúscula;
@@ -620,7 +620,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   `responsable text`, `limite date`, `hecha boolean` (en ese orden) y `SELECT * FROM tareas_apertura;`. `verificar`:
   nombres y tipos de `information_schema.columns` en orden.
 
-### e6-02 · Meter filas: INSERT · 35 ◈ 🚧
+### e6-02 · Meter filas: INSERT · 35 ◈ ✅
 - **Conceptos nuevos:** `INSERT INTO tabla (col1, col2, …) VALUES (…);`, varias filas en una sola orden, escribir la
   lista de columnas siempre (y por qué: el orden de la tabla puede cambiar), columnas omitidas → `NULL` (o su `DEFAULT`),
   textos y fechas entre comillas, `RETURNING *` para ver lo que se ha metido.
@@ -634,7 +634,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   `SELECT id, nombre, tienda_id, jefe_id FROM empleados WHERE tienda_id = 6 ORDER BY id;`. `verificar`: esas columnas de
   `empleados WHERE id >= 24`.
 
-### e6-03 · Copiar desde una consulta: INSERT … SELECT y CREATE TABLE … AS · 35 ◈ 🚧
+### e6-03 · Copiar desde una consulta: INSERT … SELECT y CREATE TABLE … AS · 35 ◈ ✅
 - **Conceptos nuevos:** `INSERT INTO tabla (cols) SELECT …;` (meter el resultado de una consulta: se juntan dos
   cosas que ya sabes), valores fijos dentro del `SELECT` (`SELECT 6, producto_id, unidades …`), y `CREATE TABLE copia AS
   SELECT …;` para hacer una copia de seguridad antes de tocar nada (Iván: «antes de cambiar nada, copia»).
@@ -647,7 +647,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   WHERE activo` y después las filas de la tienda 6 → **36** filas, **360** uds. `verificar`:
   `SELECT tienda_id, COUNT(*), SUM(unidades) FROM stock_tiendas GROUP BY tienda_id ORDER BY tienda_id;`.
 
-### e6-04 · Reglas que protegen: NOT NULL, UNIQUE, CHECK y DEFAULT · 40 ◈ 🚧
+### e6-04 · Reglas que protegen: NOT NULL, UNIQUE, CHECK y DEFAULT · 40 ◈ ✅
 - **Conceptos nuevos:** las restricciones son reglas que la base hace cumplir **siempre**, venga el dato de donde
   venga; `NOT NULL`, `UNIQUE`, `CHECK (condición)` (p. ej. `CHECK (unidades >= 0)`, `CHECK (rol IN (…))`),
   `DEFAULT valor`; ponerles nombre (`CONSTRAINT nombre CHECK (…)`); verlas en el Esquema de `cuentas` y `stock_tiendas`.
@@ -663,7 +663,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   'media', 'alta'))`, `abierta boolean NOT NULL DEFAULT true`; meter 2 filas (una sin `abierta`) y `SELECT * … ORDER BY id;`.
   `verificar`: el `SELECT` (la del DEFAULT sale `true`).
 
-### e6-05 · Claves que obligan: PRIMARY KEY, FOREIGN KEY e identidad · 40 ◈ 🚧
+### e6-05 · Claves que obligan: PRIMARY KEY, FOREIGN KEY e identidad · 40 ◈ ✅
 - **Conceptos nuevos:** escribir en `CREATE TABLE` lo que en e4-01 se aprendió a leer: `PRIMARY KEY` (una columna o
   varias: `PRIMARY KEY (tienda_id, producto_id)` de `stock_tiendas`), `REFERENCES tabla (columna)`; numeración automática
   con `id integer GENERATED ALWAYS AS IDENTITY` (🌍 `SERIAL` en PostgreSQL antiguo, `AUTO_INCREMENT` en MySQL,
@@ -677,7 +677,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   `dia date NOT NULL`, `UNIQUE (empleado_id, dia)`; meter 3 turnos de empleados existentes (sin dar el `id`) y
   `SELECT * FROM turnos_barcelona ORDER BY id;` → ids 1, 2, 3. `verificar`: ese `SELECT`.
 
-### e6-06 · Cambiar datos: UPDATE · 40 ◈ 🚧
+### e6-06 · Cambiar datos: UPDATE · 40 ◈ ✅
 - **Conceptos nuevos:** `UPDATE tabla SET columna = valor WHERE …;`, varias columnas, valores calculados
   (`SET email = lower(trim(email))`, `SET precio = precio * 1.05`); la regla de oro: **primero el `SELECT` con el mismo
   `WHERE`**, luego el `UPDATE`; el mensaje «ha cambiado N filas»; `RETURNING`. Historia: Nuria por fin guarda lo limpio
@@ -689,7 +689,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   `SELECT ciudad, COUNT(*) FROM crm_clientes GROUP BY ciudad ORDER BY ciudad;` (con el verificador: debe quedar Madrid
   93, Sevilla 48…, la cadena vacía y el NULL siguen). Comprobación extra con `interpretar`: cuántas filas cambió.
 
-### e6-07 · Borrar: DELETE, TRUNCATE y DROP · 35 ◈ 🚧
+### e6-07 · Borrar: DELETE, TRUNCATE y DROP · 35 ◈ ✅
 - **Conceptos nuevos:** `DELETE FROM tabla WHERE …;` (otra vez: primero el `SELECT`), `RETURNING` para ver lo borrado;
   la FK no deja borrar lo que otros usan; `TRUNCATE` (vacía toda la tabla, rápido, sin `WHERE`) frente a `DELETE` sin
   `WHERE` frente a `DROP TABLE` (desaparece la tabla); **borrado lógico**: en vez de borrar, marcar
@@ -701,7 +701,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   pruebas del programa viejo: borrarlas con `RETURNING crm_id, fecha_alta` → 2 filas. `verificar`:
   `SELECT COUNT(*) FROM crm_clientes` = 330 (y que no queden esas dos).
 
-### e6-08 · Todo o nada: transacciones · 45 ◈ 🚧
+### e6-08 · Todo o nada: transacciones · 45 ◈ ✅
 - **Conceptos nuevos:** `BEGIN` … `COMMIT` (confirmar) / `ROLLBACK` (deshacer); por qué: la apertura de Barcelona son
   varias órdenes (empleados, stock, tienda) que deben quedar **todas o ninguna**; si una falla dentro de la transacción,
   ninguna se queda (atomicidad); ACID en palabras sencillas (todo o nada, reglas siempre cumplidas, nadie ve cosas a medias,
@@ -715,7 +715,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   Madrid (con el verificador); `arreglar` previo: el mismo traspaso con un producto que tiene 3 uds (producto 4) →
   el `CHECK` hace fallar todo y nada cambia. `verificar`: filas de ese producto en `stock_tiendas` por tienda.
 
-### e6-09 · Diseñar bien: normalización · 40 ◈ 🚧
+### e6-09 · Diseñar bien: normalización · 40 ◈ ✅
 - **Conceptos nuevos:** redundancia y sus problemas (anomalías al actualizar, insertar y borrar: si la ciudad del
   cliente se repite en cada pedido, cambiarla obliga a cambiarla 30 veces); **1FN** (un valor por celda: nada de
   «tarjeta, bizum» en una columna ni teléfono1/teléfono2), **2FN/3FN** en palabras sencillas («cada dato depende de la
@@ -728,7 +728,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   IDENTITY PRIMARY KEY, nombre text NOT NULL UNIQUE)`, `INSERT … SELECT DISTINCT initcap(trim(ciudad))` sin `NULL` ni
   `''`, `ORDER BY` → **9** ciudades; `SELECT * FROM ciudades ORDER BY id;`. `verificar`: ese `SELECT`.
 
-### e6-10 · Ir más rápido: índices y EXPLAIN · 40 ◈ 🚧
+### e6-10 · Ir más rápido: índices y EXPLAIN · 40 ◈ ✅
 - **Conceptos nuevos:** un índice es como el índice de un libro (o el de las fichas de la etapa 0); `EXPLAIN consulta`
   muestra el plan sin ejecutar: `Seq Scan` (leer toda la tabla) frente a `Index Scan`/`Bitmap Index Scan`; la clave
   primaria y `UNIQUE` ya crean índice (`EXPLAIN SELECT * FROM pedidos WHERE id = 42` → `Index Scan using pedidos_pkey`);
@@ -742,7 +742,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   ejecución → `Bitmap Index Scan on …`. `verificar`: `SELECT indexdef FROM pg_indexes WHERE tablename = 'auditoria'`
   (con `nombres: false` o comparando solo la definición: el nombre del índice lo pone el enunciado, p. ej. `idx_auditoria_usuario`).
 
-### e6-11 · Guardar una consulta: vistas · 35 ◈ 🚧
+### e6-11 · Guardar una consulta: vistas · 35 ◈ ✅
 - **Conceptos nuevos:** `CREATE VIEW nombre AS SELECT …;` una consulta con nombre que se usa como una tabla; no guarda
   datos (se recalcula cada vez: si cambian los datos, cambia la vista); `CREATE OR REPLACE VIEW`, `DROP VIEW`; para qué:
   no repetir consultas largas, dar a alguien una vista sin enseñarle toda la tabla (seguridad: los roles de `cuentas`).
@@ -753,7 +753,7 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
   (desempatando por usuario) → app_web 291, admin_temp 85, laura.pena 23… (13 filas). `verificar`: `SELECT * FROM
   cambios_por_usuario ORDER BY usuario;`. *(Prepara el caso, sin comentar todavía qué es admin_temp.)*
 
-### e6-12 · Caso: La cuenta admin_temp · 75 ◈ 🚧
+### e6-12 · Caso: La cuenta admin_temp · 75 ◈ ✅
 - **Caso:** Lucía pide a Iván el registro de auditoría para saber **quién** hizo los cambios raros. Iván, molesto, lo da
   («Mira lo que quieras, no tengo nada que esconder»). Partes:
   1. Cambios de madrugada (`EXTRACT(HOUR FROM momento) < 6`) por usuario, de más a menos → **admin_temp 85**, app_web 10.

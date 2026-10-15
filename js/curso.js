@@ -103,7 +103,22 @@
         { id: "e5-11", archivo: "e5-11-caso-una-sola-direccion.js", titulo: "Caso: Una sola dirección", listo: true, caso: true }
       ]
     },
-    { n: 6, carpeta: "6-it", titulo: "IT", departamento: "Sistemas", datos: "faro-e6", niveles: pendientes(6, 10) },
+    { n: 6, carpeta: "6-it", titulo: "IT", departamento: "Sistemas", datos: "faro-e6",
+      niveles: [
+        { id: "e6-01", archivo: "e6-01-crear-una-tabla.js", titulo: "Crear una tabla: CREATE TABLE", listo: true },
+        { id: "e6-02", archivo: "e6-02-meter-filas-insert.js", titulo: "Meter filas: INSERT", listo: true },
+        { id: "e6-03", archivo: "e6-03-insert-select-y-create-as.js", titulo: "Copiar desde una consulta: INSERT … SELECT y CREATE TABLE … AS", listo: true },
+        { id: "e6-04", archivo: "e6-04-reglas-que-protegen.js", titulo: "Reglas que protegen: NOT NULL, UNIQUE, CHECK y DEFAULT", listo: true },
+        { id: "e6-05", archivo: "e6-05-claves-que-obligan.js", titulo: "Claves que obligan: PRIMARY KEY, FOREIGN KEY e identidad", listo: true },
+        { id: "e6-06", archivo: "e6-06-cambiar-datos-update.js", titulo: "Cambiar datos: UPDATE", listo: true },
+        { id: "e6-07", archivo: "e6-07-borrar-delete-truncate-drop.js", titulo: "Borrar: DELETE, TRUNCATE y DROP", listo: true },
+        { id: "e6-08", archivo: "e6-08-transacciones.js", titulo: "Todo o nada: transacciones", listo: true },
+        { id: "e6-09", archivo: "e6-09-normalizacion.js", titulo: "Diseñar bien: normalización", listo: true },
+        { id: "e6-10", archivo: "e6-10-indices-y-explain.js", titulo: "Ir más rápido: índices y EXPLAIN", listo: true },
+        { id: "e6-11", archivo: "e6-11-vistas.js", titulo: "Guardar una consulta: vistas", listo: true },
+        { id: "e6-12", archivo: "e6-12-caso-la-cuenta-admin-temp.js", titulo: "Caso: La cuenta admin_temp", listo: true, caso: true }
+      ]
+    },
     { n: 7, carpeta: "7-direccion", titulo: "Dirección", departamento: "Dirección general", datos: "faro-e7", niveles: pendientes(7, 11) },
     { n: 8, carpeta: "8-analitica", titulo: "Analítica", departamento: "Datos · El desenlace", datos: "faro-e8", niveles: pendientes(8, 12) }
   ];

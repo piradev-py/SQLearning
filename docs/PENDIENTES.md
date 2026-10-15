@@ -95,6 +95,13 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Datos `faro-e5.sql` (CRM antiguo sucio + fichas de empleados; pista falsa contra Iván, decisión del usuario), temario (11 niveles) y **etapa completa** (2 agentes `profesor-sql`; verificador 58/58). Cifras de los profesores comprobadas con PGlite
 - [ ] Revisión del bloque etapas 5 (+6): `qa-estres` + `alumno-novato` cuando haya 2–3 expedientes sin revisar
 
+## Etapa 6 · IT
+- [x] Datos `faro-e6.sql` (cuentas, auditoría con el rastro de admin_temp, stock por tienda), temario (12 niveles) y lecciones e6-01…e6-12 (2 agentes `profesor-sql`). Verificador: todas en verde tras corregir el total de stock de e6-08 (1 648)
+- [ ] Pasar `npm test` completo (cortado por el límite de uso)
+- [ ] e6-10: el reto no comprueba que el plan use el índice (solo que existe)
+- [ ] e6-05: error 428C9 (valor en columna GENERATED ALWAYS) sin mensaje propio en el traductor
+- [ ] Revisión del bloque etapas 5 + 6: `qa-estres` y luego `alumno-novato`
+
 ## Versión publicada
 - [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)
 - [ ] Test inestable: `esc-laboratorio` F3 (lista de sugerencias dentro del editor) falla de vez en cuando por tiempos

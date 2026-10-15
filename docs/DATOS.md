@@ -130,7 +130,7 @@ Igual que `faro-e5.sql` + `cuentas` (usuarios de la base de datos) + `auditoria`
   - Por usuario: app_web 291 · admin_temp 85 · laura.pena 23 · beatriz.soto 17 · marcos.gil 16 · diego.castano 15 · hector.vidal 15 ·
     iker.salas 11 · oscar.medina 9 · elena.ruiz 6 · tomas.rivas 6 · ivan.soler 2 · claudia.reyes 1. 16 cuentas sin cambios.
 - `stock_tiendas` (**144**): PK (`tienda_id`, `producto_id`), CHECK `unidades >= 0`; tiendas 1–4 × los 36 productos activos, 0–25 uds.
-  (Madrid 450, Valencia 417, Sevilla 386, Bilbao 398). **Barcelona (6) no tiene filas**: se da de alta en la etapa 6.
+  (Madrid 426, Valencia 443, Sevilla 377, Bilbao 402; total 1 648). **Barcelona (6) no tiene filas**: se da de alta en la etapa 6.
   Madrid con menos de 5 uds: productos 4 (3), 5 (0), 8 (1), 17 (0), 18 (2), 27 (0), 33 (4), 40 (0).
 - Sin índices aparte de PK/UNIQUE. `productos` no tiene CHECK: `ALTER TABLE productos ADD CHECK (stock >= 0)` falla (23514) por el −12.
 - CRM (de la etapa 5): 9 ciudades limpias no vacías (`initcap(trim(ciudad))`), 21 filas con gasto 0.
