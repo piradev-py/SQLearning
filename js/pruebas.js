@@ -22,15 +22,16 @@
       return nombres.every(n => indice(r, n) >= 0);
     },
 
-    /** ¿Las filas están ordenadas por esa columna? */
+    /** ¿Las filas están ordenadas por esa columna? (textos comparados como PostgreSQL: por código, «Ó» va tras la «z») */
     ordenado(r, col, sentido = "asc") {
       const i = indice(r, col);
       if (i < 0) return false;
       const v = r.filas.map(f => comoNumero(f[i]));
+      const porCodigo = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
       for (let k = 1; k < v.length; k++) {
         const a = v[k - 1], b = v[k];
         if (a === null || b === null) continue;
-        const cmp = typeof a === "number" && typeof b === "number" ? a - b : String(a).localeCompare(String(b), "es");
+        const cmp = typeof a === "number" && typeof b === "number" ? a - b : porCodigo(String(a), String(b));
         if (sentido === "asc" ? cmp > 0 : cmp < 0) return false;
       }
       return true;
@@ -53,12 +54,13 @@
     async igualA(r, db, sql, { orden = "auto", nombres = true } = {}) {
       const esperado = await db.consulta(sql);
       const o = orden === "auto" ? REVISOR.ordenImporta(sql) : orden;
-      return REVISOR.comparar(r, esperado, { orden: o, nombres }).ok;
+      const claves = o ? REVISOR.clavesOrden(sql, esperado.columnas) : null;
+      return REVISOR.comparar(r, esperado, { orden: o, nombres, claves }).ok;
     },
 
     /** La consulta del alumno sin comentarios (con { comentarios: true }, tal cual). */
     codigo({ comentarios = false } = {}) {
-      return comentarios ? sqlActual : sqlActual.replace(/--[^\n]*/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
+      return comentarios ? sqlActual : MOTOR.sinComentarios(sqlActual);
     }
   };
 })();

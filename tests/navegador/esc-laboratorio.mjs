@@ -90,6 +90,31 @@ export default async function (b) {
   await b.hasta("/40 filas/.test(document.querySelector('.r-aviso')?.textContent || '')", 10000);
   comprobar("DELETE avisa de 40 filas y de que se deshace", await b.eval("/40 filas/.test(document.querySelector('.r-aviso').textContent)"));
 
+  // 6b. Arreglos de la revisión QA (F2, F3, F13, F14, F17)
+  await vaciar();
+  await teclear("SELECT e.nombre FROM empleados AS e");
+  await tecla("Enter", "Enter", 13);
+  comprobar("F2: Enter tras «AS e» es un salto de línea", (await b.eval("document.querySelector('.es-texto').value")) === "SELECT e.nombre FROM empleados AS e\n",
+    JSON.stringify(await b.eval("document.querySelector('.es-texto').value")));
+  await teclear("WHERE e.");
+  comprobar("F14: «e.» sugiere columnas de empleados", await b.eval("[...document.querySelectorAll('.es-sugerencias .es-sug-texto')].map(x => x.textContent).includes('departamento')"));
+  await tecla("Escape", "Escape", 27);
+  await tecla("Tab", "Tab", 9);
+  comprobar("F13: Esc (cierra la lista) y Tab sale del editor", await b.eval("document.activeElement !== document.querySelector('.es-texto')"));
+  await b.eval("document.querySelector('.es-texto').focus()");
+  await teclear("\n".repeat(30) + "SELECT pr");
+  comprobar("F3: en las últimas líneas la lista se ve dentro del editor", await b.eval(`(() => {
+    const l = document.querySelector('.es-sugerencias'), e = document.querySelector('.editor-sql');
+    if (l.hidden) return false;
+    const a = l.getBoundingClientRect(), c = e.getBoundingClientRect();
+    return a.top >= c.top && a.bottom <= c.bottom + 1;
+  })()`));
+  await tecla("Escape", "Escape", 27);
+  const antesDeBorrar = await b.eval("document.querySelector('.es-texto').value");
+  await b.eval("document.querySelector('[data-limpiar]').click()");
+  await tecla("z", "KeyZ", 90, 2);
+  comprobar("F17: Ctrl+Z recupera lo borrado con «Borrar»", (await b.eval("document.querySelector('.es-texto').value")) === antesDeBorrar);
+
   // 7. Tema día y tamaños
   await b.eval("document.querySelector('[data-tema]').click()");
   await vaciar();

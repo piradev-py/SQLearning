@@ -30,9 +30,14 @@ createServer(async (req, res) => {
     if (ruta.endsWith("/")) ruta += "index.html";
     const archivo = normalize(join(RAIZ, ruta));
     if (!archivo.startsWith(RAIZ)) { res.writeHead(403).end(); return; }
-    if (!(await stat(archivo)).isFile()) throw new Error("no es archivo");
+    const info = await stat(archivo);
+    if (!info.isFile()) throw new Error("no es archivo");
     const tipo = archivo.endsWith(".tar.gz") ? TIPOS[".tar.gz"] : TIPOS[extname(archivo)] || "application/octet-stream";
-    res.writeHead(200, { "Content-Type": tipo, "Cache-Control": "no-cache" });
+    // Validación de caché: el navegador pregunta «¿ha cambiado?» y, si no, no vuelve a descargar (PGlite pesa 19 MB)
+    const etag = `"${info.size.toString(36)}-${Math.floor(info.mtimeMs).toString(36)}"`;
+    const cabeceras = { "Content-Type": tipo, "Cache-Control": "no-cache", "ETag": etag, "Last-Modified": info.mtime.toUTCString() };
+    if (req.headers["if-none-match"] === etag) { res.writeHead(304, cabeceras).end(); return; }
+    res.writeHead(200, cabeceras);
     res.end(await readFile(archivo));
   } catch {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("404 · No encontrado");

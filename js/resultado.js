@@ -25,7 +25,11 @@
     if (v === null || v === undefined) return `<td class="r-nulo">NULL</td>`;
     if (tipo === "boolean") return `<td class="r-bool">${v ? "true" : "false"}</td>`;
     const num = NUMERICOS.has(tipo);
-    return `<td${num ? ' class="r-num"' : ""}>${esc(v)}</td>`;
+    const txt = String(v);
+    // Muy largo: se recorta para no pintar megas en la tabla; el «title» lleva un trozo mayor
+    const visible = txt.length > 300 ? txt.slice(0, 300) + "…" : txt;
+    const titulo = txt.length > 48 ? ` title="${esc(txt.length > 2000 ? txt.slice(0, 2000) + "…" : txt)}"` : "";
+    return `<td${num ? ' class="r-num"' : ""}${titulo}>${esc(visible)}</td>`;
   }
 
   function tabla(div, r) {

@@ -26,7 +26,16 @@
   const escapar = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
   // Trocea el SQL en fichas con su clase de color
-  const FICHAS = /(--[^\n]*)|(\/\*[\s\S]*?(?:\*\/|$))|('(?:[^']|'')*'?)|("(?:[^"]|"")*"?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_À-ɏ][\wÀ-ɏ]*)|(\s+)|([\s\S])/g;
+  // 1 comentario de línea · 2 de bloque · 3 texto '…' · 4 nombre "…" · 5 texto $etiqueta$…$etiqueta$ (6 = etiqueta)
+  // 7 número · 8 palabra · 9 espacios · 10 cualquier otro carácter
+  const FICHAS = /(--[^\n]*)|(\/\*[\s\S]*?(?:\*\/|$))|('(?:[^']|'')*'?)|("(?:[^"]|"")*"?)|(\$([A-Za-z_]\w*)?\$[\s\S]*?(?:\$\6\$|$))|(\b\d+(?:\.\d+)?\b)|([A-Za-z_À-ɏ][\wÀ-ɏ]*)|(\s+)|([\s\S])/g;
+
+  // ¿Lo siguiente (saltando espacios) es un paréntesis? Sin copiar el texto: el resaltado sigue siendo lineal
+  function seguidoDeParentesis(sql, desde) {
+    let k = desde;
+    while (k < sql.length && (sql[k] === " " || sql[k] === "\t" || sql[k] === "\n" || sql[k] === "\r")) k++;
+    return sql[k] === "(";
+  }
 
   function resaltar(sql, tablas) {
     let html = "", m;
@@ -34,18 +43,17 @@
     while ((m = FICHAS.exec(sql))) {
       const t = escapar(m[0]);
       if (m[1] || m[2]) html += `<span class="sql-comentario">${t}</span>`;
-      else if (m[3]) html += `<span class="sql-texto">${t}</span>`;
+      else if (m[3] || m[5]) html += `<span class="sql-texto">${t}</span>`;
       else if (m[4]) html += `<span class="sql-nombre">${t}</span>`;
-      else if (m[5]) html += `<span class="sql-numero">${t}</span>`;
-      else if (m[6]) {
-        const mayus = m[6].toUpperCase();
-        const siguiente = sql.slice(FICHAS.lastIndex).match(/^\s*\(/);
+      else if (m[7]) html += `<span class="sql-numero">${t}</span>`;
+      else if (m[8]) {
+        const mayus = m[8].toUpperCase();
         if (ES_PALABRA.has(mayus)) html += `<span class="sql-clave">${t}</span>`;
-        else if (tablas.has(m[6].toLowerCase())) html += `<span class="sql-tabla">${t}</span>`;
-        else if (siguiente || ES_FUNCION.has(mayus)) html += `<span class="sql-funcion">${t}</span>`;
+        else if (tablas.has(m[8].toLowerCase())) html += `<span class="sql-tabla">${t}</span>`;
+        else if (ES_FUNCION.has(mayus) || seguidoDeParentesis(sql, FICHAS.lastIndex)) html += `<span class="sql-funcion">${t}</span>`;
         else html += t;
       }
-      else if (m[8] && /[;,()*=<>+\-/|.]/.test(m[8])) html += `<span class="sql-signo">${t}</span>`;
+      else if (m[10] && /[;,()*=<>+\-/|.]/.test(m[10])) html += `<span class="sql-signo">${t}</span>`;
       else html += t;
     }
     // Una línea vacía al final también ocupa sitio
@@ -123,14 +131,27 @@
       return prefijo ? { prefijo, inicio: area.selectionStart - prefijo.length, tabla: null } : null;
     }
 
+    // Alias de tabla escritos en la consulta: «FROM empleados AS e», «JOIN tiendas t» → { e: "empleados", t: "tiendas" }
+    const NO_ALIAS = new Set(["WHERE", "JOIN", "INNER", "LEFT", "RIGHT", "FULL", "CROSS", "ON", "USING", "GROUP",
+      "ORDER", "LIMIT", "OFFSET", "HAVING", "UNION", "EXCEPT", "INTERSECT", "WINDOW", "FETCH", "NATURAL", "SET", "AS"]);
+    function alias() {
+      const mapa = {};
+      const limpio = window.MOTOR ? MOTOR.sinTextos(area.value) : area.value;
+      for (const m of limpio.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO)\s+([\wÀ-ɏ]+)(?:\s+(?:AS\s+)?([\wÀ-ɏ]+))?/gi)) {
+        if (m[2] && !NO_ALIAS.has(m[2].toUpperCase())) mapa[m[2].toLowerCase()] = m[1].toLowerCase();
+      }
+      return mapa;
+    }
+
     function candidatos(p) {
       const pre = p.prefijo.toLowerCase();
       const empieza = x => x.toLowerCase().startsWith(pre) && x.toLowerCase() !== pre;
       if (p.tabla !== null) {
-        const cols = columnasDe[p.tabla] || [];
+        const cols = columnasDe[p.tabla] || columnasDe[alias()[p.tabla]] || [];
         return cols.filter(c => !pre || empieza(c)).map(c => ({ texto: c, tipo: "columna" }));
       }
-      if (pre.length < 1) return [];
+      // Desde 2 letras, y nunca tras una palabra clave ya completa (AS, OR, ON…): Enter debe ser un salto de línea
+      if (pre.length < 2 || ES_PALABRA.has(p.prefijo.toUpperCase())) return [];
       // Tras FROM / JOIN / INTO / UPDATE / TABLE, primero las tablas
       const antes = area.value.slice(0, p.inicio).replace(/\s+$/, "");
       const pideTabla = /\b(FROM|JOIN|INTO|UPDATE|TABLE)$/i.test(antes) || /\b(FROM|JOIN)\s+[\w\s,]*,$/i.test(antes);
@@ -156,16 +177,19 @@
       lista.innerHTML = sugerencias.map((s, i) =>
         `<li role="option" id="es-sug-${i}" data-i="${i}"${i === 0 ? ' aria-selected="true"' : ""}>` +
         `<span class="es-sug-texto">${escapar(s.texto)}</span><span class="es-sug-tipo">${s.tipo}</span></li>`).join("");
-      // Colocar debajo del cursor
+      // Colocar debajo del cursor; si no cabe, encima
       const m = medidas();
       const antes = area.value.slice(0, palabraActual.inicio).split("\n");
       const linea = antes.length - 1, col = antes[antes.length - 1].length;
       const zona = area.parentElement;
       const x = zona.offsetLeft + m.izq + col * m.ancho - area.scrollLeft;
-      const y = zona.offsetTop + m.arriba + (linea + 1) * m.alto - area.scrollTop + 2;
-      lista.style.left = Math.max(0, Math.min(x, contenedor.clientWidth - 240)) + "px";
-      lista.style.top = y + "px";
+      const yLinea = zona.offsetTop + m.arriba + linea * m.alto - area.scrollTop;
       lista.hidden = false;
+      const alto = lista.offsetHeight;
+      const debajo = yLinea + m.alto + 2;
+      const y = debajo + alto <= contenedor.clientHeight ? debajo : Math.max(0, yLinea - alto - 2);
+      // Con transform y no con top/left: Chromium ignoraba a veces los cambios de top en esta lista
+      lista.style.transform = `translate(${Math.max(0, Math.min(x, contenedor.clientWidth - 240))}px, ${y}px)`;
       area.setAttribute("aria-activedescendant", "es-sug-0");
     }
 
@@ -209,7 +233,7 @@
         if (ev.key === "ArrowDown") { ev.preventDefault(); moverSeleccion(1); return; }
         if (ev.key === "ArrowUp") { ev.preventDefault(); moverSeleccion(-1); return; }
         if (ev.key === "Enter" || ev.key === "Tab") { ev.preventDefault(); aceptarSugerencia(); return; }
-        if (ev.key === "Escape") { ev.preventDefault(); cerrarSugerencias(); return; }
+        if (ev.key === "Escape") { ev.preventDefault(); cerrarSugerencias(); salirConTab = true; return; }
       }
       if (ev.key === "Escape") { salirConTab = true; return; }
       if (ev.key === "Tab") {
@@ -249,7 +273,18 @@
     return {
       area,
       valor: () => area.value,
-      poner(txt) { area.value = txt; lineaError = null; pintar(); },
+      /** Cambia todo el texto. Con { deshacer: true } se puede volver atrás con Ctrl+Z. */
+      poner(txt, { deshacer = false } = {}) {
+        lineaError = null;
+        if (deshacer && area.isConnected) {
+          area.focus();
+          area.select();
+          const ok = txt ? document.execCommand("insertText", false, txt) : document.execCommand("delete");
+          if (ok) return;               // el evento input ya repinta y avisa del cambio
+        }
+        area.value = txt;
+        pintar();
+      },
       foco() { area.focus(); },
       /** Esquema de MOTOR.esquema(): tablas y columnas para colores y sugerencias. */
       conocer(esquema) {

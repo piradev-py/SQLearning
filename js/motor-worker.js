@@ -13,14 +13,19 @@ const TEXTO = v => v;
 const PARSERS = {
   1082: TEXTO, 1083: TEXTO, 1114: TEXTO, 1184: TEXTO, 1186: TEXTO, // date, time, timestamp, timestamptz, interval
   1700: TEXTO,                                                     // numeric
-  20: v => Number(v)                                               // bigint (count(*), sum de enteros…)
+  // bigint (count(*), sum de enteros…): número, salvo que no quepa exacto en JS (> 2^53): entonces texto
+  20: v => (Number.isSafeInteger(Number(v)) ? Number(v) : v)
 };
 
-// Nombres legibles de los tipos más habituales (para el esquema y la revisión)
+// Nombres legibles de los tipos (para el esquema y la revisión)
 const TIPOS = {
-  16: "boolean", 20: "bigint", 21: "smallint", 23: "integer", 25: "text", 700: "real", 701: "double precision",
-  1043: "varchar", 1042: "char", 1082: "date", 1083: "time", 1114: "timestamp", 1184: "timestamptz",
-  1186: "interval", 1700: "numeric", 2950: "uuid", 114: "json", 3802: "jsonb"
+  16: "boolean", 17: "bytea", 19: "name", 20: "bigint", 21: "smallint", 23: "integer", 25: "text", 26: "oid",
+  114: "json", 600: "point", 700: "real", 701: "double precision", 869: "inet", 1042: "char", 1043: "varchar",
+  1082: "date", 1083: "time", 1114: "timestamp", 1184: "timestamptz", 1186: "interval", 1560: "bit",
+  1700: "numeric", 2950: "uuid", 3615: "tsquery", 3802: "jsonb",
+  3904: "int4range", 3926: "int8range", 3906: "numrange", 3912: "daterange", 3910: "tstzrange", 3908: "tsrange",
+  1000: "boolean[]", 1005: "smallint[]", 1007: "integer[]", 1009: "text[]", 1015: "varchar[]", 1016: "bigint[]",
+  1021: "real[]", 1022: "double precision[]", 1182: "date[]", 1231: "numeric[]"
 };
 
 let db = null;
@@ -29,6 +34,7 @@ function limpiarFila(fila) {
   return fila.map(v => {
     if (v instanceof Uint8Array) return "\\x" + [...v].map(b => b.toString(16).padStart(2, "0")).join("");
     if (typeof v === "bigint") return Number(v);
+    if (Array.isArray(v)) return "{" + v.map(x => (x === null ? "NULL" : String(x))).join(",") + "}";
     if (v !== null && typeof v === "object") return JSON.stringify(v);
     return v;
   });
@@ -68,11 +74,6 @@ const ACCIONES = {
   // Una sola sentencia con parámetros ($1, $2…): para consultas internas del motor
   async consultar({ sql, params }) {
     return resultado(await db.query(sql, params || [], { rowMode: "array" }));
-  },
-  async estadoTransaccion() {
-    // ¿Hay una transacción abierta? (para no dejar la base a medias)
-    const r = await db.query("SELECT now() = statement_timestamp() AS fuera", [], { rowMode: "array" });
-    return r.rows[0][0] ? "fuera" : "dentro";
   }
 };
 

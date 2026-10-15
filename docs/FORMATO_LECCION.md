@@ -84,7 +84,12 @@ El editor empieza **vacío** (o con `inicial`). El alumno pulsa **Revisar**; no 
 - **Filas:** las mismas, con la misma cantidad de repetidas. Números con tolerancia mínima (1e-6); textos exactos
   (son datos, no frases); `NULL` solo es igual a `NULL`; fechas comparadas como fecha.
 - **Orden:** con `orden: "auto"` cuenta solo si la consulta solución tiene `ORDER BY` en su nivel principal.
-  Si cuenta, el enunciado debe pedirlo explícitamente.
+  Si cuenta, el enunciado debe pedirlo explícitamente. Si el `ORDER BY` de la solución usa columnas del resultado
+  (por nombre, alias o posición), las filas **empatadas** pueden salir en cualquier orden; si ordena por una
+  expresión (`precio * stock`), se exige el orden exacto: entonces la solución debe desempatar del todo.
+  Con `LIMIT`, que no haya empates justo en el corte (el alumno podría devolver otra fila igual de válida).
+- **Textos y orden alfabético:** PostgreSQL ordena por código de carácter: «Óscar» va **después** de «Zoe».
+  Si un nivel ordena nombres con tildes, explícalo (o evita depender de ello).
 - **DML/DDL (`INSERT`, `UPDATE`, `CREATE`…):** todo se ejecuta en `BEGIN … ROLLBACK`. Tras la consulta del alumno
   y la de la solución se ejecuta `verificar` (p. ej. `SELECT * FROM clientes ORDER BY id;` o una consulta a
   `information_schema`) y se comparan esos resultados.

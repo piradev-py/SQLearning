@@ -6,53 +6,75 @@
    con contraste alto.
    ============================================================ */
 :root {
-  --fondo: #07051a;
-  --fondo-alto: #160b3a;          /* parte alta del cielo */
-  --horizonte: #ff2e97;           /* resplandor del horizonte */
-  --superficie: rgb(14 10 38 / 0.86);
-  --superficie-solida: #0e0a26;
-  --superficie-2: #1b1346;
-  --borde: #3b2b7d;
-  --texto: #eeeaff;
-  --texto-suave: #aea4dc;
-  --acento: #ff3cac;              /* magenta neón */
-  --acento-fondo: rgb(255 60 172 / 0.14);
-  --cian: #22e4ff;                /* cian neón */
-  --cian-fondo: rgb(34 228 255 / 0.12);
-  --primario: #22e4ff;
-  --primario-texto: #06041a;
-  --primario-hover: #8af2ff;
-  --ok: #3dffa8;
-  --ok-fondo: rgb(61 255 168 / 0.12);
-  --error: #ff5c7c;
-  --error-fondo: rgb(255 92 124 / 0.13);
-  --foco: #22e4ff;
+  /* Noche: luces de neón lejanas entre la niebla (poco saturado, contraste contenido) */
+  --fondo: #04030a;
+  --fondo-alto: #0b0818;          /* parte alta del cielo */
+  --horizonte: #6e2350;           /* resplandor del horizonte, apagado */
+  --superficie: rgb(10 9 20 / 0.9);
+  --superficie-solida: #0a0914;
+  --superficie-2: #13111f;
+  --borde: #2b2642;
+  --texto: #c4bfd6;
+  --texto-suave: #857f9e;
+  --acento: #c0508f;              /* magenta polvoriento */
+  --acento-fondo: rgb(192 80 143 / 0.1);
+  --cian: #4fa3b3;                /* cian de niebla */
+  --cian-fondo: rgb(79 163 179 / 0.1);
+  --primario: #2c6772;
+  --primario-texto: #e6f2f4;
+  --primario-hover: #347682;
+  --ok: #5fb98a;
+  --ok-fondo: rgb(95 185 138 / 0.1);
+  --error: #d0607a;
+  --error-fondo: rgb(208 96 122 / 0.1);
+  --foco: #4fa3b3;
 
-  --neon-magenta: 0 0 4px rgb(255 60 172 / 0.9), 0 0 14px rgb(255 60 172 / 0.55), 0 0 32px rgb(255 60 172 / 0.25);
-  --neon-cian: 0 0 4px rgb(34 228 255 / 0.9), 0 0 14px rgb(34 228 255 / 0.5), 0 0 32px rgb(34 228 255 / 0.22);
-  --texto-neon-magenta: 0 0 6px rgb(255 60 172 / 0.8), 0 0 18px rgb(255 60 172 / 0.45);
-  --texto-neon-cian: 0 0 6px rgb(34 228 255 / 0.75), 0 0 18px rgb(34 228 255 / 0.4);
-  --rejilla: rgb(255 60 172 / 0.55);
-  --rejilla-2: rgb(34 228 255 / 0.35);
+  --neon-magenta: 0 0 2px rgb(192 80 143 / 0.6), 0 0 12px rgb(192 80 143 / 0.22);
+  --neon-cian: 0 0 2px rgb(79 163 179 / 0.6), 0 0 12px rgb(79 163 179 / 0.2);
+  --texto-neon-magenta: 0 0 8px rgb(192 80 143 / 0.45);
+  --texto-neon-cian: 0 0 8px rgb(79 163 179 / 0.4);
+  --rejilla: rgb(192 80 143 / 0.28);
+  --rejilla-2: rgb(79 163 179 / 0.16);
 
   /* Editor y código */
-  --codigo-fondo: rgb(5 3 20 / 0.92);
-  --codigo-texto: #eeeaff;
-  --codigo-numeros: #5b5196;
-  --sql-clave: #ff5cc8;
-  --sql-funcion: #22e4ff;
-  --sql-texto: #ffd166;
-  --sql-numero: #b794ff;
-  --sql-comentario: #7a70b5;
-  --sql-tabla: #5dffb5;
-  --sql-signo: #aea4dc;
+  --codigo-fondo: rgb(4 3 10 / 0.94);
+  --codigo-texto: #c4bfd6;
+  --codigo-numeros: #7a7496;
+  --sql-clave: #c76aa3;
+  --sql-funcion: #5fa9b7;
+  --sql-texto: #c9a66b;
+  --sql-numero: #9585c2;
+  --sql-comentario: #7d7699;
+  --sql-tabla: #6fae8f;
+  --sql-signo: #857f9e;
 
   --radio: 6px;
-  --sombra: 0 8px 32px rgb(0 0 0 / 0.5);
+  --sombra: 0 8px 32px rgb(0 0 0 / 0.6);
   --fuente: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
   --fuente-titulo: "Orbitron", "Segoe UI", system-ui, sans-serif;
   --fuente-codigo: "JetBrains Mono", "Cascadia Code", "Cascadia Mono", Consolas, ui-monospace, monospace;
   color-scheme: dark;
+}
+
+/* Ambiente de historia (inicio, mapa, tickets, expediente, casos): mismo misterio,
+   neón un punto más vivo. Las pantallas de código no lo usan. */
+:root[data-ambiente="historia"]:not([data-theme="light"]) {
+  --fondo-alto: #100a24;
+  --horizonte: #9a2c6e;
+  --borde: #2e2748;
+  --texto: #d2cde4;
+  --acento: #db5aa6;
+  --acento-fondo: rgb(219 90 166 / 0.13);
+  --cian: #4fc0d2;
+  --cian-fondo: rgb(79 192 210 / 0.12);
+  --primario: #2d6f7b;
+  --primario-hover: #357d8a;
+  --neon-magenta: 0 0 3px rgb(219 90 166 / 0.75), 0 0 16px rgb(219 90 166 / 0.32);
+  --neon-cian: 0 0 3px rgb(79 192 210 / 0.75), 0 0 16px rgb(79 192 210 / 0.3);
+  --texto-neon-magenta: 0 0 10px rgb(219 90 166 / 0.55);
+  --texto-neon-cian: 0 0 10px rgb(79 192 210 / 0.5);
+  --rejilla: rgb(219 90 166 / 0.6);
+  --rejilla-2: rgb(79 192 210 / 0.38);
 }
 
 :root[data-theme="light"] {
@@ -67,7 +89,7 @@
   --texto-suave: #574887;
   --acento: #c0137a;
   --acento-fondo: rgb(192 19 122 / 0.1);
-  --cian: #00839a;
+  --cian: #006b7e;
   --cian-fondo: rgb(0 131 154 / 0.1);
   --primario: #6a1fd0;
   --primario-texto: #ffffff;
@@ -85,12 +107,12 @@
   --rejilla-2: rgb(106 31 208 / 0.2);
   --codigo-fondo: #fdfbff;
   --codigo-texto: #1a0f36;
-  --codigo-numeros: #a596cf;
+  --codigo-numeros: #6f6299;
   --sql-clave: #b0127a;
   --sql-funcion: #00788d;
   --sql-texto: #9a5800;
   --sql-numero: #5b2bc0;
-  --sql-comentario: #7d70a6;
+  --sql-comentario: #6d6194;
   --sql-tabla: #11753f;
   --sql-signo: #574887;
   --sombra: 0 6px 24px rgb(70 30 140 / 0.12);
@@ -109,7 +131,7 @@ body {
 code, pre, kbd { font-family: var(--fuente-codigo); }
 h1, h2, h3 { font-family: var(--fuente-titulo); letter-spacing: 0.04em; }
 :focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
-::selection { background: var(--acento); color: #fff; }
+::selection { background: color-mix(in srgb, var(--acento) 45%, transparent); color: var(--texto); }
 
 button {
   font: inherit;
@@ -150,5 +172,6 @@ kbd {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  /* Duración 0 (no 0.01ms): con 0.01ms, CUALQUIER cambio de estilo pasa a ser una transición diminuta */
+  *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; }
 }

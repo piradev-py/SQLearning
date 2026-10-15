@@ -27,12 +27,12 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #ffd166;
-  box-shadow: 0 0 0 3px rgb(255 209 102 / 0.25), 0 0 16px 4px rgb(255 209 102 / 0.55);
+  background: #c9a66b;
+  box-shadow: 0 0 0 3px rgb(201 166 107 / 0.15), 0 0 12px 3px rgb(201 166 107 / 0.35);
 }
-.marca-faro.grande { width: 26px; height: 26px; animation: destello 2.4s ease-in-out infinite; }
+.marca-faro.grande { width: 26px; height: 26px; animation: destello 3s ease-in-out infinite; }
 @keyframes destello {
-  50% { box-shadow: 0 0 0 8px rgb(255 209 102 / 0.18), 0 0 46px 16px rgb(255 209 102 / 0.5); }
+  50% { box-shadow: 0 0 0 7px rgb(201 166 107 / 0.1), 0 0 36px 12px rgb(201 166 107 / 0.3); }
 }
 
 /* --- Cabecera -------------------------------------------------- */
@@ -43,8 +43,8 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
   padding: 10px 20px;
   background: var(--superficie);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--acento);
-  box-shadow: 0 1px 0 var(--acento), 0 4px 22px rgb(255 60 172 / 0.25);
+  border-bottom: 1px solid color-mix(in srgb, var(--acento) 55%, var(--borde));
+  box-shadow: 0 4px 22px var(--acento-fondo);
 }
 .lab-titulo { flex: 1; min-width: 0; }
 .lab-titulo h1 {
@@ -83,6 +83,8 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
 .lab-resultado { border-top: 2px solid var(--acento); }
 
 .lab-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.lab-ejemplos { flex: 1 1 140px; min-width: 0; max-width: 260px; }
+.lab-ejemplos select { width: 100%; }
 .lab-barra kbd { background: transparent; color: inherit; border-color: currentColor; opacity: 0.8; }
 .lab-ejemplos select {
   font: inherit;
@@ -157,4 +159,7 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
   .lab { grid-template-columns: 1fr; grid-template-rows: 55vh 60vh; gap: 16px; padding: 12px 16px; }
   .lab-separador { display: none; }
   .lab-titulo p { display: none; }
+  .lab-cabecera { flex-wrap: wrap; gap: 8px 16px; padding: 10px 16px; }
+  .lab-titulo { order: 3; flex-basis: 100%; }
+  .boton-tema { margin-left: auto; }
 }

@@ -14,7 +14,15 @@ Solo escriben informes en `docs/revisiones/` y escenarios en `tests/navegador/ag
 **Cuándo:** al cerrar cada fase y cada etapa, y siempre antes de publicar. Primero `qa-estres`, luego
 `alumno-novato` (nunca a la vez: comparten puertos). Tras cada revisión: el coordinador arregla, anota aquí lo que
 quede pendiente y vuelve a pasar los tests.
-- [ ] Revisión fin de fase 2 (motor) — solo `qa-estres` (aún no hay curso que recorrer)
+- [x] Revisión fin de fase 2 (motor) — `qa-estres`, informe `docs/revisiones/2026-10-15-qa-fase2.md` (🔴1 🟠5 🟡19).
+  Arreglados: F1–F15, F17–F19, F20 (Inicio/Fin, capa inert), F21, F22 (portada), F23 (ETag). Regresiones en
+  `tests/probar-motor.html` (46/46) y `esc-laboratorio.mjs`. De paso: la regla de movimiento reducido creaba
+  transiciones en todo (0.01ms → 0s) y el motor recargaba los datos en cada consulta (DISCARD ALL en bloque).
+  Quedan pendientes (menores):
+  - [ ] F16 · editor lento con textos enormes (500 líneas: 70 ms/tecla): repintar solo lo visible
+  - [ ] Dos pestañas del laboratorio se pisan el borrador
+  - [ ] Sin conexión: service worker para cachear PGlite y las fuentes (antes de publicar)
+  - [ ] Comprobar en GitHub Pages que wasm/data viajan comprimidos
 - [ ] Revisión fin de fase 3 (interfaz)
 - [ ] Revisión etapa 1 antes de publicar (las dos)
 

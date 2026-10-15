@@ -20,9 +20,9 @@
   position: absolute;
   inset: 0 0 calc(100% - var(--horizonte-y)) 0;
   background:
-    radial-gradient(ellipse 70% 55% at 50% 100%, color-mix(in srgb, var(--horizonte) 55%, transparent), transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 20%, color-mix(in srgb, var(--cian) 18%, transparent), transparent 70%),
-    linear-gradient(to bottom, var(--fondo) 0%, var(--fondo-alto) 65%, color-mix(in srgb, var(--horizonte) 30%, var(--fondo-alto)) 100%);
+    radial-gradient(ellipse 70% 50% at 50% 100%, color-mix(in srgb, var(--horizonte) 45%, transparent), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 20%, color-mix(in srgb, var(--cian) 8%, transparent), transparent 70%),
+    linear-gradient(to bottom, var(--fondo) 0%, var(--fondo-alto) 70%, color-mix(in srgb, var(--horizonte) 22%, var(--fondo-alto)) 100%);
 }
 /* Estrellas lejanas (puntos fijos) */
 .escena-cielo::before {
@@ -30,14 +30,26 @@
   position: absolute;
   inset: 0 0 35% 0;
   background-image:
-    radial-gradient(1px 1px at 12% 18%, #fff8, transparent),
-    radial-gradient(1px 1px at 27% 42%, #fff6, transparent),
-    radial-gradient(1px 1px at 46% 12%, #fff7, transparent),
-    radial-gradient(1px 1px at 63% 30%, #fff5, transparent),
-    radial-gradient(1.5px 1.5px at 78% 9%, #fff9, transparent),
-    radial-gradient(1px 1px at 88% 38%, #fff6, transparent),
-    radial-gradient(1px 1px at 5% 55%, #fff5, transparent);
+    radial-gradient(1px 1px at 12% 18%, #fff4, transparent),
+    radial-gradient(1px 1px at 27% 42%, #fff3, transparent),
+    radial-gradient(1px 1px at 46% 12%, #fff4, transparent),
+    radial-gradient(1px 1px at 63% 30%, #fff2, transparent),
+    radial-gradient(1.5px 1.5px at 78% 9%, #fff5, transparent),
+    radial-gradient(1px 1px at 88% 38%, #fff3, transparent),
+    radial-gradient(1px 1px at 5% 55%, #fff2, transparent);
 }
+/* Niebla sobre el horizonte y viñeta oscura en los bordes: aire de misterio */
+.escena::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent calc(var(--horizonte-y) - 22%),
+      color-mix(in srgb, var(--fondo-alto) 70%, transparent) calc(var(--horizonte-y) - 3%),
+      transparent calc(var(--horizonte-y) + 14%)),
+    radial-gradient(ellipse 90% 85% at 50% 50%, transparent 55%, rgb(0 0 0 / 0.6) 100%);
+}
+:root[data-theme="light"] .escena::after { background: none; }
 .escena-ciudad {
   position: absolute;
   left: 0;
@@ -54,7 +66,8 @@
   right: -50%;
   top: var(--horizonte-y);
   bottom: 0;
-  perspective: 260px;
+  perspective: 300px;
+  perspective-origin: 50% 0;      /* las líneas fugan hacia el horizonte */
   background:
     linear-gradient(to bottom, color-mix(in srgb, var(--horizonte) 35%, transparent), transparent 35%),
     var(--fondo);
@@ -86,6 +99,9 @@
   50% { filter: brightness(0.82); }
   52% { filter: brightness(1.05); }
 }
+
+/* Ambiente de historia: la ciudad algo más encendida */
+:root[data-ambiente="historia"]:not([data-theme="light"]) .escena-ciudad { filter: saturate(1.35) brightness(1.15); }
 
 /* Versión discreta: detrás del espacio de trabajo */
 .escena--tenue { --horizonte-y: 78%; }

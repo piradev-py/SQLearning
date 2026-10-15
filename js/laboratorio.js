@@ -43,8 +43,10 @@
   pestanas.forEach((p, i) => {
     p.addEventListener("click", () => mostrar(p.dataset.pestana));
     p.addEventListener("keydown", ev => {
-      if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") return;
-      const otra = pestanas[(i + (ev.key === "ArrowRight" ? 1 : -1) + pestanas.length) % pestanas.length];
+      const destino = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: pestanas.length - 1 }[ev.key];
+      if (destino === undefined) return;
+      ev.preventDefault();
+      const otra = pestanas[(destino + pestanas.length) % pestanas.length];
       otra.focus();
       mostrar(otra.dataset.pestana);
     });
@@ -87,11 +89,12 @@
   EJEMPLOS.forEach((e, i) => selEjemplos.add(new Option(e.nombre, i)));
   selEjemplos.addEventListener("change", () => {
     const e = EJEMPLOS[selEjemplos.value];
-    if (e) { editor.poner(e.sql); guardar(CLAVE_BORRADOR, e.sql); editor.foco(); }
     selEjemplos.value = "";
+    // Con «deshacer»: Ctrl+Z recupera lo que había escrito
+    if (e) { editor.poner(e.sql, { deshacer: true }); guardar(CLAVE_BORRADOR, e.sql); editor.foco(); }
   });
   $("[data-limpiar]").addEventListener("click", () => {
-    editor.poner("");
+    editor.poner("", { deshacer: true });
     guardar(CLAVE_BORRADOR, "");
     editor.foco();
   });
@@ -118,11 +121,14 @@
   });
   sep.addEventListener("keydown", ev => {
     const actual = Number(sep.getAttribute("aria-valuenow"));
-    if (ev.key === "ArrowLeft") { ev.preventDefault(); ponerAncho(actual - 5); }
-    if (ev.key === "ArrowRight") { ev.preventDefault(); ponerAncho(actual + 5); }
+    const nuevo = { ArrowLeft: actual - 5, ArrowRight: actual + 5, Home: 25, End: 75 }[ev.key];
+    if (nuevo !== undefined) { ev.preventDefault(); ponerAncho(nuevo); }
   });
 
   // --- Arranque -----------------------------------------------------------
+  // Mientras arranca PostgreSQL, los paneles no se pueden usar (ni con el teclado)
+  const paneles = document.querySelectorAll(".lab-panel, [data-separador]");
+  paneles.forEach(p => { p.inert = true; });
   (async () => {
     try {
       await MOTOR.preparar(DATOS);
@@ -134,6 +140,7 @@
       estado.textContent = `${esquema.length} tablas`;
       btnEjecutar.disabled = false;
       $("[data-cargando]").hidden = true;
+      paneles.forEach(p => { p.inert = false; });
       editor.foco();
     } catch (e) {
       $("[data-cargando]").innerHTML = `<p>😕 No se ha podido arrancar PostgreSQL.</p>

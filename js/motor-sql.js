@@ -1,17 +1,23 @@
 /* ============================================================
    SQLearning · Motor SQL (PostgreSQL con PGlite en un worker)
    - Todo lo que ejecuta el alumno va dentro de BEGIN … ROLLBACK:
-     un DELETE de práctica nunca estropea la base.
+     un DELETE de práctica nunca estropea la base. Una marca
+     (SET LOCAL) dentro de esa transacción dice si el alumno se ha
+     salido de ella (COMMIT, ABORT, END…); si es así, se recargan
+     los datos. Tras cada sesión se limpia el estado de sesión
+     (DISCARD ALL: PREPARE, cursores, cerrojos, SET…).
    - Si una consulta tarda más de TIEMPO_MAX, se mata el worker,
      se crea otro y se vuelven a cargar los datos.
    - Las llamadas se ponen en cola: nunca se mezclan dos sesiones.
    API: MOTOR.preparar("faro-e1"), MOTOR.ejecutar(sql),
-        MOTOR.sesion(async db => …), MOTOR.esquema()
+        MOTOR.sesion(async db => …), MOTOR.esquema(),
+        MOTOR.sinTextos(sql), MOTOR.sinComentarios(sql)
    ============================================================ */
 (function () {
   const TIEMPO_MAX = 4000;        // ms por consulta del alumno
   const TIEMPO_INICIO = 60000;    // ms para arrancar PostgreSQL y cargar los datos
   const RUTA_WORKER = "js/motor-worker.js";
+  const MARCA = "sqlearning.marca";
 
   let worker = null;
   let listo = null;               // Promesa: worker cargado
@@ -21,18 +27,34 @@
   const cacheDatos = {};
   let cola = Promise.resolve();
 
+  // --- Léxico mínimo de SQL: comentarios, textos '…', nombres "…" y textos $etiqueta$…$etiqueta$ ---
+  const LEXICO = /(--[^\n]*)|(\/\*[\s\S]*?(?:\*\/|$))|('(?:[^']|'')*'?)|("(?:[^"]|"")*"?)|(\$([A-Za-z_]\w*)?\$[\s\S]*?(?:\$\6\$|$))/g;
+
+  /** Quita comentarios y vacía los textos (para buscar palabras clave o `;` sin falsos positivos). */
+  function sinTextos(sql) {
+    return sql.replace(LEXICO, (m, linea, bloque, texto, nombre) =>
+      linea || bloque ? " " : nombre ? '""' : "''");
+  }
+  /** Quita solo los comentarios (respetando lo que hay dentro de los textos). */
+  function sinComentarios(sql) {
+    return sql.replace(LEXICO, (m, linea, bloque) => (linea || bloque ? " " : m));
+  }
+
   function crearWorker() {
-    worker = new Worker(RUTA_WORKER, { type: "module" });
+    const w = new Worker(RUTA_WORKER, { type: "module" });
+    worker = w;
     listo = new Promise((ok, mal) => {
       pendientes.set(0, m => (m.ok ? ok() : mal(m.error)));
     });
-    worker.addEventListener("message", ev => {
+    // Si no llega a cargar, se descarta: la siguiente llamada lo intentará con uno nuevo
+    listo.catch(() => { if (worker === w) { w.terminate(); worker = null; } });
+    w.addEventListener("message", ev => {
       const m = ev.data;
       const fn = pendientes.get(m.id);
       if (fn) { pendientes.delete(m.id); fn(m); }
     });
-    worker.addEventListener("error", ev => {
-      // Si el worker ni siquiera carga (p. ej. abierto con doble clic, file://), avisa en vez de esperar para siempre
+    w.addEventListener("error", ev => {
+      // Si el worker ni siquiera carga (p. ej. abierto con doble clic, file://, o sin red), avisa en vez de esperar
       const arranque = pendientes.get(0);
       if (arranque) {
         pendientes.delete(0);
@@ -89,18 +111,6 @@
     return cacheDatos[nombre];
   }
 
-  // ¿El alumno controla transacciones él mismo? Entonces la base se recarga después.
-  const CONTROL_TX = /\b(BEGIN|COMMIT|ROLLBACK|START\s+TRANSACTION|END\s*;|SAVEPOINT|RELEASE)\b/i;
-
-  // Quita comentarios y textos entre comillas (para buscar palabras clave sin falsos positivos)
-  function sinTextos(sql) {
-    return sql
-      .replace(/--[^\n]*/g, " ")
-      .replace(/\/\*[\s\S]*?\*\//g, " ")
-      .replace(/'(?:[^']|'')*'/g, "''")
-      .replace(/"(?:[^"]|"")*"/g, '""');
-  }
-
   // Convierte la posición (carácter) del error en línea y columna del texto del alumno
   function lineaDe(sql, posicion) {
     if (!posicion) return null;
@@ -128,20 +138,43 @@
     };
   }
 
+  // ¿Seguimos dentro de la transacción que abrió el motor? (la marca solo existe ahí)
+  async function sigueDentro() {
+    try {
+      const r = await enviar("consultar", { sql: `SELECT current_setting('${MARCA}', true)` });
+      return r.filas[0]?.[0] === "1";
+    } catch (e) {
+      // «transacción abortada» (25P02): el alumno provocó un error, pero seguimos dentro de la nuestra
+      return e?.codigo === "25P02";
+    }
+  }
+
   // Abre una transacción, ejecuta fn(db) y la deshace siempre
-  async function sesionInterna(fn, sqlAlumno) {
-    await enviar("ejecutar", { sql: "BEGIN;" });
+  async function sesionInterna(fn) {
+    await enviar("ejecutar", { sql: `BEGIN; SET LOCAL ${MARCA} = '1';` });
+    let intacta = true;
     try {
       return await fn(crearDb());
     } finally {
-      try { await enviar("ejecutar", { sql: "ROLLBACK;" }); } catch (e) { /* el worker pudo reiniciarse */ }
-      if (sqlAlumno && CONTROL_TX.test(sinTextos(sqlAlumno))) await arrancar();
+      try {
+        intacta = await sigueDentro();
+        await enviar("ejecutar", { sql: "ROLLBACK;" });
+        // Aparte: varias órdenes en un mensaje forman un bloque, y DISCARD ALL no puede ir dentro de uno
+        await enviar("ejecutar", { sql: "DISCARD ALL;" });
+      } catch (e) {
+        intacta = false;            // el worker pudo reiniciarse: mejor recargar
+      }
+      if (!intacta) await arrancar();
     }
   }
+
+  // Órdenes que en el navegador no pueden funcionar y se quedarían esperando
+  const NO_DISPONIBLE = /\bCOPY\b[^;]*\bFROM\s+STDIN\b/i;
 
   window.MOTOR = {
     TIEMPO_MAX,
     sinTextos,
+    sinComentarios,
 
     /** Arranca PostgreSQL con los datos indicados (p. ej. "faro-e1"). Si ya están cargados, no hace nada. */
     preparar(nombre) {
@@ -160,8 +193,10 @@
     ejecutar(sql) {
       return enCola(async () => {
         const t0 = performance.now();
+        if (NO_DISPONIBLE.test(sinTextos(sql)))
+          return { ok: false, ms: 0, error: errorAlumno({ mensaje: "COPY … FROM STDIN no está disponible", codigo: "STDIN" }, sql) };
         try {
-          const resultados = await sesionInterna(db => db.ejecutar(sql), sql);
+          const resultados = await sesionInterna(db => db.ejecutar(sql));
           const conColumnas = resultados.filter(r => r.columnas.length);
           return {
             ok: true,
@@ -176,8 +211,8 @@
     },
 
     /** Para revisiones: fn(db) corre dentro de una transacción que se deshace al terminar. */
-    sesion(fn, sqlAlumno) {
-      return enCola(() => sesionInterna(fn, sqlAlumno));
+    sesion(fn) {
+      return enCola(() => sesionInterna(fn));
     },
 
     errorAlumno,

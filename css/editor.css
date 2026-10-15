@@ -11,7 +11,7 @@
   background: var(--codigo-fondo);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
-  overflow: hidden;
+  overflow: clip;      /* clip, no hidden: el navegador no puede desplazarlo por dentro al seguir el cursor */
 }
 .editor-sql:focus-within { border-color: var(--cian); box-shadow: var(--neon-cian); }
 .es-numeros {
@@ -27,7 +27,7 @@
 }
 .es-numeros-dentro div { padding-right: 10px; }
 .es-numeros-dentro .es-error { color: var(--error); font-weight: 700; background: var(--error-fondo); }
-.es-zona { position: relative; flex: 1; min-width: 0; overflow: hidden; }
+.es-zona { position: relative; flex: 1; min-width: 0; overflow: clip; }
 .es-resaltado, .es-texto {
   margin: 0;
   padding: 12px 14px;
@@ -70,6 +70,8 @@
 
 .es-sugerencias {
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 10;
   min-width: 220px;
   max-height: 260px;
@@ -98,6 +100,8 @@
 .r-tabla-marco { overflow: auto; max-height: 100%; border: 1px solid var(--borde); border-radius: var(--radio); background: var(--superficie-solida); }
 .r-tabla { border-collapse: collapse; font-size: 14px; min-width: 100%; }
 .r-tabla th, .r-tabla td { padding: 6px 12px; border-bottom: 1px solid var(--borde); text-align: left; white-space: nowrap; }
+/* Textos larguísimos: se recortan con «…» (el texto completo sale al pasar el ratón) */
+.r-tabla td { max-width: 48ch; overflow: hidden; text-overflow: ellipsis; }
 .r-tabla th {
   position: sticky;
   top: 0;

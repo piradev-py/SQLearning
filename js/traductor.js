@@ -81,6 +81,16 @@
     "42P10": () => "En `ORDER BY` con `DISTINCT`, solo puedes ordenar por columnas que estén en el `SELECT`.",
     "21000": () => "Una subconsulta que debía devolver un solo valor devuelve varios.",
     "25P02": () => "Un error anterior ha dejado la transacción bloqueada: haz `ROLLBACK;` y vuelve a empezar.",
+    "25001": () => "Esa orden no se puede usar aquí: no funciona dentro de una transacción (y en SQLearning todo lo que ejecutas va dentro de una, para no romper nada).",
+    "42P05": () => "Ya existe una consulta preparada con ese nombre.",
+    "54000": () => "El resultado es demasiado grande para PostgreSQL. Prueba con algo más pequeño.",
+    "53200": () => "PostgreSQL se ha quedado sin memoria con esa consulta. Prueba con algo más pequeño.",
+    "58P01": () => "PostgreSQL no puede leer archivos del ordenador desde aquí.",
+    "42501": () => "No tienes permiso para hacer eso.",
+    "0A000": () => "PostgreSQL no permite esa operación (no está disponible o no tiene sentido aquí).",
+    "STDIN": () => "`COPY … FROM STDIN` sirve para cargar datos desde la consola de PostgreSQL y aquí no está disponible. Para añadir filas usa `INSERT INTO … VALUES …`.",
+    "CARGA": () => "No se ha podido cargar el motor de PostgreSQL (¿se ha cortado la conexión?). Recarga la página.",
+    "REINICIO": () => "El motor se ha reiniciado a mitad de la consulta. Vuelve a ejecutarla.",
     "TIEMPO": () => "La consulta tardó demasiado y se ha cortado. ¿Hay un bucle sin fin (una CTE recursiva sin condición de parada) o un cruce de tablas enorme?"
   };
 

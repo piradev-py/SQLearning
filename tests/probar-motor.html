@@ -128,6 +128,70 @@
         return bien.ok && !mal.ok || [bien, mal];
       });
 
+      // --- Regresiones de la revisión QA fase 2 (docs/revisiones/2026-10-15-qa-fase2.md) ---
+      const cuenta = async tabla => (await MOTOR.ejecutar(`SELECT count(*) FROM ${tabla};`)).ultimo?.filas[0][0];
+      for (const ataque of [
+        "ABORT; DELETE FROM productos;",
+        "END; DELETE FROM productos;",
+        "END WORK; DELETE FROM productos;",
+        "END TRANSACTION; DELETE FROM productos;",
+        "SELECT $$'$$; COMMIT; DELETE FROM productos; SELECT $$'$$;",
+        "COMMIT; BEGIN; DELETE FROM productos;"
+      ]) {
+        await prueba(`F1: «${ataque.slice(0, 32)}…» no deja huella`, async () => {
+          await MOTOR.ejecutar(ataque);
+          const n = await cuenta("productos");
+          return n === 40 || n;
+        });
+      }
+      await prueba("F1: ABORT + SET search_path no rompe las consultas siguientes", async () => {
+        await MOTOR.ejecutar("ABORT; SET search_path TO pg_catalog;");
+        return (await cuenta("productos")) === 40;
+      });
+      await prueba("F1: el revisor no se deja engañar tras un ABORT", async () => {
+        await REVISOR.revisarEjercicio({ solucion: "SELECT nombre FROM productos;" }, "SELECT $$'$$; ABORT; DELETE FROM productos; SELECT nombre FROM productos WHERE nombre <> $$'$$;");
+        const r = await REVISOR.revisarEjercicio({ solucion: "SELECT count(*) AS n FROM productos;" }, "SELECT 0 AS n;");
+        return !r.ok || r;
+      });
+      await prueba("F10: PREPARE dos veces no da error (se limpia la sesión)", async () => {
+        await MOTOR.ejecutar("PREPARE p1 AS SELECT 1;");
+        const r = await MOTOR.ejecutar("PREPARE p1 AS SELECT 1;");
+        return r.ok || r;
+      });
+      await prueba("F4: empates en el ORDER BY de la solución: otro desempate vale", async () => {
+        const p = { solucion: "SELECT departamento, count(*) AS empleados FROM empleados GROUP BY departamento ORDER BY empleados DESC;" };
+        const bien = await REVISOR.revisarEjercicio(p, "SELECT departamento, count(*) AS empleados FROM empleados GROUP BY departamento ORDER BY empleados DESC, departamento DESC;");
+        const mal = await REVISOR.revisarEjercicio(p, "SELECT departamento, count(*) AS empleados FROM empleados GROUP BY departamento ORDER BY empleados;");
+        return bien.ok && !mal.ok || [bien, mal];
+      });
+      await prueba("F4: ORDER BY por expresión → orden exacto (sin claves)", () =>
+        REVISOR.clavesOrden("SELECT nombre, precio * stock AS v FROM productos ORDER BY precio * stock;", ["nombre", "v"]) === null);
+      await prueba("F4: claves por alias, posición y tabla.columna", () =>
+        JSON.stringify(REVISOR.clavesOrden("SELECT p.nombre, p.precio AS \"Precio\" FROM productos p ORDER BY \"Precio\" DESC, 1, p.nombre LIMIT 3;", ["nombre", "Precio"])) === "[1,0,0]");
+      await prueba("F5: PRUEBA.ordenado sigue el orden de PostgreSQL («Óscar» al final)", async () => {
+        const r = (await MOTOR.ejecutar("SELECT nombre FROM empleados ORDER BY nombre;")).ultimo;
+        return PRUEBA.ordenado(r, "nombre", "asc") || r.filas.map(f => f[0]);
+      });
+      await prueba("F7: fecha = misma fecha como timestamp", async () =>
+        (await REVISOR.revisarEjercicio({ solucion: "SELECT ciudad, apertura FROM tiendas;" }, "SELECT ciudad, apertura::timestamp AS apertura FROM tiendas;")).ok || "falló");
+      await prueba("F8: «--» dentro de un texto y ; dentro de $$ no confunden", () =>
+        REVISOR.bienEscrita("SELECT nombre FROM productos WHERE nombre LIKE '%--%';").ok &&
+        REVISOR.bienEscrita("SELECT nombre FROM productos WHERE nombre <> $$a;b$$;").ok);
+      await prueba("F9: bigint enorme se conserva exacto", async () => {
+        const r = await MOTOR.ejecutar("SELECT 9007199254740993::bigint;");
+        return String(r.ultimo.filas[0][0]) === "9007199254740993" || r.ultimo.filas;
+      });
+      await prueba("F9: numeric enorme distinto no se aprueba", async () =>
+        !(await REVISOR.revisarEjercicio({ solucion: "SELECT 12345678901234567.1::numeric AS x;" }, "SELECT 12345678901234567.2::numeric AS x;")).ok);
+      await prueba("Tolerancia: 1234567 ≠ 1234568", () =>
+        !REVISOR.comparar({ columnas: ["x"], tipos: ["integer"], filas: [[1234567]] }, { columnas: ["x"], tipos: ["integer"], filas: [[1234568]] }).ok);
+      await prueba("F11: COPY FROM STDIN responde al instante", async () => {
+        const r = await MOTOR.ejecutar("COPY productos FROM STDIN;");
+        return !r.ok && r.error.codigo === "STDIN" && r.ms < 100 || r;
+      });
+      await prueba("Tras todos los ataques, la base sigue intacta", async () =>
+        (await cuenta("productos")) === 40 && (await cuenta("empleados")) === 22 && (await cuenta("tiendas")) === 5);
+
       // --- Reto con PRUEBA ---
       const reto = {
         comprobaciones: [

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es" data-ambiente="historia">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQLearning · El Fantasma de Faro</title>
+  <meta name="description" content="Aprende SQL de cero a Data Analyst resolviendo un misterio en una ciudad de neón.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/tema.css">
+  <link rel="stylesheet" href="css/fondo.css">
+  <style>
+    /* Portada provisional (fase 3: inicio con mapa de etapas) */
+    body { display: grid; place-items: center; min-height: 100vh; background: transparent; overflow: hidden; }
+    /* La ciudad baja: el título queda en el cielo */
+    .escena { --horizonte-y: 76%; }
+    .escena-ciudad { height: 42%; }
+    .portada {
+      text-align: center;
+      padding: 40px 64px;
+      margin-top: -26vh;
+      /* Halo oscuro para que el texto se lea aunque roce la ciudad */
+      background: radial-gradient(closest-side, rgb(4 3 10 / 0.85), rgb(4 3 10 / 0.6) 70%, transparent);
+    }
+    :root[data-theme="light"] .portada { background: radial-gradient(ellipse 60% 55% at 50% 55%, rgb(246 239 255 / 0.9), transparent 80%); }
+    .portada-marca {
+      margin: 0;
+      font: 900 clamp(40px, 7vw, 88px)/1 var(--fuente-titulo);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cian);
+      text-shadow: var(--texto-neon-cian);
+    }
+    .portada-marca strong { color: var(--acento); font-weight: 900; text-shadow: var(--texto-neon-magenta); }
+    .portada-sub {
+      margin: 18px 0 6px;
+      font: 600 clamp(14px, 1.6vw, 18px) var(--fuente-titulo);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--texto);
+    }
+    .portada-lema { margin: 0 auto 32px; max-width: 520px; color: var(--texto-suave); }
+    .portada-botones { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .portada-botones a, .portada-botones span {
+      padding: 10px 22px;
+      border-radius: var(--radio);
+      font: 700 14px var(--fuente-titulo);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .portada-botones a {
+      color: var(--primario-texto);
+      background: var(--primario);
+      box-shadow: var(--neon-cian);
+    }
+    .portada-botones a:hover { background: var(--primario-hover); }
+    .portada-botones span { color: var(--texto-suave); border: 1px dashed var(--borde); }
+    .boton-tema { position: fixed; top: 16px; right: 16px; }
+  </style>
+</head>
+<body>
+  <div class="escena" aria-hidden="true">
+    <div class="escena-cielo"></div>
+    <img class="escena-ciudad" src="recursos/ciudad-neon.svg" alt="">
+    <div class="escena-suelo"></div>
+  </div>
+  <button type="button" class="boton-tema" data-tema aria-label="Cambiar tema">🌙 Noche</button>
+
+  <main class="portada">
+    <h1 class="portada-marca">SQL<strong>earning</strong></h1>
+    <p class="portada-sub">El Fantasma de Faro</p>
+    <p class="portada-lema">Alguien está manipulando los datos. Aprende SQL de cero a Data Analyst y descubre quién.</p>
+    <div class="portada-botones">
+      <a href="laboratorio.html">Laboratorio</a>
+      <span>Historia · próximamente</span>
+    </div>
+  </main>
+
+  <script src="js/tema.js"></script>
+</body>
+</html>
