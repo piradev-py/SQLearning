@@ -149,4 +149,27 @@ Igual que `faro-e5.sql` + `cuentas` (usuarios de la base de datos) + `auditoria`
   (p. ej. agosto, el mes con más actividad, con Iván de vacaciones; cada acción, minutos después de un fichaje de Héctor en Getafe).
 - No se nombra a Héctor: sus 15 cambios de stock son de día y normales.
 
+## Etapa 7 · `faro-e7.sql` (semilla 7007 para lo nuevo)
+Igual que `faro-e6.sql` + `vacaciones` + `fichajes` + `sesiones` (todo de 2026-01-05 a 2026-09-30). Comprobado con PGlite.
+- `vacaciones` (**46**): `id`, `empleado_id`, `desde`, `hasta` (date, CHECK hasta ≥ desde); dos periodos por empleado.
+  **Iván (7): 2026-04-06…04-10 y 2026-08-03…08-23.** Héctor (5): 06-03…06-07 y 07-01…07-07 (nunca coinciden con admin_temp).
+  Iker (23): 02-12…02-16 y 08-26…09-08.
+- `fichajes` (**4 108**): `id`, `empleado_id`, `centro`, `entrada`, `salida` (timestamp). Días laborables (algún día suelto sin fichar),
+  de ~8:00 a ~17:30. Centros: Oficinas 2 043 · Tienda Valencia 350 · Sevilla 350 · Bilbao 349 · Madrid 348 · **Almacén central 319** ·
+  Almacén Sur 177 · Almacén Levante 172. Héctor ficha 258 veces (a veces de día en el Almacén central). Fichajes de madrugada (< 6 h):
+  **Héctor 75** (todos en el Almacén central) e Iker 9 (turnos de descarga, nunca las noches de admin_temp).
+- `sesiones` (**689**): `id`, `usuario` (→ cuentas), `inicio`, `fin`, `puesto`. ivan.soler 170 (SIS-01, ninguna en sus vacaciones) ·
+  nuria.campos 175 (SIS-02) · copias_seguridad 269 (SRV-BACKUP, cada noche ~03:00) · **admin_temp 75 (ALM-GET-03, terminal del muelle
+  del Almacén central)**, una por noche de actividad, del 2026-03-04 04:56 al 2026-09-27 02:37.
+- Para el temario: organigrama recursivo por niveles 1 · 6 · 12 · 4 (23 empleados); `generate_series` de 2024-01 a 2026-09 = 33 meses,
+  de ellos **13** sin ningún reembolso online (los huecos que el gráfico juntaba).
+
+### Lo que siembra el Fantasma en la etapa 7 (caso «La coartada de Iván») — Héctor aparece
+- admin_temp actúa **75 noches** (85 acciones). **13 acciones (12 noches) caen en las vacaciones de agosto de Iván** y 1 en las de abril;
+  Iván no tiene fichajes ni sesiones esos días.
+- Cada sesión de admin_temp sale de **ALM-GET-03** y empieza mientras **Héctor (5) está fichado en el Almacén central**: entró entre
+  **2 y 17 minutos antes** (media 10,1). Con `LAG` sobre la línea de tiempo «fichajes del Almacén central + acciones de admin_temp», el
+  evento anterior a cada primera acción de la noche es siempre un fichaje de Héctor (75 de 75; las otras 10 acciones van detrás de otra acción).
+- Aquí, por fin, se nombra a Héctor como sospechoso (regla de HISTORIA). La etapa 8 lo confirma y cuantifica el fraude.
+
 Las cifras exactas se consultan con el propio motor (laboratorio o `tests/`), nunca a ojo.

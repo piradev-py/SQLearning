@@ -833,3 +833,147 @@ function etapa6() {
 
 writeFileSync(SALIDA + "faro-e6.sql", etapa6());
 console.log("✅ datos/faro-e6.sql");
+
+// --- Etapa 7 (Dirección): lo de la etapa 6 + vacaciones, fichajes y sesiones de la base de datos ----------------
+// Semilla propia (7007). Ana Beltrán pide informes; Lucía quiere saber dónde estaba cada uno cuando actuó admin_temp.
+// La coartada: Iván estaba de vacaciones (sin fichajes ni sesiones) en agosto, y cada noche de admin_temp empieza
+// pocos minutos después de que Héctor fiche en el Almacén central; las sesiones de admin_temp salen de un terminal
+// del muelle de Getafe. Iker (jefe de muelle) hace turnos de noche, pero nunca las noches de admin_temp.
+const esquemaDireccion = `
+CREATE TABLE vacaciones (
+  id integer PRIMARY KEY,
+  empleado_id integer NOT NULL REFERENCES empleados (id),
+  desde date NOT NULL,
+  hasta date NOT NULL,
+  CHECK (hasta >= desde)
+);
+
+CREATE TABLE fichajes (
+  id integer PRIMARY KEY,
+  empleado_id integer NOT NULL REFERENCES empleados (id),
+  centro text NOT NULL,
+  entrada timestamp NOT NULL,
+  salida timestamp NOT NULL,
+  CHECK (salida > entrada)
+);
+
+CREATE TABLE sesiones (
+  id integer PRIMARY KEY,
+  usuario text NOT NULL REFERENCES cuentas (usuario),
+  inicio timestamp NOT NULL,
+  fin timestamp NOT NULL,
+  puesto text NOT NULL
+);
+`;
+
+function etapa7Tablas() {
+  const t6 = etapa6Tablas();
+  const r = azar(7007);
+  const ent = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const elegir = lista => lista[Math.floor(r() * lista.length)];
+  const dos = n => String(n).padStart(2, "0");
+  const DIA = 86400000;
+  const fecha = ms => new Date(ms).toISOString().slice(0, 10);
+  const marca = ms => new Date(ms).toISOString().slice(0, 19).replace("T", " ");
+  const ms = txt => Date.parse(txt.replace(" ", "T") + "Z");
+  const minutos = m => m * 60000;
+
+  // Las noches de admin_temp (todas sus acciones son entre las 2 y las 5)
+  const noches = new Map();
+  for (const a of t6.auditoria.filter(a => a[2] === "admin_temp")) {
+    const d = a[1].slice(0, 10);
+    if (!noches.has(d)) noches.set(d, []);
+    noches.get(d).push(ms(a[1]));
+  }
+  const diasAdmin = new Set(noches.keys());
+
+  // Vacaciones de 2026 (ene–sep): dos periodos por empleado; Iván, Semana Santa y del 3 al 23 de agosto
+  const IVAN = 7, HECTOR = 5, IKER = 23;
+  const vacaciones = [];
+  const choca = (desde, hasta) => [...diasAdmin].some(d => d >= desde && d <= hasta);
+  for (let e = 1; e <= 23; e++) {
+    if (e === IVAN) { vacaciones.push([e, "2026-04-06", "2026-04-10"], [e, "2026-08-03", "2026-08-23"]); continue; }
+    for (const [ini, fin, largo] of [["2026-02-02", "2026-06-15", 5], ["2026-07-01", "2026-09-07", 14]]) {
+      let desde, hasta, intentos = 0, dias = largo;
+      do {
+        if (++intentos % 200 === 0) dias--;            // si no cabe, vacaciones más cortas
+        desde = fecha(Date.parse(ini) + ent(0, (Date.parse(fin) - Date.parse(ini)) / DIA) * DIA);
+        while ([0, 6].includes(new Date(desde).getUTCDay())) desde = fecha(Date.parse(desde) + DIA);   // empiezan en día laborable
+        hasta = fecha(Date.parse(desde) + (Math.max(1, dias + ent(-1, 2)) - 1) * DIA);
+      } while (e === HECTOR && choca(desde, hasta));   // Héctor nunca se va cuando actúa admin_temp
+      vacaciones.push([e, desde, hasta]);
+    }
+  }
+  vacaciones.sort((a, b) => a[1].localeCompare(b[1]) || a[0] - b[0]);
+  const deVacaciones = (e, d) => vacaciones.some(v => v[0] === e && d >= v[1] && d <= v[2]);
+
+  // Centro habitual de cada empleado
+  const CENTRO_TIENDA = { 1: "Tienda Madrid", 2: "Tienda Valencia", 3: "Tienda Sevilla", 4: "Tienda Bilbao" };
+  const todos = empleados.concat([["Iker Salas", "Logística", 1]]);
+  const centroDe = (e, [nombre, dep, tienda]) =>
+    e === IKER ? "Almacén central" : nombre === "Óscar Medina" ? "Almacén Levante" : nombre === "Beatriz Soto" ? "Almacén Sur"
+    : dep === "Tienda" ? CENTRO_TIENDA[tienda] : "Oficinas";
+
+  const fichajes = [];   // [empleado_id, centro, entrada, salida]
+  const sesiones = [];   // [usuario, inicio, fin, puesto]
+  const desde = Date.parse("2026-01-05"), hasta = Date.parse("2026-09-30");
+  const nochesIker = new Set();
+  for (let t = desde; t <= hasta; t += DIA) {
+    const d = fecha(t), finde = [0, 6].includes(new Date(t).getUTCDay());
+    todos.forEach((emp, i) => {
+      const e = i + 1;
+      if (finde || deVacaciones(e, d) || r() < 0.02) return;   // algún día libre o de baja
+      let centro = centroDe(e, emp);
+      if (e === HECTOR && r() < 0.3) centro = "Almacén central";   // Héctor reparte su día entre oficina y almacén
+      const entrada = t + minutos(ent(7 * 60 + 45, 9 * 60 + 30));
+      const salida = entrada + minutos(ent(8 * 60, 9 * 60 + 15));
+      fichajes.push([e, centro, marca(entrada), marca(salida)]);
+      // Sesiones en la base de datos de los dos administradores (Sistemas)
+      if (e === IVAN || e === 6) {
+        const ini = entrada + minutos(ent(5, 40));
+        sesiones.push([e === IVAN ? "ivan.soler" : "nuria.campos", marca(ini), marca(salida - minutos(ent(5, 30))), e === IVAN ? "SIS-01" : "SIS-02"]);
+      }
+    });
+    // Turnos de noche de Iker en el almacén (descargas): nunca las noches de admin_temp
+    if (!diasAdmin.has(d) && !deVacaciones(IKER, d) && r() < 0.08) {
+      nochesIker.add(d);
+      const entrada = t + minutos(ent(60, 150));
+      fichajes.push([IKER, "Almacén central", marca(entrada), marca(entrada + minutos(ent(180, 270)))]);
+    }
+  }
+  // Las noches de admin_temp: Héctor ficha en el Almacén central minutos antes y sale después de la última acción;
+  // la sesión de admin_temp sale del terminal del muelle (ALM-GET-03)
+  for (const [d, acciones] of noches) {
+    acciones.sort((a, b) => a - b);
+    const primera = acciones[0], ultima = acciones[acciones.length - 1];
+    const entrada = primera - minutos(ent(6, 18));
+    fichajes.push([HECTOR, "Almacén central", marca(entrada), marca(ultima + minutos(ent(12, 35)))]);
+    sesiones.push(["admin_temp", marca(primera - minutos(ent(1, 4))), marca(ultima + minutos(ent(1, 6))), "ALM-GET-03"]);
+  }
+  // Las copias de seguridad, cada noche a las 3 desde el servidor
+  for (let t = desde; t <= hasta; t += DIA) {
+    const ini = t + minutos(180 + ent(0, 2));
+    sesiones.push(["copias_seguridad", marca(ini), marca(ini + minutos(ent(14, 22))), "SRV-BACKUP"]);
+  }
+  fichajes.sort((a, b) => a[2].localeCompare(b[2]) || a[0] - b[0]);
+  sesiones.sort((a, b) => a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]));
+  return {
+    vacaciones: vacaciones.map((v, i) => [i + 1, ...v]),
+    fichajes: fichajes.map((f, i) => [i + 1, ...f]),
+    sesiones: sesiones.map((s, i) => [i + 1, ...s])
+  };
+}
+
+function etapa7() {
+  const t = etapa7Tablas();
+  return [
+    etapa6().replace("datos de la etapa 6", "datos de la etapa 7"),
+    esquemaDireccion,
+    insertar("vacaciones", ["id", "empleado_id", "desde", "hasta"], t.vacaciones),
+    insertar("fichajes", ["id", "empleado_id", "centro", "entrada", "salida"], t.fichajes),
+    insertar("sesiones", ["id", "usuario", "inicio", "fin", "puesto"], t.sesiones)
+  ].join("\n");
+}
+
+writeFileSync(SALIDA + "faro-e7.sql", etapa7());
+console.log("✅ datos/faro-e7.sql");
