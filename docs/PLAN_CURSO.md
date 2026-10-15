@@ -20,11 +20,11 @@ Estado: ✅ escrito · 🚧 pendiente
 | 2 · Atención al cliente ☎️ | 9 | ✅ |
 | 3 · Ventas 💶 | 9 | ✅ |
 | 4 · Logística 📦 | 10 | ✅ |
-| 5 · Migración 🧹 | 11 | 🚧 |
-| 6 · IT 🛠️ | 10 | 🚧 |
+| 5 · Migración 🧹 | 11 | ✅ |
+| 6 · IT 🛠️ | 12 | 🚧 |
 | 7 · Dirección 🧭 | 11 | 🚧 |
 | 8 · Analítica 📈 | 12 | 🚧 |
-| **Total** | **91** | |
+| **Total** | **93** | |
 
 ---
 
@@ -404,7 +404,7 @@ mayúsculas y espacios, trocear, sustituir y componer textos, usar expresiones r
 con `CASE`, convertir y operar con fechas (formatos, partes, truncado, intervalos, presentación), rellenar o anular
 vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles antes de dar una cifra.
 
-### e5-01 · Datos que llegan como texto: CAST · 30 ◈ 🚧
+### e5-01 · Datos que llegan como texto: CAST · 30 ◈ ✅
 - **Conceptos nuevos:** por qué una exportación (CSV, Excel, CRM viejo) llega toda como `text` (pestaña Esquema:
   `crm_clientes` es todo texto, recordando los tipos de e1-03); convertir con `CAST(x AS numeric)` y con el atajo
   de PostgreSQL `x::numeric`, `::integer`, `::date`, `::boolean` (`'true'::boolean`); `pg_typeof(x)` para ver el tipo.
@@ -420,7 +420,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   (`999999.00`) y después **270** (`11286.40`); el resto, con el verificador. Comprobaciones: 5 filas, tipo numérico,
   orden numérico (no alfabético).
 
-### e5-02 · Mayúsculas y espacios: UPPER, LOWER, INITCAP y TRIM · 30 ◈ 🚧
+### e5-02 · Mayúsculas y espacios: UPPER, LOWER, INITCAP y TRIM · 30 ◈ ✅
 - **Conceptos nuevos:** `UPPER`, `LOWER`, `INITCAP` (primera letra de cada palabra), `TRIM` (y `LTRIM`/`RTRIM`),
   `LENGTH` para ver los espacios invisibles; anidar funciones (`initcap(trim(ciudad))`); usar una función en
   `WHERE`, `GROUP BY` y `ORDER BY`. Ejemplos: `email <> lower(trim(email))` → **44** emails por arreglar;
@@ -432,7 +432,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   `clientes`, de más a menos → incluye la fila `''` y la de `NULL` (cifras por ciudad con el verificador).
   Comprobaciones: ninguna ciudad repetida, suma de `clientes` = 332, Madrid en primera fila (comprobar con el verificador).
 
-### e5-03 · Trocear texto: LEFT, SUBSTRING y SPLIT_PART · 35 ◈ 🚧
+### e5-03 · Trocear texto: LEFT, SUBSTRING y SPLIT_PART · 35 ◈ ✅
 - **Conceptos nuevos:** `LEFT(x, n)`, `RIGHT(x, n)`, `SUBSTRING(x FROM i FOR n)` (las posiciones empiezan en 1),
   `POSITION('@' IN email)`, `SPLIT_PART(email, '@', 2)` (trocear por un separador). Ejemplos: usuario y dominio de
   cada email (`lower(trim(email))`); provincia como `LEFT(cp, 2)` (28 Madrid, 46 Valencia, 41 Sevilla, 48 Bilbao…);
@@ -446,7 +446,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   (`split_part(lower(trim(email)), '@', 2)`), `clientes`, de más a menos y, a igualdad, por dominio. Comprobaciones:
   suma 332, sin dominios repetidos por mayúsculas o espacios (cifras con el verificador).
 
-### e5-04 · Sustituir y componer: REPLACE, CONCAT y LPAD · 35 ◈ 🚧
+### e5-04 · Sustituir y componer: REPLACE, CONCAT y LPAD · 35 ◈ ✅
 - **Conceptos nuevos:** `REPLACE(x, 'C/', 'Calle ')` (sustituye todas las apariciones), encadenar `REPLACE`;
   componer con `||` (visto en e1-04) frente a `CONCAT(...)` y `CONCAT_WS(', ', ...)`; `LPAD(cp, 5, '0')` (y `RPAD`)
   para devolver el cero que el Excel se comió en los **19** CP de Barcelona. Ejemplos: `replace(lower(direccion), 'c/', 'calle ')`;
@@ -459,7 +459,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   `clientes`, ordenadas por `provincia` → ya no aparece `'80'` y `'08'` agrupa a Barcelona. Comprobaciones: ninguna
   provincia de una sola cifra o `'80'`, suma 332 (incluida la fila `NULL`), cifra de `'08'` con el verificador.
 
-### e5-05 · Patrones: expresiones regulares · 45 ◈ 🚧
+### e5-05 · Patrones: expresiones regulares · 45 ◈ ✅
 - **Conceptos nuevos:** expresión regular («un `LIKE` con superpoderes»): `~` (cumple el patrón), `~*` (sin
   distinguir mayúsculas), `!~`; piezas básicas: `^` y `$` (principio y fin), `[0-9]` o `\d`, `[^0-9]` (lo que no es
   cifra), `{4}`, `+`, `.` (cualquier carácter); `regexp_replace(x, patrón, reemplazo, 'g')`. Ejemplos: formatos de
@@ -475,7 +475,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   que quedan con 9 cifras, ordenados por `crm_id` → **290** filas. Comprobaciones: 290 filas, todos de 9 cifras y solo
   dígitos, ninguno empieza por `34` de prefijo (respuesta alternativa válida: otro patrón que dé el mismo resultado).
 
-### e5-06 · Decidir fila a fila: CASE · 40 ◈ 🚧
+### e5-06 · Decidir fila a fila: CASE · 40 ◈ ✅
 - **Conceptos nuevos:** `CASE WHEN … THEN … ELSE … END` (el «SI…» de una hoja de cálculo), `CASE` simple
   (`CASE x WHEN 'S' THEN …`), tramos (`total < 100`, `< 500`, resto), `GROUP BY` por un `CASE`, contar con condición
   `COUNT(CASE WHEN estado = 'reembolsado' THEN 1 END)` (`FILTER` llega en la etapa 7). Ejemplos: `socio` escrito de
@@ -490,7 +490,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   ordenadas por `crm_id` → 332 filas. Comprobaciones: 332 filas sin error, `gasto` numérico, **suma 1 948 954,01**,
   `crm_id` 24 (`'10.080,50 €'`) → 10080.50.
 
-### e5-07 · Fechas de verdad: to_date, EXTRACT y date_trunc · 40 ◈ 🚧
+### e5-07 · Fechas de verdad: to_date, EXTRACT y date_trunc · 40 ◈ ✅
 - **Conceptos nuevos:** `to_date(texto, 'DD/MM/YYYY')` y `to_date(texto, 'YYYY-MM-DD')` (la plantilla describe cómo
   viene escrita la fecha), elegir la plantilla con `CASE` + `~` (los 199 y 133 de e5-05); `EXTRACT(YEAR | MONTH |
   ISODOW FROM fecha)` (devuelve un número); `date_trunc('month', fecha)` («redondear hacia abajo» al mes, que es lo que
@@ -506,7 +506,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   `clientes`, ordenadas por `anio` → aparecen los años **1900** y **2099** (una fila cada uno: se retoman en e5-10).
   Comprobaciones: suma 332, ningún `NULL`, filas de 1900 y 2099 con 1 (resto con el verificador).
 
-### e5-08 · Cuánto tarda y cómo se ve: intervalos y to_char · 45 ◈ 🚧
+### e5-08 · Cuánto tarda y cómo se ve: intervalos y to_char · 45 ◈ ✅
 - **Conceptos nuevos:** `timestamp - timestamp` = `interval` (`entrega - salida` en `envios`, del estilo `2 days 05:10:00`);
   `AVG` de intervalos; `EXTRACT(EPOCH FROM intervalo) / 86400` → días con decimales; `fecha + INTERVAL '3 days'`;
   `date - date` = número de días; `age(DATE '2026-10-01', nacimiento)` para la edad en `fichas_empleados`; `to_char(fecha,
@@ -521,7 +521,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   `dias_medios` (redondeado a 2 decimales), ordenadas por `almacen` → 4 filas (Zaragoza no tiene envíos), todas ≈ 2,5.
   Comprobaciones: 4 filas, `dias_medios` numérico entre 2 y 3, suma de `envios_entregados` con el verificador.
 
-### e5-09 · Rellenar vacíos: COALESCE y NULLIF · 40 ◈ 🚧
+### e5-09 · Rellenar vacíos: COALESCE y NULLIF · 40 ◈ ✅
 - **Conceptos nuevos:** `COALESCE(a, b, …)` (el primero que no es `NULL`); `NULLIF(a, b)` (`NULL` si son iguales):
   convertir los falsos vacíos en `NULL` de verdad (`NULLIF(NULLIF(trim(telefono), ''), 'N/D')` → **42** sin teléfono:
   20 `NULL` + 12 `N/D` + 10 `''`); dividir sin miedo con `x / NULLIF(y, 0)`. Ejemplos: `COALESCE(ciudad, 'Desconocida')`
@@ -536,7 +536,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   de más a menos envíos → 4 filas: Mensajería Sur 611 · Rayo Express 482 · Paquetería Norte 244 · Logística Delta 0
   con `coste_total` **0**. Comprobaciones: 4 filas, ningún `NULL`, suma de `coste_total` = 9 245,80.
 
-### e5-10 · Duplicados y valores imposibles · 45 ◈ 🚧
+### e5-10 · Duplicados y valores imposibles · 45 ◈ ✅
 - **Conceptos nuevos:** clave de comparación normalizada (`lower(trim(email))`) para encontrar duplicados con
   `GROUP BY … HAVING COUNT(*) > 1` → **20** personas repetidas (332 filas, **312** personas); el duplicado se reconoce
   por otro formato y gasto 0; contrastar con el sistema nuevo con `LEFT JOIN clientes ON lower(trim(crm.email)) =
@@ -552,7 +552,7 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
   `crm_id` → **3** filas: 31 (`fecha_alta` 1900-01-01), 122 (`fecha_alta` 31/12/2099), 260 (`gasto_total` 999999.00).
   Se admite `UNION ALL` (e4-09) o `CASE`. Comprobaciones: 3 filas, los tres `crm_id`, ningún otro.
 
-### e5-11 · Caso: Una sola dirección · 75 ◈ 🚧
+### e5-11 · Caso: Una sola dirección · 75 ◈ ✅
 - **Caso:** Nuria quiere cerrar la migración con las direcciones. Le preocupan los 9 clientes
   `@correo-rapido.example` de las etapas anteriores: no tienen teléfono y nadie los recuerda. Partes:
   1. Sus direcciones tal cual (`WHERE lower(trim(email)) LIKE '%@correo-rapido.example'`): columnas `crm_id`,
@@ -573,9 +573,211 @@ vacíos con `COALESCE`/`NULLIF`, y detectar duplicados y valores imposibles ante
 
 ---
 
-## Etapas 6–8
+## Etapa 6 · IT 🛠️ — «Construir y cambiar la base sin romperla»
+
+**Historia:** tras el hallazgo de la dirección, Lucía te manda a **Sistemas**, con **Iván Soler**: brusco, técnico,
+de pocas palabras («En producción no tocas nada. Tienes un entorno de pruebas»). Allí pasas de *leer* datos a
+*construir* y *cambiar*: das de alta de verdad la tienda de **Barcelona** (su plantilla y su stock inicial), guardas
+por fin los datos limpios de Nuria, aprendes las reglas que protegen la base y por qué una operación es «todo o nada».
+Al final, Iván te deja leer su **registro de auditoría**… y todo lo raro lo hizo una cuenta que él mismo creó.
+
+**Tablas** (`datos/faro-e6.sql`, ver `docs/DATOS.md`): las de la etapa 5 + `cuentas` (29 usuarios de la base de datos),
+`auditoria` (497 cambios registrados desde 2024: quién, cuándo, qué tabla, qué fila, qué columna, valor antes y después)
+y `stock_tiendas` (stock de las tiendas físicas 1–4; **Barcelona no tiene filas**).
+
+**El entorno de pruebas** (clave para escribir esta etapa): todo lo que ejecuta el alumno va en una transacción que
+**se deshace al terminar** (el resultado lo dice: «Es práctica: al terminar se deshace sola»). Por eso:
+- Una tabla creada en una ejecución **no existe en la siguiente**. Cada ejercicio que crea algo lo hace **en la misma
+  ejecución** que lo usa: `CREATE TABLE …; INSERT …; SELECT …;` con `varias: true`. Explicarlo en e6-01 con Iván
+  («así puedes equivocarte cuanto quieras»), y recordarlo en los enunciados.
+- Para DML/DDL se usa `verificar` (consulta que se compara tras ejecutar; ver FORMATO_LECCION). Si el alumno escribe
+  `COMMIT`/`ROLLBACK`, el motor lo nota y recarga los datos (~0,7 s): funciona, pero se dice en e6-08.
+- `UPDATE`/`DELETE` sin `RETURNING` muestran «La consulta ha cambiado N filas»: sirve para `prediccion`/`interpretar`.
+- `EXPLAIN` devuelve texto que puede variar en costes: usar `prediccion`/`quiz`/`interpretar` sobre el **tipo de
+  recorrido** (`Seq Scan`, `Index Scan`, `Bitmap Index Scan`), nunca comparar su salida en un `ejercicio`.
+- Comprobar la estructura con `information_schema.columns` / `pg_indexes` / `information_schema.table_constraints`
+  en `verificar` (el alumno no tiene que escribirlas: se le enseña a mirar la pestaña Esquema y, como mucho, una consulta a `information_schema`).
+Restricciones: aún NO hay subconsultas, CTE ni ventanas (etapa 7). Nada depende de `CURRENT_DATE`/`now()`
+(`DEFAULT CURRENT_DATE` se puede **explicar**, pero las comprobaciones no lo usan). No se crean funciones ni triggers.
+
+**Al terminarla, el alumno sabrá:** crear tablas con tipos y restricciones (`NOT NULL`, `UNIQUE`, `CHECK`, `DEFAULT`,
+`PRIMARY KEY`, `FOREIGN KEY`, identidad), meter filas (`INSERT … VALUES`, `INSERT … SELECT`, `CREATE TABLE … AS`),
+cambiarlas y borrarlas con seguridad (`UPDATE`, `DELETE`, `TRUNCATE`, `RETURNING`, «primero el SELECT»), agrupar
+cambios en transacciones (`BEGIN`/`COMMIT`/`ROLLBACK`, `SAVEPOINT`, ACID), modificar tablas (`ALTER TABLE`, `DROP`),
+diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índices y leer `EXPLAIN`, y guardar consultas como vistas.
+
+### e6-01 · Crear una tabla: CREATE TABLE · 30 ◈ 🚧
+- **Conceptos nuevos:** consultar (`SELECT`) frente a construir (DDL: `CREATE`, `ALTER`, `DROP`) y cambiar datos
+  (DML: `INSERT`, `UPDATE`, `DELETE`); `CREATE TABLE nombre (columna tipo, …);` repasando los tipos de e1-03
+  (`integer`, `numeric(8, 2)`, `text`, `date`, `timestamp`, `boolean`); nombres sin tildes ni espacios, en minúscula;
+  `DROP TABLE`; el **entorno de pruebas** (ver arriba) y por qué cada ejercicio crea y consulta en la misma ejecución
+  (`varias: true`). Ver la tabla creada con `SELECT * FROM tabla;` (0 filas, pero con sus columnas) o con
+  `information_schema.columns`.
+- **Trampas:** crear una tabla que ya existe (`CREATE TABLE tiendas …` → error **42P07**); ejecutar el `SELECT` solo,
+  después, en otra ejecución (→ **42P01**, la tabla «ya no existe»: el entorno la deshizo); coma después de la última columna.
+- **Predicción:** `CREATE TABLE prueba (id integer, nombre text); SELECT * FROM prueba;` → ¿cuántas filas? (0, con 2 columnas).
+- **Reto:** la lista de tareas de apertura de Barcelona: tabla `tareas_apertura` con `id integer`, `tarea text`,
+  `responsable text`, `limite date`, `hecha boolean` (en ese orden) y `SELECT * FROM tareas_apertura;`. `verificar`:
+  nombres y tipos de `information_schema.columns` en orden.
+
+### e6-02 · Meter filas: INSERT · 35 ◈ 🚧
+- **Conceptos nuevos:** `INSERT INTO tabla (col1, col2, …) VALUES (…);`, varias filas en una sola orden, escribir la
+  lista de columnas siempre (y por qué: el orden de la tabla puede cambiar), columnas omitidas → `NULL` (o su `DEFAULT`),
+  textos y fechas entre comillas, `RETURNING *` para ver lo que se ha metido.
+  Historia: la plantilla de **Barcelona**: `empleados` 24 **Núria Puig** (Tienda, tienda 6, `nuria.puig@faro.example`,
+  `jefe_id` 4 = Elena Ruiz), 25 **Jordi Vila**, 26 **Marta Casals** (`jefe_id` 24). `empleados.id` no se rellena solo:
+  hay que darlo (en e6-05 se verá la identidad).
+- **Trampas:** valores en distinto orden que las columnas (un nombre en `departamento`); id repetido (`id` 7 → **23505**);
+  dejar fuera una columna `NOT NULL` (`email` → **23502**); `"Núria Puig"` con comillas dobles (→ «la columna no existe»).
+- **Predicción:** tras insertar los tres, `SELECT COUNT(*) FROM empleados;` → **26**.
+- **Reto:** insertar los tres empleados de Barcelona (con su `jefe_id`) en una sola orden y
+  `SELECT id, nombre, tienda_id, jefe_id FROM empleados WHERE tienda_id = 6 ORDER BY id;`. `verificar`: esas columnas de
+  `empleados WHERE id >= 24`.
+
+### e6-03 · Copiar desde una consulta: INSERT … SELECT y CREATE TABLE … AS · 35 ◈ 🚧
+- **Conceptos nuevos:** `INSERT INTO tabla (cols) SELECT …;` (meter el resultado de una consulta: se juntan dos
+  cosas que ya sabes), valores fijos dentro del `SELECT` (`SELECT 6, producto_id, unidades …`), y `CREATE TABLE copia AS
+  SELECT …;` para hacer una copia de seguridad antes de tocar nada (Iván: «antes de cambiar nada, copia»).
+  Historia: el **stock inicial de Barcelona**: copiar el surtido de Valencia (tienda 2) → **36** filas, **417** uds.
+- **Trampas:** el número y el orden de las columnas del `SELECT` deben casar con la lista del `INSERT`; insertarlo dos
+  veces choca con la clave (`tienda_id`, `producto_id`) → **23505**; `CREATE TABLE … AS` copia los datos pero **no** las
+  restricciones ni la clave primaria (mirarlo en el Esquema).
+- **Quiz:** ¿qué copia `CREATE TABLE copia AS SELECT * FROM stock_tiendas`? (filas y columnas, no claves ni reglas).
+- **Reto:** Barcelona arranca con **10 unidades de cada producto activo**: `INSERT … SELECT 6, id, 10 FROM productos
+  WHERE activo` y después las filas de la tienda 6 → **36** filas, **360** uds. `verificar`:
+  `SELECT tienda_id, COUNT(*), SUM(unidades) FROM stock_tiendas GROUP BY tienda_id ORDER BY tienda_id;`.
+
+### e6-04 · Reglas que protegen: NOT NULL, UNIQUE, CHECK y DEFAULT · 40 ◈ 🚧
+- **Conceptos nuevos:** las restricciones son reglas que la base hace cumplir **siempre**, venga el dato de donde
+  venga; `NOT NULL`, `UNIQUE`, `CHECK (condición)` (p. ej. `CHECK (unidades >= 0)`, `CHECK (rol IN (…))`),
+  `DEFAULT valor`; ponerles nombre (`CONSTRAINT nombre CHECK (…)`); verlas en el Esquema de `cuentas` y `stock_tiendas`.
+  Los errores como aliados: **23502** (falta un valor), **23505** (repetido), **23514** (no cumple el CHECK).
+  `ALTER TABLE … ADD CONSTRAINT …` para añadir una regla a una tabla que ya existe.
+- **Momento clave:** `ALTER TABLE productos ADD CONSTRAINT stock_no_negativo CHECK (stock >= 0);` **falla** (23514):
+  hay una fila que lo incumple… los **Auriculares Sonora Pulse** con −12 (la pista de la etapa 1). Iván: «Si esta
+  regla hubiera estado desde el principio, ese −12 no existiría». (Sin señalar a nadie.)
+- **Trampas:** `CHECK` con `NULL`: `CHECK (unidades >= 0)` **deja pasar** un `NULL` (desconocido no es falso) → por eso
+  se combina con `NOT NULL`; `UNIQUE` permite varios `NULL`.
+- **Predicción:** `INSERT INTO stock_tiendas VALUES (6, 1, -3);` → error 23514.
+- **Reto:** `incidencias_it` con `id integer`, `titulo text NOT NULL`, `prioridad text CHECK (prioridad IN ('baja',
+  'media', 'alta'))`, `abierta boolean NOT NULL DEFAULT true`; meter 2 filas (una sin `abierta`) y `SELECT * … ORDER BY id;`.
+  `verificar`: el `SELECT` (la del DEFAULT sale `true`).
+
+### e6-05 · Claves que obligan: PRIMARY KEY, FOREIGN KEY e identidad · 40 ◈ 🚧
+- **Conceptos nuevos:** escribir en `CREATE TABLE` lo que en e4-01 se aprendió a leer: `PRIMARY KEY` (una columna o
+  varias: `PRIMARY KEY (tienda_id, producto_id)` de `stock_tiendas`), `REFERENCES tabla (columna)`; numeración automática
+  con `id integer GENERATED ALWAYS AS IDENTITY` (🌍 `SERIAL` en PostgreSQL antiguo, `AUTO_INCREMENT` en MySQL,
+  `IDENTITY(1,1)` en SQL Server); la FK protege en los dos sentidos: no deja **meter** un hijo sin padre
+  (`INSERT INTO stock_tiendas VALUES (7, 1, 3)` → **23503**) ni **borrar** un padre con hijos (`DELETE FROM clientes
+  WHERE id = 1` → 23503: tiene pedidos); `ON DELETE CASCADE` / `SET NULL` (concepto y quiz, sin ejecutar cascadas
+  sobre los datos de Faro); `DROP TABLE cuentas` falla porque `auditoria` depende de ella (**2BP01**).
+- **Trampas:** dar un valor a una columna `GENERATED ALWAYS` (error); una FK hacia una columna sin clave/UNIQUE.
+- **Quiz:** ¿qué pasa con los pedidos de un cliente borrado si la FK fuera `ON DELETE CASCADE`? (se borran: peligroso).
+- **Reto:** `turnos_barcelona` con `id` identidad PK, `empleado_id integer NOT NULL REFERENCES empleados (id)`,
+  `dia date NOT NULL`, `UNIQUE (empleado_id, dia)`; meter 3 turnos de empleados existentes (sin dar el `id`) y
+  `SELECT * FROM turnos_barcelona ORDER BY id;` → ids 1, 2, 3. `verificar`: ese `SELECT`.
+
+### e6-06 · Cambiar datos: UPDATE · 40 ◈ 🚧
+- **Conceptos nuevos:** `UPDATE tabla SET columna = valor WHERE …;`, varias columnas, valores calculados
+  (`SET email = lower(trim(email))`, `SET precio = precio * 1.05`); la regla de oro: **primero el `SELECT` con el mismo
+  `WHERE`**, luego el `UPDATE`; el mensaje «ha cambiado N filas»; `RETURNING`. Historia: Nuria por fin guarda lo limpio
+  de la etapa 5: `UPDATE crm_clientes SET email = lower(trim(email)) WHERE email <> lower(trim(email));` → **44** filas.
+- **Trampas:** `UPDATE` **sin `WHERE`** cambia todas las filas (predicción: `UPDATE crm_clientes SET socio = 'S';` → 332);
+  `= NULL` en el `WHERE` no encuentra nada (`IS NULL`); el `UPDATE` que viola una regla falla entero (un `CHECK`).
+- **Predicción:** ¿cuántas filas cambia `UPDATE stock_tiendas SET unidades = unidades + 5 WHERE tienda_id = 1;`? (36).
+- **Reto:** normalizar las ciudades del CRM: `SET ciudad = initcap(trim(ciudad))` solo donde cambie algo; `verificar`:
+  `SELECT ciudad, COUNT(*) FROM crm_clientes GROUP BY ciudad ORDER BY ciudad;` (con el verificador: debe quedar Madrid
+  93, Sevilla 48…, la cadena vacía y el NULL siguen). Comprobación extra con `interpretar`: cuántas filas cambió.
+
+### e6-07 · Borrar: DELETE, TRUNCATE y DROP · 35 ◈ 🚧
+- **Conceptos nuevos:** `DELETE FROM tabla WHERE …;` (otra vez: primero el `SELECT`), `RETURNING` para ver lo borrado;
+  la FK no deja borrar lo que otros usan; `TRUNCATE` (vacía toda la tabla, rápido, sin `WHERE`) frente a `DELETE` sin
+  `WHERE` frente a `DROP TABLE` (desaparece la tabla); **borrado lógico**: en vez de borrar, marcar
+  (`activa = false`, como `cuentas`): se conserva la historia. Historia: Nuria borra del CRM los **12** clientes
+  `@antiguo.example` que nunca se migraron (`DELETE … WHERE lower(trim(email)) LIKE '%@antiguo.example'` → 12; quedan 320).
+- **Trampas:** `DELETE FROM crm_clientes;` sin `WHERE` (332); borrar un empleado con `fichas_empleados` o `cuentas` (23503).
+- **Clasificar (papel):** situaciones → `DELETE con WHERE` / `TRUNCATE` / `DROP TABLE` / `UPDATE … activa = false`.
+- **Reto:** Nuria confirma que las dos fichas con fecha imposible (crm_id 31 `1900-01-01` y 122 `31/12/2099`) eran
+  pruebas del programa viejo: borrarlas con `RETURNING crm_id, fecha_alta` → 2 filas. `verificar`:
+  `SELECT COUNT(*) FROM crm_clientes` = 330 (y que no queden esas dos).
+
+### e6-08 · Todo o nada: transacciones · 45 ◈ 🚧
+- **Conceptos nuevos:** `BEGIN` … `COMMIT` (confirmar) / `ROLLBACK` (deshacer); por qué: la apertura de Barcelona son
+  varias órdenes (empleados, stock, tienda) que deben quedar **todas o ninguna**; si una falla dentro de la transacción,
+  ninguna se queda (atomicidad); ACID en palabras sencillas (todo o nada, reglas siempre cumplidas, nadie ve cosas a medias,
+  lo confirmado no se pierde); `SAVEPOINT nombre` / `ROLLBACK TO nombre`. Contar al alumno que el entorno de pruebas
+  ya es una transacción que se deshace (y que si escribe `COMMIT`, el entorno recarga los datos, tarda un poco).
+- **Predicción:** `BEGIN; DELETE FROM stock_tiendas; ROLLBACK; SELECT COUNT(*) FROM stock_tiendas;` → **144**.
+  Otra: `INSERT` válido + `INSERT` con unidades −1 en la misma ejecución → error y **ninguna** fila nueva.
+- **Trampas:** tras un error dentro de `BEGIN`, todo lo siguiente falla hasta el `ROLLBACK` («transacción abortada»).
+- **Reto:** traspasar **5** unidades de un producto de Madrid (tienda 1) a Barcelona en una transacción: `UPDATE` que
+  resta en la tienda 1 + `INSERT` en la 6 (Barcelona aún no tiene filas), `COMMIT`. Producto elegido con ≥ 5 uds en
+  Madrid (con el verificador); `arreglar` previo: el mismo traspaso con un producto que tiene 3 uds (producto 4) →
+  el `CHECK` hace fallar todo y nada cambia. `verificar`: filas de ese producto en `stock_tiendas` por tienda.
+
+### e6-09 · Diseñar bien: normalización · 40 ◈ 🚧
+- **Conceptos nuevos:** redundancia y sus problemas (anomalías al actualizar, insertar y borrar: si la ciudad del
+  cliente se repite en cada pedido, cambiarla obliga a cambiarla 30 veces); **1FN** (un valor por celda: nada de
+  «tarjeta, bizum» en una columna ni teléfono1/teléfono2), **2FN/3FN** en palabras sencillas («cada dato depende de la
+  clave, de toda la clave y nada más que de la clave»; cada dato en **un solo sitio**); `ALTER TABLE … ADD COLUMN`.
+  Mirar `auditoria`: guarda el `usuario` (con FK a `cuentas`), no el nombre ni el departamento del empleado.
+  Cuándo se desnormaliza a propósito (informes, la columna `pedidos.mes` de la etapa 3).
+- **Papel:** `clasificar` columnas de una tabla mal diseñada (p. ej. `pedido, cliente, ciudad_cliente, productos, total`)
+  según qué regla rompen; `seleccionar` la anomalía de un ejemplo.
+- **Reto:** sacar las ciudades del CRM a su propia tabla: `CREATE TABLE ciudades (id integer GENERATED ALWAYS AS
+  IDENTITY PRIMARY KEY, nombre text NOT NULL UNIQUE)`, `INSERT … SELECT DISTINCT initcap(trim(ciudad))` sin `NULL` ni
+  `''`, `ORDER BY` → **9** ciudades; `SELECT * FROM ciudades ORDER BY id;`. `verificar`: ese `SELECT`.
+
+### e6-10 · Ir más rápido: índices y EXPLAIN · 40 ◈ 🚧
+- **Conceptos nuevos:** un índice es como el índice de un libro (o el de las fichas de la etapa 0); `EXPLAIN consulta`
+  muestra el plan sin ejecutar: `Seq Scan` (leer toda la tabla) frente a `Index Scan`/`Bitmap Index Scan`; la clave
+  primaria y `UNIQUE` ya crean índice (`EXPLAIN SELECT * FROM pedidos WHERE id = 42` → `Index Scan using pedidos_pkey`);
+  `CREATE INDEX nombre ON tabla (columna);` (`pedidos (cliente_id)`: de `Seq Scan` a `Bitmap Index Scan`); ver los
+  índices en `pg_indexes`; coste: los índices ocupan y frenan `INSERT`/`UPDATE`; en tablas pequeñas a veces no se usan;
+  `EXPLAIN ANALYZE` (sí ejecuta: tiempos y filas reales). Leer solo la **primera línea** del plan; los costes son estimaciones.
+- **Trampas:** «más índices = mejor» (no); creer que `EXPLAIN` ejecuta la consulta (`EXPLAIN DELETE …` no borra nada;
+  `EXPLAIN ANALYZE DELETE …` sí, aunque aquí se deshaga).
+- **Predicción:** `EXPLAIN SELECT * FROM pedidos WHERE cliente_id = 42;` antes y después del índice (tipo de recorrido).
+- **Reto:** índice en `auditoria (usuario)` y `EXPLAIN SELECT * FROM auditoria WHERE usuario = 'admin_temp';` en la misma
+  ejecución → `Bitmap Index Scan on …`. `verificar`: `SELECT indexdef FROM pg_indexes WHERE tablename = 'auditoria'`
+  (con `nombres: false` o comparando solo la definición: el nombre del índice lo pone el enunciado, p. ej. `idx_auditoria_usuario`).
+
+### e6-11 · Guardar una consulta: vistas · 35 ◈ 🚧
+- **Conceptos nuevos:** `CREATE VIEW nombre AS SELECT …;` una consulta con nombre que se usa como una tabla; no guarda
+  datos (se recalcula cada vez: si cambian los datos, cambia la vista); `CREATE OR REPLACE VIEW`, `DROP VIEW`; para qué:
+  no repetir consultas largas, dar a alguien una vista sin enseñarle toda la tabla (seguridad: los roles de `cuentas`).
+  Ejemplo: vista `stock_total` (unidades por producto sumando tiendas).
+- **Trampas:** creer que la vista es una copia (predicción: crear la vista, hacer un `UPDATE` en la tabla y consultar la
+  vista → ya sale el cambio); `ORDER BY` dentro de la vista no garantiza el orden fuera.
+- **Reto:** vista `cambios_por_usuario` (`usuario`, `cambios`) sobre `auditoria` y consultarla de más a menos cambios
+  (desempatando por usuario) → app_web 291, admin_temp 85, laura.pena 23… (13 filas). `verificar`: `SELECT * FROM
+  cambios_por_usuario ORDER BY usuario;`. *(Prepara el caso, sin comentar todavía qué es admin_temp.)*
+
+### e6-12 · Caso: La cuenta admin_temp · 75 ◈ 🚧
+- **Caso:** Lucía pide a Iván el registro de auditoría para saber **quién** hizo los cambios raros. Iván, molesto, lo da
+  («Mira lo que quieras, no tengo nada que esconder»). Partes:
+  1. Cambios de madrugada (`EXTRACT(HOUR FROM momento) < 6`) por usuario, de más a menos → **admin_temp 85**, app_web 10.
+     `interpretar`: ¿qué cuenta? (admin_temp; las 10 de app_web son altas reales de clientes por la web de noche, normal).
+  2. Qué tocó `admin_temp`: por `tabla` y `columna` → clientes (altas) **9**, pedidos `estado` **69**, productos `precio`
+     **4**, `stock` **3**. Detalle de productos (JOIN `productos`): el **−12** de los Auriculares Sonora Pulse
+     (2026-08-16 03:51) y dos precios bajados y restaurados la misma noche. `interpretar`: ¿cuántos euros suman los
+     reembolsos que hizo admin_temp? (JOIN `pedidos`: **36 470,20**) — incluye el **2210** de Iratxe.
+  3. ¿De quién es la cuenta? `cuentas WHERE usuario = 'admin_temp'`: admin, **sin empleado**, creada el 2019-11-04 por
+     **ivan.soler**, **activa**; y la auditoría de `cuentas` muestra que Iván desactivó `migracion_2019` (creada el mismo
+     día) en 2024… pero no esta. `interpretar`: ¿quién la creó?
+  4. Cerrar la puerta en una transacción: `BEGIN; UPDATE cuentas SET activa = false WHERE usuario = 'admin_temp';`
+     `INSERT INTO auditoria (…) VALUES (498, TIMESTAMP '2026-10-01 09:00:00', 'lucia.mora', 'cuentas', 'UPDATE', 28,
+     'activa', 'true', 'false'); COMMIT;` `verificar`: la cuenta y la última fila de auditoría.
+  → Pista del Expediente: **La cuenta admin_temp**.
+- **Regla del misterio:** Iván **parece culpable** (creó la cuenta, es admin, vive en la dirección de los falsos).
+  Él dice que la creó para la migración de 2019 y creía haberla borrado. Nuria: «Iván tiene acceso a todo». Lucía: «Una
+  cuenta compartida no tiene cara: el registro dice *qué* cuenta, no *quién* había detrás. Antes de acusar, quiero saber
+  dónde estaba cada uno a esas horas» → etapa 7. **Héctor no aparece ni se sugiere** (sus cambios de stock son de día).
+
+---
+
+## Etapas 7–8
 Se detallan aquí (mismo formato) antes de escribir sus lecciones. Contenido previsto:
 
-- **6 · IT 🛠️:** `CREATE TABLE`, constraints, `INSERT/UPDATE/DELETE`, transacciones, normalización, índices y `EXPLAIN`, vistas. Caso: *La cuenta admin_temp*.
 - **7 · Dirección 🧭:** subconsultas, `EXISTS`, CTE, CTE recursiva, funciones ventana, `LAG/LEAD`, acumulados, medias móviles, `NTILE`, `FILTER`, `generate_series`. Caso: *La coartada de Iván*.
 - **8 · Analítica 📈:** KPIs, MoM/YoY, cohortes y retención, embudos, RFM, estadística descriptiva, z-score, A/B test, pivotes, dashboard, informe. Caso final: *Caso cerrado*.
