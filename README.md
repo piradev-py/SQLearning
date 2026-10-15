@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/PostgreSQL-en_el_navegador-4fc0d2?style=for-the-badge&labelColor=0a0914&logo=postgresql&logoColor=4fc0d2" alt="PostgreSQL en el navegador">
-  <img src="https://img.shields.io/badge/diligencias-37-db5aa6?style=for-the-badge&labelColor=0a0914" alt="37 diligencias">
+  <img src="https://img.shields.io/badge/diligencias-47-db5aa6?style=for-the-badge&labelColor=0a0914" alt="47 diligencias">
   <img src="https://img.shields.io/badge/precio-gratis-c9a66b?style=for-the-badge&labelColor=0a0914" alt="Gratis">
   <img src="https://img.shields.io/badge/idioma-español-c4bfd6?style=for-the-badge&labelColor=0a0914" alt="En español">
 </p>
@@ -69,7 +69,7 @@ tablas) sin miedo, porque nada de lo que hagas estropea los datos.
 | **EXP.1** · Primer día | `SELECT`, columnas calculadas, alias, `DISTINCT`, `ORDER BY`, `LIMIT`… y un inventario imposible | 🟢 abierto |
 | **EXP.2** · Atención al cliente | `WHERE`, `AND`/`OR`/`NOT`, `IN`, `BETWEEN`, `LIKE`/`ILIKE`, `NULL`… y clientes de madrugada | 🟢 abierto |
 | **EXP.3** · Ventas | `COUNT`, `SUM`, `AVG`, `MIN`/`MAX`, `GROUP BY`, `HAVING`, el orden en que piensa SQL, tus primeros gráficos… y unos reembolsos disparados | 🟢 abierto |
-| **EXP.4** · `█████████` | `███ ██████ █████` | 🔒 CLASIFICADO |
+| **EXP.4** · Logística | Claves, `INNER`/`LEFT`/`RIGHT`/`FULL JOIN`, huérfanos, *self join*, `CROSS JOIN`, `UNION`/`INTERSECT`/`EXCEPT`… y unos pedidos que nunca salieron del almacén | 🟢 abierto |
 | **EXP.5** · `█████████` | `██████ █ ██████` | 🔒 CLASIFICADO |
 | **EXP.6** · `██` | `████ ██ ████████` | 🔒 CLASIFICADO |
 | **EXP.7** · `█████████` | `█████████ ████████` | 🔒 CLASIFICADO |

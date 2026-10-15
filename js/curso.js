@@ -6,7 +6,7 @@
    ============================================================ */
 (function () {
   // Versión de la web (la escribe herramientas/version.mjs): evita mezclar archivos viejos de la caché
-  const VERSION = "202610151527";
+  const VERSION = "202610151620";
 
   // Diligencias aún sin título (expedientes que se escribirán más adelante)
   const pendientes = (etapa, n) => Array.from({ length: n }, (_, i) => {
@@ -73,7 +73,21 @@
         { id: "e3-09", archivo: "e3-09-caso-reembolsos-disparados.js", titulo: "Caso: Reembolsos disparados", listo: true, caso: true }
       ]
     },
-    { n: 4, carpeta: "4-logistica", titulo: "Logística", departamento: "Logística", datos: "faro-e4", niveles: pendientes(4, 10) },
+    {
+      n: 4, carpeta: "4-logistica", titulo: "Logística", departamento: "Logística", datos: "faro-e4",
+      niveles: [
+        { id: "e4-01", archivo: "e4-01-claves-que-conectan-tablas.js", titulo: "Claves que conectan tablas: PK y FK", listo: true },
+        { id: "e4-02", archivo: "e4-02-inner-join.js", titulo: "Unir dos tablas: INNER JOIN", listo: true },
+        { id: "e4-03", archivo: "e4-03-left-right-full-join.js", titulo: "Que no se pierda nadie: LEFT, RIGHT y FULL JOIN", listo: true },
+        { id: "e4-04", archivo: "e4-04-huerfanos.js", titulo: "Huérfanos: LEFT JOIN … IS NULL", listo: true },
+        { id: "e4-05", archivo: "e4-05-tres-tablas-o-mas.js", titulo: "Tres tablas o más", listo: true },
+        { id: "e4-06", archivo: "e4-06-join-con-group-by.js", titulo: "Unir y resumir: JOIN con GROUP BY", listo: true },
+        { id: "e4-07", archivo: "e4-07-self-join.js", titulo: "Una tabla consigo misma: self join", listo: true },
+        { id: "e4-08", archivo: "e4-08-cross-join.js", titulo: "Todas las combinaciones: CROSS JOIN", listo: true },
+        { id: "e4-09", archivo: "e4-09-union-intersect-except.js", titulo: "Apilar resultados: UNION, INTERSECT y EXCEPT", listo: true },
+        { id: "e4-10", archivo: "e4-10-caso-pedidos-fantasma.js", titulo: "Caso: Pedidos fantasma", listo: true, caso: true }
+      ]
+    },
     { n: 5, carpeta: "5-migracion", titulo: "Migración", departamento: "Sistemas · Migración", datos: "faro-e5", niveles: pendientes(5, 10) },
     { n: 6, carpeta: "6-it", titulo: "IT", departamento: "Sistemas", datos: "faro-e6", niveles: pendientes(6, 10) },
     { n: 7, carpeta: "7-direccion", titulo: "Dirección", departamento: "Dirección general", datos: "faro-e7", niveles: pendientes(7, 11) },

@@ -62,7 +62,11 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Favicon en todos los tamaños + `apple-touch-icon`
 - [x] El laboratorio carga los datos de la etapa más avanzada abierta y jugable (lo indica junto al título); prueba en `esc-laboratorio.mjs`
 - [x] **Etapa 3 completa** (9 niveles, 2 agentes `profesor-sql`; verificador 37/37, `npm test` verde). Comprobado con SQL: sin empate en el corte del top 5 de e3-08, los ejemplos con HAVING devuelven filas, altas de Getafe desde marzo de 2026; corregido «cuatro tiendas físicas» (son cinco) y «entre 1 y 4 reembolsos» (hay meses con 0). Gráfico: miles con espacio («1 527»)
-- [ ] Revisión del siguiente bloque (etapas 3 y 4, o 3–5): `qa-estres` + `alumno-novato` **cuando haya 2 o 3 expedientes nuevos** (decisión del usuario: se revisa por bloques, como el 0–2, no etapa a etapa)
+## Etapa 4 · Logística
+- [x] Datos `faro-e4.sql` (almacenes, transportistas, envíos, `empleados.jefe_id`; e1–e3 sin cambios) y cifras en `docs/DATOS.md`
+- [x] Temario detallado (10 niveles) y **etapa completa** (2 agentes `profesor-sql`; verificador 47/47, `npm test` verde). Cifras deducidas por los profesores comprobadas con PGlite; corregido un falso positivo («uso estrella»)
+
+- [ ] Revisión del siguiente bloque (etapas 3 y 4 ya listas: lanzarla ahora o tras la 5): `qa-estres` + `alumno-novato` **cuando haya 2 o 3 expedientes nuevos** (decisión del usuario: se revisa por bloques, como el 0–2, no etapa a etapa)
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)
