@@ -133,10 +133,61 @@ apertura), `empleados` (id, nombre, departamento, tienda_id, email).
 
 ---
 
-## Etapas 2–8
+## Etapa 2 · Atención al cliente ☎️ — «Encontrar la aguja en el pajar»
+
+**Historia:** Marcos Gil, de atención al cliente, está desbordado: cada reclamación exige buscar un cliente o un pedido
+entre miles. Le enseñas a filtrar. Al final, una clienta de Bilbao reclama un pedido que no hizo, y tirando del hilo
+aparecen clientes que nadie recuerda, todos dados de alta de madrugada.
+
+**Tablas** (`datos/faro-e2.sql`, ver `docs/DATOS.md`): las de la etapa 1 más `clientes` (300), `pedidos` (2 486),
+`reclamaciones` (40).
+
+**Al terminarla, el alumno sabrá:** filtrar filas con `WHERE` combinando condiciones, listas, rangos, patrones de
+texto y fechas, y tratar correctamente los valores vacíos (`NULL`).
+
+### e2-01 · Filtrar filas: WHERE · 25 ◈ 🚧
+- **Conceptos nuevos:** `WHERE`, igualdad `=`, textos entre comillas simples, distinción mayúsculas en textos, orden de las cláusulas (`SELECT … FROM … WHERE … ORDER BY … LIMIT`).
+- **Reto:** Marcos necesita los datos de un cliente concreto por su email.
+
+### e2-02 · Comparar: mayor, menor, distinto · 30 ◈ 🚧
+- **Conceptos nuevos:** `<`, `>`, `<=`, `>=`, `<>` (y `!=`), comparar números, textos y fechas (`'2026-01-01'`).
+- **Reto:** pedidos de más de 1 000 € para revisarlos uno a uno.
+
+### e2-03 · Combinar condiciones: AND, OR, NOT · 30 ◈ 🚧
+- **Conceptos nuevos:** `AND`, `OR`, `NOT` (recordando la lógica de la Etapa 0).
+- **Reto:** pedidos online cancelados o reembolsados de un mes.
+
+### e2-04 · Paréntesis y prioridad · 35 ◈ 🚧
+- **Conceptos nuevos:** `AND` va antes que `OR`, los paréntesis cambian el resultado; paso `arreglar` con una consulta que devuelve de más.
+- **Reto:** clientes de Bilbao o Sevilla que sean socios.
+
+### e2-05 · Listas: IN y NOT IN · 30 ◈ 🚧
+- **Conceptos nuevos:** `IN (…)`, `NOT IN (…)` como atajo de varios `OR`.
+- **Reto:** pedidos pagados con bizum o transferencia en tiendas físicas.
+
+### e2-06 · Rangos y fechas: BETWEEN · 35 ◈ 🚧
+- **Conceptos nuevos:** `BETWEEN … AND …` (incluye los extremos), rangos de fechas y la trampa de las horas con `timestamp` (`'2026-08-31'` es a las 00:00).
+- **Reto:** pedidos de la primera quincena de agosto de 2026.
+
+### e2-07 · Buscar texto: LIKE e ILIKE · 35 ◈ 🚧
+- **Conceptos nuevos:** `LIKE` con `%` y `_`, `ILIKE` (sin distinguir mayúsculas, propio de PostgreSQL). 🌍 En MySQL `LIKE` ya ignora mayúsculas.
+- **Reto:** reclamaciones cuyo motivo hable de «retraso».
+
+### e2-08 · El vacío: NULL · 40 ◈ 🚧
+- **Conceptos nuevos:** `NULL` = dato desconocido; `IS NULL` / `IS NOT NULL`; por qué `= NULL` nunca funciona (lógica de 3 valores); la trampa de `NOT IN` con `NULL`.
+- **Reto:** clientes sin teléfono para que Marcos les escriba por email.
+
+### e2-09 · Caso: Clientes de madrugada · 60 ◈ 🚧
+- **Caso:** Iratxe, de Bilbao, reclama un pedido que no reconoce. Partes: encontrar la reclamación por su motivo
+  (`ILIKE '%reconozco%'`) → ver el pedido (online, 03:12, reembolsado) → buscar otros clientes con el mismo patrón
+  (email `@correo-rapido.example`, todos de Getafe, alta de madrugada) → contarlos (9).
+  → Pista del Expediente: **Clientes de madrugada**.
+
+---
+
+## Etapas 3–8
 Se detallan aquí (mismo formato) antes de escribir sus lecciones. Contenido previsto:
 
-- **2 · Atención al cliente ☎️:** `WHERE`, comparadores, `AND/OR/NOT` y paréntesis, `IN`, `BETWEEN`, `LIKE/ILIKE`, `NULL` e `IS NULL`, filtrar fechas. Caso: *Clientes de madrugada*.
 - **3 · Ventas 💶:** `COUNT/SUM/AVG/MIN/MAX`, `COUNT(DISTINCT)`, `ROUND`, `GROUP BY`, `HAVING`, orden lógico de ejecución, primer gráfico. Caso: *Reembolsos disparados*.
 - **4 · Logística 📦:** PK/FK, `INNER/LEFT/RIGHT/FULL JOIN`, huérfanos, varias tablas, self join, `CROSS JOIN`, `UNION/INTERSECT/EXCEPT`. Caso: *Pedidos fantasma*.
 - **5 · Migración 🧹:** `CAST`, funciones de texto y regex básico, fechas (`EXTRACT`, `date_trunc`, intervalos, `to_char`), `CASE`, `COALESCE/NULLIF`, duplicados, atípicos. Caso: *Una sola dirección*.

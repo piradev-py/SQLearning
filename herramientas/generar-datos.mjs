@@ -165,3 +165,199 @@ function etapa1() {
 
 writeFileSync(SALIDA + "faro-e1.sql", etapa1());
 console.log("✅ datos/faro-e1.sql");
+
+// =========================================================================
+// Universo de clientes y pedidos (semilla propia: no altera la etapa 1)
+// Ver docs/DATOS.md. Una vez escritas las lecciones de una etapa, NO cambiar.
+// =========================================================================
+function universo() {
+  const r = azar(2026);
+  const ent = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const elegir = lista => lista[Math.floor(r() * lista.length)];
+  const ponderado = pares => { let x = r() * pares.reduce((s, [, p]) => s + p, 0); for (const [v, p] of pares) { if ((x -= p) < 0) return v; } return pares[0][0]; };
+  const dos = n => String(n).padStart(2, "0");
+  const marca = (d, h, m, s) => `${d.toISOString().slice(0, 10)} ${dos(h)}:${dos(m)}:${dos(s)}`;
+  const diaEntre = (desde, hasta) => {
+    const a = Date.UTC(...desde), b = Date.UTC(...hasta);
+    return new Date(a + Math.floor(r() * ((b - a) / 86400000 + 1)) * 86400000);
+  };
+  const sinTildes = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ñ/g, "n").replace(/\s+/g, "");
+
+  const NOMBRES = ["Lucas", "Martina", "Hugo", "Sofía", "Mateo", "Lucía", "Leo", "Valeria", "Daniel", "Paula", "Pablo", "Julia",
+    "Álvaro", "Emma", "Adrián", "Carla", "Mario", "Alba", "Diego", "Noa", "Javier", "Irene", "Marcos", "Sara", "Iker", "Nerea",
+    "Jon", "Ane", "Rocío", "Manuel", "Carmen", "Antonio", "Pilar", "Raúl", "Elena", "Iratxe", "Gorka", "Macarena", "Íñigo", "Begoña"];
+  const APELLIDOS = ["García", "Martínez", "López", "Sánchez", "Pérez", "Gómez", "Fernández", "Díaz", "Moreno", "Muñoz", "Álvarez",
+    "Romero", "Navarro", "Torres", "Domínguez", "Vázquez", "Ramos", "Gil", "Serrano", "Molina", "Blanco", "Suárez", "Ortega",
+    "Delgado", "Castro", "Ortiz", "Rubio", "Marín", "Sanz", "Iglesias", "Goikoetxea", "Etxeberria", "Aguirre", "Ibáñez", "Peña"];
+  const CIUDADES = [["Madrid", 30], ["Valencia", 15], ["Sevilla", 15], ["Bilbao", 12], ["Barcelona", 8], ["Zaragoza", 7], ["Málaga", 7], ["Valladolid", 6]];
+  const DOMINIOS = [["correo.example", 40], ["mail.example", 30], ["red.example", 20], ["empresa.example", 10]];
+  const TIENDA_DE = { Madrid: 1, Valencia: 2, Sevilla: 3, Bilbao: 4 };
+
+  // --- Clientes reales ---
+  const clientes = [];
+  const usados = new Set();
+  for (let id = 1; clientes.length < 291; id++) {
+    let nombre;
+    do { nombre = `${elegir(NOMBRES)} ${elegir(APELLIDOS)}`; } while (usados.has(nombre));
+    usados.add(nombre);
+    const base = sinTildes(nombre.split(" ")[0]) + "." + sinTildes(nombre.split(" ")[1]);
+    const email = (r() < 0.3 ? base + ent(1, 99) : base) + "@" + ponderado(DOMINIOS);
+    const dia = diaEntre([2022, 0, 1], [2026, 7, 31]);
+    // Unos pocos reales se dan de alta de madrugada (para que el filtro del caso necesite combinar condiciones)
+    const noche = r() < 0.035;
+    const h = noche ? ent(1, 5) : ent(9, 22);
+    clientes.push({
+      id: clientes.length + 1, nombre, email,
+      telefono: r() < 0.12 ? null : `6${ent(10, 99)} ${ent(100, 999)} ${ent(100, 999)}`,
+      ciudad: r() < 0.03 ? null : ponderado(CIUDADES),
+      socio: r() < 0.35,
+      alta: marca(dia, h, ent(0, 59), ent(0, 59))
+    });
+  }
+  // La clienta de Bilbao que reclamará un pedido que no hizo
+  const victima = clientes.find(c => c.ciudad === "Bilbao" && c.nombre.startsWith("Iratxe")) ||
+    Object.assign(clientes[57], { nombre: "Iratxe Goikoetxea", email: "iratxe.goikoetxea@correo.example", ciudad: "Bilbao" });
+
+  // --- Clientes falsos del Fantasma ---
+  const FALSOS = ["Mario Peña", "Sara Ortiz", "Diego Rubio", "Alba Marín", "Raúl Sanz", "Noa Castro", "Leo Ibáñez", "Julia Delgado", "Hugo Aguirre"];
+  const falsos = FALSOS.map((nombre, k) => {
+    const dia = diaEntre([2026, 2, 1], [2026, 7, 31]);
+    return {
+      id: clientes.length + k + 1, nombre,
+      email: sinTildes(nombre.split(" ")[0]) + "." + sinTildes(nombre.split(" ")[1]) + ent(10, 99) + "@correo-rapido.example",
+      telefono: null, ciudad: "Getafe", socio: false,
+      alta: marca(dia, ent(2, 4), ent(0, 59), ent(0, 59)), falso: true
+    };
+  });
+  const todos = clientes.concat(falsos);
+
+  // --- Pedidos con sus líneas ---
+  const precios = filasProductos.map(([pid, , , precio, , , activo]) => ({ pid, precio, activo }));
+  const pedidos = [], lineas = [];
+  const nuevoPedido = (cliente, fecha, tiendaId, estado, objetivo = null) => {
+    const id = pedidos.length + 1;
+    let total = 0;
+    const n = objetivo ? ent(1, 2) : ponderado([[1, 55], [2, 30], [3, 15]]);
+    const vistos = new Set();
+    for (let k = 0; k < n; k++) {
+      let p;
+      do { p = objetivo ? elegir(precios.filter(x => x.precio >= 120)) : elegir(precios); } while (vistos.has(p.pid));
+      vistos.add(p.pid);
+      const cantidad = objetivo ? 1 : ponderado([[1, 80], [2, 15], [3, 5]]);
+      lineas.push([id, p.pid, cantidad, p.precio]);
+      total += cantidad * p.precio;
+    }
+    const metodo = tiendaId === 5 ? ponderado([["tarjeta", 70], ["bizum", 20], ["transferencia", 10]])
+      : ponderado([["tarjeta", 60], ["efectivo", 25], ["bizum", 15]]);
+    pedidos.push({ id, cliente_id: cliente.id, tienda_id: tiendaId, fecha, estado, total: Math.round(total * 100) / 100, metodo_pago: metodo,
+      nota: r() < 0.06 ? elegir(["Dejar en conserjería", "Llamar antes de entregar", "Es un regalo", "Entregar por la tarde", "Factura a nombre de empresa"]) : null });
+    return id;
+  };
+
+  // Pedidos normales, en orden de fecha
+  const normales = [];
+  for (const c of clientes) {
+    const n = ponderado([[0, 8], [3, 30], [6, 30], [10, 20], [16, 12]]) + ent(0, 3);
+    const altaDia = new Date(c.alta.slice(0, 10) + "T00:00:00Z");
+    const desde = altaDia > new Date("2024-01-01T00:00:00Z") ? altaDia : new Date("2024-01-01T00:00:00Z");
+    for (let k = 0; k < n; k++) {
+      const dia = diaEntre([desde.getUTCFullYear(), desde.getUTCMonth(), desde.getUTCDate()], [2026, 8, 30]);
+      const online = !TIENDA_DE[c.ciudad] || r() < 0.4;
+      const tienda = online ? 5 : TIENDA_DE[c.ciudad];
+      const h = online ? ponderado([[ent(8, 23), 94], [ent(0, 6), 6]]) : ent(10, 20);
+      const estado = ponderado([["entregado", 83], ["en camino", 4], ["cancelado", 9], ["reembolsado", 2]]);
+      normales.push({ c, fecha: marca(dia, h, ent(0, 59), ent(0, 59)), tienda, estado });
+    }
+  }
+  // Pedidos del Fantasma (y el que reclama la víctima)
+  const fantasma = [];
+  for (const f of falsos) {
+    const n = ent(6, 9);
+    for (let k = 0; k < n; k++) {
+      const dia = diaEntre([2026, 2, 5], [2026, 8, 25]);
+      fantasma.push({ c: f, fecha: marca(dia, ent(2, 4), ent(0, 59), ent(0, 59)), tienda: 5, estado: "reembolsado", caro: true });
+    }
+  }
+  const reclamado = { c: victima, fecha: marca(new Date("2026-08-14T00:00:00Z"), 3, 12, 41), tienda: 5, estado: "reembolsado", caro: true, clave: true };
+  fantasma.push(reclamado);
+
+  const todosPedidos = normales.concat(fantasma).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  let pedidoReclamado = null;
+  for (const p of todosPedidos) {
+    const id = nuevoPedido(p.c, p.fecha, p.tienda, p.estado, p.caro ? true : null);
+    if (p.clave) pedidoReclamado = id;
+  }
+
+  // --- Reclamaciones ---
+  const MOTIVOS = ["El pedido llegó con retraso", "Producto defectuoso", "Falta un artículo en el paquete", "Cobro duplicado en la tarjeta",
+    "Producto distinto al pedido", "El repartidor no dejó aviso", "Quiero cambiar la dirección de entrega", "Caja dañada"];
+  const reclamaciones = [];
+  const candidatos = pedidos.filter(p => p.estado !== "cancelado" && !falsos.some(f => f.id === p.cliente_id));
+  for (let k = 0; k < 39; k++) {
+    const p = elegir(candidatos);
+    const d = new Date(p.fecha.slice(0, 10) + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() + ent(1, 12));
+    reclamaciones.push({ cliente_id: p.cliente_id, pedido_id: p.id, fecha: d.toISOString().slice(0, 10), motivo: elegir(MOTIVOS),
+      estado: ponderado([["resuelta", 70], ["abierta", 20], ["rechazada", 10]]) });
+  }
+  reclamaciones.push({ cliente_id: victima.id, pedido_id: pedidoReclamado, fecha: "2026-09-02",
+    motivo: "No reconozco este pedido: yo no lo hice", estado: "abierta" });
+  reclamaciones.sort((a, b) => a.fecha.localeCompare(b.fecha));
+  reclamaciones.forEach((x, i) => { x.id = i + 1; });
+
+  return { clientes: todos, pedidos, lineas, reclamaciones, victima, pedidoReclamado };
+}
+
+const esquemaClientesPedidos = `
+CREATE TABLE clientes (
+  id integer PRIMARY KEY,
+  nombre text NOT NULL,
+  email text NOT NULL UNIQUE,
+  telefono text,
+  ciudad text,
+  socio boolean NOT NULL DEFAULT FALSE,
+  alta timestamp NOT NULL
+);
+
+CREATE TABLE pedidos (
+  id integer PRIMARY KEY,
+  cliente_id integer NOT NULL REFERENCES clientes (id),
+  tienda_id integer NOT NULL REFERENCES tiendas (id),
+  fecha timestamp NOT NULL,
+  estado text NOT NULL,
+  total numeric(10, 2) NOT NULL,
+  metodo_pago text NOT NULL,
+  nota text
+);
+
+CREATE TABLE reclamaciones (
+  id integer PRIMARY KEY,
+  cliente_id integer NOT NULL REFERENCES clientes (id),
+  pedido_id integer NOT NULL REFERENCES pedidos (id),
+  fecha date NOT NULL,
+  motivo text NOT NULL,
+  estado text NOT NULL
+);
+`;
+
+function etapa2() {
+  const u = universo();
+  return [
+    "-- Faro · datos de la etapa 2 (generado por herramientas/generar-datos.mjs; no editar a mano)",
+    esquemaE1,
+    esquemaClientesPedidos,
+    insertar("tiendas", ["id", "ciudad", "apertura"], tiendas),
+    insertar("empleados", ["id", "nombre", "departamento", "tienda_id", "email"],
+      empleados.map(([n, d, t], i) => [i + 1, n, d, t, email(n)])),
+    insertar("productos", ["id", "nombre", "categoria", "precio", "stock", "proveedor", "activo", "creado"], filasProductos),
+    insertar("clientes", ["id", "nombre", "email", "telefono", "ciudad", "socio", "alta"],
+      u.clientes.map(c => [c.id, c.nombre, c.email, c.telefono, c.ciudad, c.socio, c.alta])),
+    insertar("pedidos", ["id", "cliente_id", "tienda_id", "fecha", "estado", "total", "metodo_pago", "nota"],
+      u.pedidos.map(p => [p.id, p.cliente_id, p.tienda_id, p.fecha, p.estado, p.total, p.metodo_pago, p.nota])),
+    insertar("reclamaciones", ["id", "cliente_id", "pedido_id", "fecha", "motivo", "estado"],
+      u.reclamaciones.map(x => [x.id, x.cliente_id, x.pedido_id, x.fecha, x.motivo, x.estado]))
+  ].join("\n");
+}
+
+writeFileSync(SALIDA + "faro-e2.sql", etapa2());
+console.log("✅ datos/faro-e2.sql");
