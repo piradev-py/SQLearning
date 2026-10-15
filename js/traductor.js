@@ -42,15 +42,23 @@
         ? `Hay algo mal escrito cerca de \`${cerca}\`. Revisa comas, comillas y el orden de las palabras.`
         : "Hay algo mal escrito en la consulta. Revisa comas, comillas y el orden de las palabras.";
     },
-    "42P01": (e) => {
+    "42P01": (e, sql) => {
+      // «missing FROM-clause entry for table "julia"»: casi siempre un texto sin comillas (julia.martinez@…)
+      const sinFrom = entre(e.mensaje, /missing FROM-clause entry for table "([^"]+)"/);
+      if (sinFrom) return `Has escrito \`${sinFrom}.algo\` como si \`${sinFrom}\` fuera una tabla. Si es un texto (un email, un nombre…), va entre comillas simples: \`'así'\`.`;
       const n = entre(e.mensaje, /relation "([^"]+)"/);
-      const sug = n && parecido(n, tablas);
+      if (!n) return "Esa tabla no existe. Mira los nombres en la pestaña Esquema.";
+      const sug = parecido(n, tablas);
       return `No existe ninguna tabla llamada \`${n}\`.` + (sug ? ` ¿Querías decir \`${sug}\`?` : " Mira los nombres en la pestaña Esquema.");
     },
-    "42703": (e) => {
-      const n = entre(e.mensaje, /column "?([^" ]+)"? does not exist/) || entre(e.mensaje, /column ([\w.]+) does not exist/);
-      const corto = n && n.split(".").pop();
-      const sug = corto && parecido(corto, columnas);
+    "42703": (e, sql) => {
+      const n = entre(e.mensaje, /column "([^"]*)" does not exist/) ?? entre(e.mensaje, /column ([\w.]+) does not exist/);
+      if (n === null) return "Usas una columna que no existe. Mira los nombres en la pestaña Esquema.";
+      const corto = n.split(".").pop();
+      // Si en la consulta iba entre comillas dobles, era un texto mal escrito, no una columna
+      const conComillasDobles = sql && sql.includes(`"${corto}"`);
+      if (conComillasDobles) return `Has escrito \`"${corto}"\` entre comillas dobles y PostgreSQL lo toma por el nombre de una columna. Los textos van entre **comillas simples**: \`'${corto}'\`.`;
+      const sug = parecido(corto, columnas);
       let txt = `No existe ninguna columna llamada \`${corto}\`.`;
       if (sug) txt += ` ¿Querías decir \`${sug}\`?`;
       if (e.pista && /quote/.test(e.pista)) txt += " Ojo: los textos van entre comillas simples `'así'`; las dobles son para nombres de columnas.";
@@ -101,9 +109,9 @@
       columnas = [...new Set(esquema.flatMap(t => t.columnas.map(c => c.nombre)))];
     },
     /** Explicación en español de un error { mensaje, codigo, posicion, detalle, pista }. */
-    explicar(e) {
+    explicar(e, sql = "") {
       const fn = CODIGOS[e?.codigo];
-      try { if (fn) return fn(e); } catch (x) { /* si falla, mensaje genérico */ }
+      try { if (fn) return fn(e, sql); } catch (x) { /* si falla, mensaje genérico */ }
       return "PostgreSQL no ha podido ejecutar la consulta. Lee el mensaje original de abajo por si da una pista.";
     }
   };

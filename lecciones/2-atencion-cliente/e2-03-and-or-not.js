@@ -101,7 +101,7 @@ WHERE ciudad = 'Bilbao'
     {
       tipo: "reto",
       de: "marcos",
-      enunciado: "El responsable de la tienda online quiere repasar los pedidos que acabaron mal en **junio de 2025**. Necesito `id`, `fecha`, `estado` y `total` de los pedidos de la **tienda online** (`tienda_id = 5`) con `fecha` desde el **1 de junio de 2025** (incluido) y anterior al **1 de julio de 2025**, que se **cancelaron o reembolsaron** (es decir, ni `entregado` ni `en camino`). Ordénalos por `fecha`, del más antiguo al más reciente.",
+      enunciado: "El responsable de la tienda online quiere repasar los pedidos que acabaron mal en **junio de 2025**. Necesito `id`, `fecha`, `estado` y `total` de los pedidos de la **tienda online** (`tienda_id = 5`) con `fecha` desde el **1 de junio de 2025** (incluido) y anterior al **1 de julio de 2025**, cuyo `estado` **no** sea `entregado` **y tampoco** sea `en camino` (así quedan los cancelados y los reembolsados). Ordénalos por `fecha`, del más antiguo al más reciente.",
       inicial: "-- Escribe tu consulta aquí\n",
       comprobaciones: [
         { texto: "Tiene las columnas id, fecha, estado y total", prueba: (r) => PRUEBA.columnas(r, ["id", "fecha", "estado", "total"]) },

@@ -122,9 +122,10 @@
         const faltan = [...correctas].filter(k => !marcadas.has(k)).length;
         if (!sobran && !faltan) return { ok: true };
         const partes = [];
-        if (sobran) partes.push(`${plural(sobran, "marcada que no toca", "marcadas que no tocan")}`);
+        if (sobran) partes.push(`tienes ${plural(sobran, "marcada que no toca", "marcadas que no tocan")}`);
         if (faltan) partes.push(`te ${faltan === 1 ? "falta" : "faltan"} ${faltan} por marcar`);
-        return { ok: false, mensaje: "Tienes " + partes.join(" y ") + "." };
+        const txt = partes.join(" y ");
+        return { ok: false, mensaje: txt[0].toUpperCase() + txt.slice(1) + "." };
       },
       mostrarSolucion() { marcadas.clear(); correctas.forEach(k => marcadas.add(k)); pintar(); }
     };
@@ -237,12 +238,16 @@
         const dadas = new Map(rels.map(r => [norma(r).par, norma(r).tipo]));
         const faltan = [...esperadas.keys()].filter(k => !dadas.has(k)).length;
         const sobran = [...dadas.keys()].filter(k => !esperadas.has(k)).length;
-        const tipoMal = [...dadas].filter(([k, t]) => esperadas.has(k) && esperadas.get(k) !== t).length;
-        if (!faltan && !sobran && !tipoMal) return { ok: true };
+        // 1:N dibujada al revés (N:1) es un fallo de dirección, no de tipo: se dice aparte
+        const alReves = (a, b) => (a === "1:N" && b === "N:1") || (a === "N:1" && b === "1:N");
+        const reves = [...dadas].filter(([k, t]) => esperadas.has(k) && alReves(esperadas.get(k), t)).length;
+        const tipoMal = [...dadas].filter(([k, t]) => esperadas.has(k) && esperadas.get(k) !== t && !alReves(esperadas.get(k), t)).length;
+        if (!faltan && !sobran && !tipoMal && !reves) return { ok: true };
         const partes = [];
         if (faltan) partes.push(`${faltan === 1 ? "falta" : "faltan"} ${plural(faltan, "relación", "relaciones")}`);
         if (sobran) partes.push(`${sobran === 1 ? "sobra" : "sobran"} ${plural(sobran, "relación", "relaciones")}`);
         if (tipoMal) partes.push(`${plural(tipoMal, "relación tiene", "relaciones tienen")} el tipo equivocado`);
+        if (reves) partes.push(`${plural(reves, "relación 1:N está dibujada", "relaciones 1:N están dibujadas")} al revés (en «De» va el lado de **uno**)`);
         const t = partes.join(", ");
         return { ok: false, mensaje: t[0].toUpperCase() + t.slice(1) + "." };
       },

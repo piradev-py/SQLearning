@@ -7,8 +7,8 @@ CURSO.registrar({
     {
       tipo: "historia",
       de: "hector",
-      asunto: "Reorganizando el almacén de Getafe",
-      texto: "¡Hola! Soy Héctor, de logística. Estamos reorganizando el almacén de Getafe y quiero dejar a mano de los carros lo que más unidades tiene.\n¿Me pasas los productos con más stock? Pero no la lista entera, que me pierdo: **de cinco en cinco**, como las páginas de un catálogo."
+      asunto: "Reorganizando el almacén",
+      texto: "¡Hola! Soy Héctor, de logística. Estamos reorganizando el almacén central y quiero dejar a mano de los carros lo que más unidades tiene.\n¿Me pasas los productos con más stock? Pero no la lista entera, que me pierdo: **de cinco en cinco**, como las páginas de un catálogo."
     },
     {
       tipo: "explicacion",

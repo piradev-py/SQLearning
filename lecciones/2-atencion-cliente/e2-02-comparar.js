@@ -33,7 +33,7 @@ ORDER BY total DESC;`,
     },
     {
       tipo: "ejercicio",
-      enunciado: "Para un estudio de métodos de pago, muestra `id`, `metodo_pago` y `total` de los pedidos que **no** se pagaron con `tarjeta`.",
+      enunciado: "Para un estudio de métodos de pago, muestra `id`, `metodo_pago` y `total` de los pedidos que **no** se pagaron con `'tarjeta'` (en los datos se guarda así, en minúsculas).",
       solucion: `SELECT id, metodo_pago, total
 FROM pedidos
 WHERE metodo_pago <> 'tarjeta';`,

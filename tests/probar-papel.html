@@ -72,7 +72,7 @@
     prueba("Diagrama: vacío → faltan 2", () => /faltan 2 relaciones/i.test(m.revisar().mensaje) || m.revisar());
     unir("pedido", "1:N", "cliente");                 // al revés: es N:1 visto desde cliente → tipo mal
     unir("pedido", "N:M", "producto");
-    prueba("Diagrama: 1:N dibujado al revés → tipo equivocado", () => /tipo equivocado/.test(m.revisar().mensaje) || m.revisar());
+    prueba("Diagrama: 1:N dibujado al revés → «al revés»", () => /al revés/.test(m.revisar().mensaje) || m.revisar());
     unir("cliente", "1:N", "pedido");                 // sustituye la de esa pareja
     prueba("Diagrama: correcto (y la pareja no se duplica)", () => m.revisar().ok && mesa.querySelectorAll(".papel-relaciones li").length === 2 || m.revisar());
     unir("cliente", "1:1", "producto");

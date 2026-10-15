@@ -13,7 +13,7 @@ CURSO.registrar({
     {
       tipo: "explicacion",
       titulo: "Dato e información",
-      texto: "Un **dato** es un valor suelto: `Madrid`, `40.900`, `12/03/1998`. Por sí solo dice poco.\nLa **información** aparece cuando los datos se relacionan: «Rosa, de Madrid, gastó 40.900 pesetas en 1998».\nCada dato tiene un **tipo**: **texto** (nombres, ciudades), **número** (cantidades, precios), **fecha** o **sí/no**.",
+      texto: "Un **dato** es un valor suelto: `Madrid`, `40.900`, `12/03/1998`. Por sí solo dice poco.\nLa **información** aparece cuando los datos se relacionan: «Rosa, de Madrid, gastó 40.900 pesetas en 1998».\nCada dato tiene un **tipo**: **texto** (nombres, ciudades), **número** (cantidades, precios), **fecha** o **sí/no**.\nAdemás, un dato puede ser **cuantitativo** (una cantidad que se mide o se cuenta: precio, unidades, edad) o **cualitativo** (una cualidad: ciudad, categoría, color).",
       consejo: "Un teléfono o un código postal se escriben con cifras, pero son **texto**: nunca vas a sumarlos ni a calcular su media."
     },
     {

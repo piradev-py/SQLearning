@@ -13,7 +13,7 @@ CURSO.registrar({
     {
       tipo: "explicacion",
       titulo: "NULL: un dato que no sabemos",
-      texto: "Cuando una casilla está vacía, PostgreSQL guarda **NULL**: «no tenemos ese dato». No es un 0 ni un texto vacío `''`: es **desconocido**.\nEn el ejemplo, la clienta 5 no tiene ciudad y la clienta 8 no tiene teléfono. El editor muestra esas casillas como `NULL`.",
+      texto: "Cuando una casilla está vacía, PostgreSQL guarda **NULL**: «no tenemos ese dato». No es un 0 ni un texto vacío `''`: es **desconocido**.\nEn el ejemplo, la clienta 5 no tiene ciudad y la clienta 8 no tiene teléfono. El resultado muestra esas casillas como `NULL`.",
       ejemplo: `SELECT id, nombre, telefono, ciudad
 FROM clientes
 ORDER BY id

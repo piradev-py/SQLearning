@@ -75,6 +75,14 @@
         const r = await MOTOR.ejecutar("SELECT nombre, precios FROM productos;");
         return !r.ok && r.error.codigo === "42703" && /precio/.test(r.error.explicacion) || r;
       });
+      await prueba("Error traducido: texto con comillas dobles y espacios → comillas simples", async () => {
+        const r = await MOTOR.ejecutar('SELECT nombre || " - " || departamento FROM empleados;');
+        return !r.ok && /comillas simples/.test(r.error.explicacion) && !/null/.test(r.error.explicacion) || r.error;
+      });
+      await prueba("Error traducido: email sin comillas → es un texto", async () => {
+        const r = await MOTOR.ejecutar("SELECT * FROM empleados WHERE email = ana.beltran@faro.example;");
+        return !r.ok && !/null/.test(r.error.explicacion) || r.error;
+      });
       await prueba("Error traducido: sintaxis (coma de más)", async () => {
         const r = await MOTOR.ejecutar("SELECT nombre, FROM productos;");
         return !r.ok && r.error.codigo === "42601" && !!r.error.explicacion || r;

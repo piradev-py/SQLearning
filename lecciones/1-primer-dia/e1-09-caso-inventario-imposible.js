@@ -16,9 +16,10 @@ CURSO.registrar({
       texto: "Un **comentario** es texto para personas: PostgreSQL se lo salta.\n- `--` comenta desde ahí hasta el final de la línea.\n- `/* … */` comenta todo lo que haya dentro, aunque ocupe varias líneas.\nSirven para explicar una consulta y también para «apagar» una línea sin borrarla mientras pruebas.",
       ejemplo: `/* Informe de inventario
    Revisión para contabilidad */
-SELECT nombre, stock -- unidades en almacén
+SELECT nombre, precio -- precio de venta con IVA
 FROM productos
-ORDER BY nombre;`,
+ORDER BY nombre
+LIMIT 5;`,
       consejo: "Una consulta sin comentarios es un misterio dentro de seis meses, incluso para quien la escribió. Explica el **porqué** («ordeno por stock para ver los extremos»), no lo que ya se lee en el código.",
       otrosMotores: "En MySQL, `--` necesita un espacio detrás (`-- así`) y además se admite `#` para comentar una línea. `/* … */` funciona igual en todos los motores."
     },
