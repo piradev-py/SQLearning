@@ -16,16 +16,21 @@ Secuencia breve (~30–40 s): las frases aparecen una a una sobre la ciudad de n
 «Continuar a la hoja de ruta». Hacer clic adelanta la frase siguiente (se leen todas igualmente). Con movimiento
 reducido aparecen todas a la vez y el botón llega a los pocos segundos. Texto (en `js/prologo.js`):
 
-1. La ciudad nunca duerme. Sus luces, a veces, parpadean.
-2. **Faro** vende tecnología en cinco tiendas y en la red. Cada venta, cada cliente, cada caja que sale del almacén deja un rastro: un dato.
-3. Hace semanas que algunos rastros no cuadran. Un stock imposible. Clientes que nadie recuerda. Reembolsos de madrugada.
-4. En los pasillos ya tiene nombre: **el Fantasma**.
-5. Lucía Mora, jefa de datos, necesita a alguien nuevo. Alguien a quien nadie conozca todavía.
-6. Mañana empiezas. Tu herramienta: **SQL**. Tu misión: encontrar la verdad en los datos.
-7. *(sello)* **CASO ABIERTO · EL FANTASMA DE FARO**
+Texto definitivo del usuario (adaptado: «cuatro tiendas y una tienda online», para cuadrar con los datos):
 
-**Si ya has avanzado**, tras la frase 4 se muestra «Anteriormente en el caso…» con las pistas del Expediente que
-ya tienes y el último nivel superado, y luego la frase 7 (el sello cambia a «CASO EN CURSO»; y a «CASO CERRADO» al
+1. La ciudad tiene secretos. Y algunos se esconden en los datos.
+2. En **Faro**, una empresa tecnológica con cuatro tiendas y una tienda online, algo extraño está ocurriendo: productos que desaparecen, clientes que nunca existieron y reembolsos imposibles.
+3. Alguien está detrás de todo. Le llaman **el Fantasma**.
+4. Lucía Mora, jefa de datos, te ha elegido para descubrir la verdad. Tu única herramienta es **SQL**. Tus únicas pistas, miles de registros.
+5. Cada consulta revela una pista. Cada error oculta un secreto.
+6. ¿Estás preparado para encontrar al Fantasma?
+7. Ten cuidado. Puede que él también te esté buscando.
+8. *(sello)* **CASO ABIERTO · EL FANTASMA DE FARO**
+
+La locución `recursos/spech_intropage.mp3` suena durante el prólogo.
+
+**Si ya has avanzado**, tras la frase 3 se muestra «Anteriormente en el caso…» con las pistas del Expediente que
+ya tienes y el último nivel superado, luego la frase 7 y el sello (que cambia a «CASO EN CURSO»; y a «CASO CERRADO» al
 terminar la etapa 8). Nunca muestra pistas que el alumno no haya descubierto.
 
 ## Prólogo opcional: la Etapa 0 «El archivo de papel»

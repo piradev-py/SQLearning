@@ -55,7 +55,7 @@ quede pendiente y vuelve a pasar los tests.
 - [ ] Publicar en GitHub Pages
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
-- [ ] **Analizar el prólogo propuesto por el usuario** (`docs/PROLOGO_PROPUESTO.md`) como posible prólogo de la historia
+- [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cuatro tiendas y una tienda online» para cuadrar con los datos
 - [ ] Prólogo con movimiento reducido: ¿frase a frase con fundido (sin movimiento) en vez de todo de golpe? (el Windows del usuario lo tiene activado)
 - [ ] Figuras del ambiente historia (lluvia, carteles, siluetas de personajes, el Fantasma) — ver `docs/ESTILO.md`
 - [ ] Pulido visual de la página de lección, pasos «sobre el papel» y pantalla de diligencia superada

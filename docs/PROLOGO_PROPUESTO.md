@@ -1,7 +1,8 @@
 # Prólogo propuesto por el usuario (pendiente de analizar)
 
 > Guardado el 2026-10-15 a petición del usuario, «para analizarla como posible prólogo en la historia más adelante».
-> Aún NO sustituye al prólogo actual (`js/prologo.js`, `docs/HISTORIA.md`). Ver `docs/PENDIENTES.md`.
+> **Superado:** el usuario eligió después una versión más corta (2026-10-15), que es la que usa `js/prologo.js`.
+> Ver «Prólogo» en `docs/HISTORIA.md`. Este texto largo queda como material de referencia.
 
 ---
 

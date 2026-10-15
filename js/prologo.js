@@ -7,14 +7,17 @@
    PROLOGO.iniciar(alTerminar)
    ============================================================ */
 (function () {
+  // Texto del usuario (ver docs/HISTORIA.md). Las 3 primeras frases presentan el caso; la última cierra.
   const FRASES = [
-    "La ciudad nunca duerme. Sus luces, a veces, parpadean.",
-    "**Faro** vende tecnología en cinco tiendas y en la red. Cada venta, cada cliente, cada caja que sale del almacén deja un rastro: un dato.",
-    "Hace semanas que algunos rastros no cuadran. Un stock imposible. Clientes que nadie recuerda. Reembolsos de madrugada.",
-    "En los pasillos ya tiene nombre: **el Fantasma**.",
-    "Lucía Mora, jefa de datos, necesita a alguien nuevo. Alguien a quien nadie conozca todavía.",
-    "Mañana empiezas. Tu herramienta: **SQL**. Tu misión: encontrar la verdad en los datos."
+    "La ciudad tiene secretos. Y algunos se esconden en los datos.",
+    "En **Faro**, una empresa tecnológica con cuatro tiendas y una tienda online, algo extraño está ocurriendo: productos que desaparecen, clientes que nunca existieron y reembolsos imposibles.",
+    "Alguien está detrás de todo. Le llaman **el Fantasma**.",
+    "Lucía Mora, jefa de datos, te ha elegido para descubrir la verdad. Tu única herramienta es **SQL**. Tus únicas pistas, miles de registros.",
+    "Cada consulta revela una pista. Cada error oculta un secreto.",
+    "¿Estás preparado para encontrar al Fantasma?",
+    "Ten cuidado. Puede que él también te esté buscando."
   ];
+  const PRESENTACION = 3;                // frases que se ven también al volver con avance
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const md = s => esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   const reducido = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -24,9 +27,9 @@
     const d = PROGRESO.datos();
     const avance = Object.keys(d.completados).length > 0;
     const casoCerrado = d.credenciales.includes("exp-8");
-    const lista = FRASES.slice(0, 4).map(t => ({ tipo: "frase", html: md(t) }));
+    const lista = FRASES.slice(0, PRESENTACION).map(t => ({ tipo: "frase", html: md(t) }));
     if (!avance) {
-      lista.push(...FRASES.slice(4).map(t => ({ tipo: "frase", html: md(t) })));
+      lista.push(...FRASES.slice(PRESENTACION).map(t => ({ tipo: "frase", html: md(t) })));
     } else {
       const ultimo = d.ultimo && CURSO.buscar(d.ultimo);
       const pistas = d.expediente.map(p => `<li><span class="prologo-pista">${esc(p.titulo)}</span></li>`).join("");
@@ -36,6 +39,7 @@
           ${pistas ? `<ul class="prologo-pistas">${pistas}</ul>` : `<p>Aún no has encontrado ninguna pista.</p>`}
           ${ultimo ? `<p class="prologo-ultimo">Última diligencia: <strong>${esc(CURSO.codigo(ultimo.nivel.id))} · ${esc(ultimo.nivel.titulo || "")}</strong></p>` : ""}`
       });
+      if (!casoCerrado) lista.push({ tipo: "frase", html: md(FRASES[FRASES.length - 1]) });
     }
     lista.push({ tipo: "sello", texto: casoCerrado ? "CASO CERRADO" : avance ? "CASO EN CURSO" : "CASO ABIERTO" });
     return lista;
