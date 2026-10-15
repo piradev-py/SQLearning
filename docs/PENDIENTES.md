@@ -50,7 +50,7 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Etapa 0 completa (10 niveles) y Etapa 1 completa (9 niveles): verificador 19/19 y `npm test` en verde
 - [x] Música de fondo: playlist de 4 pistas en bucle con **crossfade** de 6 s, play/stop y volumen en todas las páginas, sigue donde iba al cambiar de página; locución solo en el prólogo, baja la música (`js/musica.js`, prueba `esc-musica.mjs`)
 - [x] Volver de una lección o del laboratorio lleva a la hoja de ruta (`index.html#ruta`), sin repetir el prólogo
-- [ ] Confirmar origen/licencia de los audios antes de publicar (`docs/LICENCIAS.md`)
+- [x] Audios hechos con Suno por el usuario (atribución en README y `docs/LICENCIAS.md`)
 - [ ] Revisión de sección (etapas 0 y 1): `qa-estres` (retomar la de fase 3, cortada por el límite de uso) + `alumno-novato`
 - [ ] Publicar en GitHub Pages
 

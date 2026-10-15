@@ -8,7 +8,7 @@ Todo lo que usa SQLearning es gratuito y de licencia libre (también para uso co
 | PostgreSQL (dentro de PGlite) | PostgreSQL License | `vendor/pglite/` | Conservar el aviso de copyright (incluido) |
 | Fuentes Orbitron y JetBrains Mono (Google Fonts) | SIL Open Font License 1.1 | enlazadas desde Google Fonts | Ninguna para usarlas en una web |
 | Ciudad neón (`recursos/ciudad-neon.svg`) | Propia (generada por `herramientas/generar-ciudad.mjs`) | `recursos/` | — |
-| Música de fondo (`recursos/background_synthwave_1.mp3` … `_4.mp3`) y locución (`recursos/spech_intropage.mp3`) | **Por confirmar con el usuario** (origen y licencia) antes de publicar | `recursos/` | Si es de terceros: licencia que permita publicarla en una web |
+| Música de fondo (`recursos/background_synthwave_1.mp3` … `_4.mp3`) y locución (`recursos/spech_intropage.mp3`) | Generadas por el usuario con **Suno** (IA). Con plan de pago son del usuario; con plan gratuito Suno conserva los derechos y solo permite uso no comercial con atribución | `recursos/` | Atribución «Música y voz hechas con Suno» en el README; no usar con fines comerciales salvo con plan de pago |
 | Lenguaje SQL | Estándar ISO/ANSI | — | Ninguna |
 | Historia, personajes, datos de Faro, lecciones, interfaz, gráficos | Propios del proyecto | todo lo demás | — |
 
