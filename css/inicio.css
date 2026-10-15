@@ -18,7 +18,9 @@ body { background: transparent; min-height: 100vh; }
   padding: 32px 20px;
   cursor: pointer;
   outline: none;
-  background: radial-gradient(ellipse 60% 55% at 50% 45%, rgb(4 3 10 / 0.88), rgb(4 3 10 / 0.55) 70%, rgb(4 3 10 / 0.25));
+  /* Velo del color del fondo del tema: oscuro de noche, lavanda de día */
+  background: radial-gradient(ellipse 60% 55% at 50% 45%, color-mix(in srgb, var(--fondo) 88%, transparent),
+    color-mix(in srgb, var(--fondo) 55%, transparent) 70%, color-mix(in srgb, var(--fondo) 25%, transparent));
 }
 .prologo-marca {
   margin: 0 0 8px;

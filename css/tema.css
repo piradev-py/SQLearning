@@ -1,7 +1,7 @@
 /* ============================================================
    SQLearning · Tema cyberpunk / retrowave
    Por defecto: noche neón (magenta + cian sobre morado profundo).
-   Alternativo: <html data-theme="light"> «amanecer synthwave».
+   Alternativo: <html data-theme="light"> «amanecer pastel».
    El neón va en bordes, títulos y detalles; el texto largo siempre
    con contraste alto.
    ============================================================ */
@@ -78,44 +78,46 @@
 }
 
 :root[data-theme="light"] {
-  --fondo: #f6efff;
-  --fondo-alto: #e6d6ff;
-  --horizonte: #ff9ad1;
-  --superficie: rgb(255 255 255 / 0.9);
-  --superficie-solida: #ffffff;
-  --superficie-2: #efe5ff;
-  --borde: #cdb8f2;
-  --texto: #1a0f36;
-  --texto-suave: #574887;
-  --acento: #c0137a;
-  --acento-fondo: rgb(192 19 122 / 0.1);
-  --cian: #006b7e;
-  --cian-fondo: rgb(0 131 154 / 0.1);
-  --primario: #6a1fd0;
-  --primario-texto: #ffffff;
-  --primario-hover: #5414ad;
-  --ok: #10703e;
-  --ok-fondo: #dff5e9;
-  --error: #b3163e;
-  --error-fondo: #fde4ea;
-  --foco: #6a1fd0;
-  --neon-magenta: 0 0 0 1px rgb(192 19 122 / 0.25), 0 4px 18px rgb(192 19 122 / 0.18);
-  --neon-cian: 0 0 0 1px rgb(0 131 154 / 0.25), 0 4px 18px rgb(0 131 154 / 0.16);
+  /* Amanecer pastel: lavanda y crema rosada, nada de blanco puro; acentos apagados (rosa empolvado,
+     verde azulado). Texto ≥ 4,5:1 sobre todas las superficies. */
+  --fondo: #ece6f2;
+  --fondo-alto: #e2d9ee;
+  --horizonte: #f0bccb;
+  --superficie: rgb(247 242 245 / 0.9);
+  --superficie-solida: #f7f2f5;
+  --superficie-2: #ede5ee;
+  --borde: #d8cce0;
+  --texto: #2e2a3d;
+  --texto-suave: #5f5874;
+  --acento: #a3436b;
+  --acento-fondo: rgb(163 67 107 / 0.09);
+  --cian: #2c6f7c;
+  --cian-fondo: rgb(44 111 124 / 0.09);
+  --primario: #3d7480;
+  --primario-texto: #fbf7f9;
+  --primario-hover: #356873;
+  --ok: #2e7550;
+  --ok-fondo: #e3efe6;
+  --error: #ad3c5a;
+  --error-fondo: #f6e3e8;
+  --foco: #3d7480;
+  --neon-magenta: 0 0 0 1px rgb(163 67 107 / 0.16), 0 4px 16px rgb(163 67 107 / 0.1);
+  --neon-cian: 0 0 0 1px rgb(44 111 124 / 0.16), 0 4px 16px rgb(44 111 124 / 0.09);
   --texto-neon-magenta: none;
   --texto-neon-cian: none;
-  --rejilla: rgb(192 19 122 / 0.28);
-  --rejilla-2: rgb(106 31 208 / 0.2);
-  --codigo-fondo: #fdfbff;
-  --codigo-texto: #1a0f36;
-  --codigo-numeros: #6f6299;
-  --sql-clave: #b0127a;
-  --sql-funcion: #00788d;
-  --sql-texto: #9a5800;
-  --sql-numero: #5b2bc0;
-  --sql-comentario: #6d6194;
-  --sql-tabla: #11753f;
-  --sql-signo: #574887;
-  --sombra: 0 6px 24px rgb(70 30 140 / 0.12);
+  --rejilla: rgb(163 67 107 / 0.2);
+  --rejilla-2: rgb(92 74 156 / 0.14);
+  --codigo-fondo: #faf6f8;
+  --codigo-texto: #2e2a3d;
+  --codigo-numeros: #6f6885;
+  --sql-clave: #a03f6e;
+  --sql-funcion: #2c6f7c;
+  --sql-texto: #87591c;
+  --sql-numero: #5c4a9c;
+  --sql-comentario: #6b6480;
+  --sql-tabla: #2f6f4a;
+  --sql-signo: #5f5874;
+  --sombra: 0 6px 24px rgb(80 60 110 / 0.09);
   color-scheme: light;
 }
 
@@ -186,6 +188,7 @@ kbd {
   white-space: nowrap;
   text-shadow: var(--texto-neon-cian);
 }
+:root[data-theme="light"] .marca { -webkit-text-stroke-width: 0; }  /* letras oscuras sobre claro: ya se ven finas */
 .marca strong { color: var(--acento); font-weight: 400; text-shadow: var(--texto-neon-magenta); }
 .marca-faro {
   position: relative;

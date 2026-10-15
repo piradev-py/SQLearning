@@ -1,8 +1,8 @@
 /* ============================================================
    SQLearning · Pestaña «Gráfico» (js/grafico.js)
    Paleta validada con la skill dataviz (validate_palette.js):
-   noche sobre #0a0914 y día sobre #ffffff, 5 series, todas las
-   comprobaciones en verde para series vecinas (ΔE daltonismo ≥ 11).
+   noche sobre #0a0914 y día (pastel) sobre #f7f2f5, 5 series, todas las
+   comprobaciones en verde para series vecinas (ΔE daltonismo ≥ 10).
    El texto nunca lleva el color de la serie: usa los tokens de texto.
    ============================================================ */
 :root {
@@ -13,11 +13,11 @@
   --serie-4: #3ca368;   /* verde */
 }
 :root[data-theme="light"] {
-  --serie-0: #0e97a9;
-  --serie-1: #970d63;
-  --serie-2: #b77610;
-  --serie-3: #622cb5;
-  --serie-4: #298646;
+  --serie-0: #0091a3;
+  --serie-1: #9d3a67;
+  --serie-2: #b77f39;
+  --serie-3: #6a51a4;
+  --serie-4: #418954;
 }
 .gr-c0 { --serie: var(--serie-0); }
 .gr-c1 { --serie: var(--serie-1); }

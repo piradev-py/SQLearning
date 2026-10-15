@@ -108,5 +108,5 @@
 .escena--tenue .escena-ciudad { opacity: 0.45; height: 40%; }
 .escena--tenue .escena-suelo::before { opacity: 0.4; }
 
-:root[data-theme="light"] .escena-ciudad { opacity: 0.35; filter: saturate(0.8); animation: none; }
+:root[data-theme="light"] .escena-ciudad { opacity: 0.45; filter: invert(1) hue-rotate(180deg) saturate(0.6); animation: none; }  /* siluetas claras con el neón en su tono, no gris */
 :root[data-theme="light"] .escena-cielo::before { display: none; }
