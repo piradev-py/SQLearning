@@ -2,3 +2,4 @@ node_modules/
 .claude/settings.local.json
 tests/navegador/perfil-*/
 tests/navegador/salida/
+tests/navegador/agentes/

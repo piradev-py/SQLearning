@@ -1,0 +1,1 @@
+﻿@electric-sql/pglite 0.5.10 (copiado de dist/, sin .map ni extensiones)

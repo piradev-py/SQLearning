@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Pruebas del motor · SQLearning</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; background: #fff; color: #222; }
+    .ok { color: #1a7f37; } .mal { color: #c62828; font-weight: bold; }
+    pre { background: #f4f4f4; padding: 8px; white-space: pre-wrap; }
+  </style>
+  <base href="../">
+</head>
+<body>
+  <h1>Pruebas del motor SQL</h1>
+  <p data-resumen>Comprobando…</p>
+  <ol data-lista></ol>
+  <script src="js/motor-sql.js"></script>
+  <script src="js/traductor.js"></script>
+  <script src="js/revisor-sql.js"></script>
+  <script src="js/pruebas.js"></script>
+  <script>
+    const lista = document.querySelector("[data-lista]");
+    const resultados = [];
+    function anotar(nombre, ok, extra = "") {
+      resultados.push(ok);
+      const li = document.createElement("li");
+      li.className = ok ? "ok" : "mal";
+      li.textContent = (ok ? "✅ " : "❌ ") + nombre + (extra ? " — " + extra : "");
+      lista.append(li);
+    }
+    async function prueba(nombre, fn) {
+      try { const r = await fn(); anotar(nombre, r === true, r === true ? "" : JSON.stringify(r)); }
+      catch (e) { anotar(nombre, false, "EXCEPCIÓN: " + (e?.mensaje || e?.message || JSON.stringify(e))); }
+    }
+
+    (async () => {
+      const t0 = performance.now();
+      await MOTOR.preparar("faro-e1");
+      anotar("Arranca PostgreSQL y carga faro-e1", true, Math.round(performance.now() - t0) + " ms");
+      const esquema = await MOTOR.esquema();
+      TRADUCTOR.conocer(esquema);
+
+      await prueba("Esquema: 3 tablas con claves", () => {
+        const p = esquema.find(t => t.nombre === "productos");
+        const e = esquema.find(t => t.nombre === "empleados");
+        return esquema.length === 3 && p.filas === 40 && p.columnas[0].pk && e.columnas.find(c => c.nombre === "tienda_id").fk?.tabla === "tiendas" || esquema;
+      });
+      await prueba("SELECT básico: 5 tiendas", async () => {
+        const r = await MOTOR.ejecutar("SELECT * FROM tiendas;");
+        return r.ok && r.ultimo.filas.length === 5 && r.ultimo.columnas.join() === "id,ciudad,apertura" && r.ultimo.filas[0][2] === "1998-05-04" || r;
+      });
+      await prueba("Tipos: numeric como texto exacto, count como número", async () => {
+        const r = await MOTOR.ejecutar("SELECT precio, (SELECT count(*) FROM productos) FROM productos WHERE id = 1;");
+        return r.ultimo.filas[0][0] === "749.00" && r.ultimo.filas[0][1] === 40 && r.ultimo.tipos[0] === "numeric" || r;
+      });
+      await prueba("Stock imposible sembrado (-12)", async () => {
+        const r = await MOTOR.ejecutar("SELECT nombre, stock FROM productos ORDER BY stock LIMIT 1;");
+        return r.ultimo.filas[0][0] === "Auriculares Sonora Pulse" && r.ultimo.filas[0][1] === -12 || r;
+      });
+      await prueba("Aislamiento: un DELETE no cambia la base", async () => {
+        const d = await MOTOR.ejecutar("DELETE FROM productos;");
+        const r = await MOTOR.ejecutar("SELECT count(*) FROM productos;");
+        return d.ok && d.ultimo.afectadas === 40 && r.ultimo.filas[0][0] === 40 || [d, r];
+      });
+      await prueba("Aislamiento: COMMIT del alumno no deja huella", async () => {
+        await MOTOR.ejecutar("COMMIT; DELETE FROM tiendas WHERE id = 5; COMMIT;");
+        const r = await MOTOR.ejecutar("SELECT count(*) FROM tiendas;");
+        return r.ultimo.filas[0][0] === 5 || r;
+      });
+      await prueba("Error traducido: tabla mal escrita sugiere el nombre", async () => {
+        const r = await MOTOR.ejecutar("SELECT *\nFROM producto;");
+        return !r.ok && r.error.codigo === "42P01" && r.error.linea === 2 && /productos/.test(r.error.explicacion) || r;
+      });
+      await prueba("Error traducido: columna inexistente", async () => {
+        const r = await MOTOR.ejecutar("SELECT nombre, precios FROM productos;");
+        return !r.ok && r.error.codigo === "42703" && /precio/.test(r.error.explicacion) || r;
+      });
+      await prueba("Error traducido: sintaxis (coma de más)", async () => {
+        const r = await MOTOR.ejecutar("SELECT nombre, FROM productos;");
+        return !r.ok && r.error.codigo === "42601" && !!r.error.explicacion || r;
+      });
+      await prueba("Tiempo límite: consulta infinita se corta y el motor sigue vivo", async () => {
+        const r = await MOTOR.ejecutar("WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i + 1 FROM n) SELECT count(*) FROM n;");
+        const s = await MOTOR.ejecutar("SELECT count(*) FROM empleados;");
+        return !r.ok && r.error.codigo === "TIEMPO" && s.ok && s.ultimo.filas[0][0] === 22 || [r, s];
+      });
+
+      // --- Revisor ---
+      const paso = { tipo: "ejercicio", solucion: "SELECT nombre, precio\nFROM productos;" };
+      await prueba("Revisor: correcta aunque se escriba distinto", async () =>
+        (await REVISOR.revisarEjercicio(paso, "select NOMBRE , precio from productos ;")).ok || "falló");
+      await prueba("Revisor: falta el ;", async () => {
+        const r = await REVISOR.revisarEjercicio(paso, "SELECT nombre, precio FROM productos");
+        return !r.ok && /punto y coma/.test(r.mensaje) || r;
+      });
+      await prueba("Revisor: sobra columna", async () => {
+        const r = await REVISOR.revisarEjercicio(paso, "SELECT nombre, precio, stock FROM productos;");
+        return !r.ok && /sobra la columna `stock`/i.test(r.mensaje) || r;
+      });
+      await prueba("Revisor: columnas en otro orden", async () => {
+        const r = await REVISOR.revisarEjercicio(paso, "SELECT precio, nombre FROM productos;");
+        return !r.ok && /otro orden/.test(r.mensaje) || r;
+      });
+      await prueba("Revisor: sin ORDER BY en la solución, el orden da igual", async () =>
+        (await REVISOR.revisarEjercicio(paso, "SELECT nombre, precio FROM productos ORDER BY precio DESC;")).ok || "falló");
+      const pasoOrden = { tipo: "ejercicio", solucion: "SELECT nombre, precio FROM productos ORDER BY precio DESC, nombre;" };
+      await prueba("Revisor: con ORDER BY en la solución, el orden cuenta", async () => {
+        const r = await REVISOR.revisarEjercicio(pasoOrden, "SELECT nombre, precio FROM productos;");
+        return !r.ok && /orden/.test(r.mensaje) || r;
+      });
+      await prueba("Revisor: ORDER BY dentro de subconsulta no cuenta como orden", () =>
+        REVISOR.ordenImporta("SELECT * FROM (SELECT * FROM productos ORDER BY id) t;") === false);
+      await prueba("Revisor: faltan filas", async () => {
+        const r = await REVISOR.revisarEjercicio(paso, "SELECT nombre, precio FROM productos LIMIT 30;");
+        return !r.ok && /faltan 10 filas/.test(r.mensaje) || r;
+      });
+      await prueba("Revisor: dos consultas cuando se pide una", async () => {
+        const r = await REVISOR.revisarEjercicio(paso, "SELECT 1; SELECT nombre, precio FROM productos;");
+        return !r.ok && /2 consultas/.test(r.mensaje) || r;
+      });
+      await prueba("Revisor: un ; dentro de un texto no cuenta", () => REVISOR.sentencias("SELECT 'a;b';").length === 1);
+      await prueba("Revisor: tolerancia decimal (2.0 = 2)", () =>
+        REVISOR.comparar({ columnas: ["x"], tipos: ["numeric"], filas: [["2.00"]] }, { columnas: ["x"], tipos: ["integer"], filas: [[2]] }).ok);
+      await prueba("Revisor: DML con verificar", async () => {
+        const p = { tipo: "ejercicio", solucion: "UPDATE productos SET stock = 0 WHERE id = 17;", verificar: "SELECT id, stock FROM productos ORDER BY id;" };
+        const bien = await REVISOR.revisarEjercicio(p, "UPDATE productos SET stock = 0 WHERE nombre = 'Auriculares Sonora Pulse';");
+        const mal = await REVISOR.revisarEjercicio(p, "UPDATE productos SET stock = 0;");
+        return bien.ok && !mal.ok || [bien, mal];
+      });
+
+      // --- Reto con PRUEBA ---
+      const reto = {
+        comprobaciones: [
+          { texto: "5 filas", prueba: r => r.filas.length === 5 },
+          { texto: "columnas", prueba: r => PRUEBA.columnas(r, ["nombre", "stock"]) },
+          { texto: "orden", prueba: r => PRUEBA.ordenado(r, "stock", "desc") },
+          { texto: "igual", prueba: (r, db) => PRUEBA.igualA(r, db, "SELECT nombre, stock FROM productos ORDER BY stock DESC LIMIT 5;") }
+        ]
+      };
+      await prueba("Reto: la solución pasa todo", async () => {
+        const r = await REVISOR.revisarReto(reto, "SELECT nombre, stock FROM productos ORDER BY stock DESC LIMIT 5;");
+        return r.ok && r.filas.length === 5 || r;
+      });
+      await prueba("Reto: sin orden falla solo lo que toca", async () => {
+        const r = await REVISOR.revisarReto(reto, "SELECT nombre, stock FROM productos LIMIT 5;");
+        return !r.ok && r.filas[0].ok && r.filas[1].ok && !r.filas[2].ok && r.filas[4].ok || r;
+      });
+      await prueba("Reto: con error de SQL marca todo en rojo", async () => {
+        const r = await REVISOR.revisarReto(reto, "SELECT nombre, stok FROM productos;");
+        return !r.ok && r.filas.every(f => !f.ok) && /stock/.test(r.mensaje) || r;
+      });
+
+      const bien = resultados.filter(Boolean).length;
+      document.querySelector("[data-resumen]").textContent =
+        `${bien === resultados.length ? "✅" : "❌"} ${bien}/${resultados.length} pruebas superadas en ${Math.round(performance.now() - t0)} ms`;
+    })();
+  </script>
+</body>
+</html>

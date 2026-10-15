@@ -40,7 +40,7 @@ Lo que lo delata en los datos (y cómo lo va descubriendo el alumno):
 | Etapa | Pista del Expediente | Qué se ve en los datos |
 |---|---|---|
 | 1 | **El inventario imposible** | Un producto con stock negativo (-12). Ordenando por stock aparece arriba del todo. |
-| 2 | **Clientes de madrugada** | Varios clientes dados de alta entre las 2:00 y las 5:00, todos con email `@correo-rapido.net`. Uno reclama un pedido que «nunca hizo». |
+| 2 | **Clientes de madrugada** | Varios clientes dados de alta entre las 2:00 y las 5:00, todos con email `@correo-rapido.example`. Uno reclama un pedido que «nunca hizo». |
 | 3 | **Reembolsos disparados** | Los reembolsos de la tienda online triplican la media de las demás tiendas. |
 | 4 | **Pedidos fantasma** | Pedidos reembolsados que no tienen envío registrado (LEFT JOIN → NULL); los pocos envíos que hay los firma el almacén de Getafe. |
 | 5 | **Una sola dirección** | Al limpiar los datos (mayúsculas, espacios, abreviaturas «C/» = «Calle»), las direcciones de los clientes falsos son la misma, y coincide con la de un empleado. |
