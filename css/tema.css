@@ -176,12 +176,14 @@ kbd {
   gap: 12px;
   color: var(--cian);
   text-decoration: none;
-  font: 900 20px/1 var(--fuente-titulo);
-  letter-spacing: 0.06em;
+  /* Sixtyfour, la del prólogo y el icono (cada página la carga de Google Fonts) */
+  font: 400 17px/1 "Sixtyfour", var(--fuente-titulo);
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  white-space: nowrap;
   text-shadow: var(--texto-neon-cian);
 }
-.marca strong { color: var(--acento); font-weight: 900; text-shadow: var(--texto-neon-magenta); }
+.marca strong { color: var(--acento); font-weight: 400; text-shadow: var(--texto-neon-magenta); }
 .marca-faro {
   position: relative;
   width: 12px;

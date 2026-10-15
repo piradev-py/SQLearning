@@ -57,7 +57,10 @@ quede pendiente y vuelve a pasar los tests.
 
 ## Etapa 3 · Ventas (preparación)
 - [x] Datos `datos/faro-e3.sql` (`lineas_pedido` + `pedidos.mes`) y cifras en `docs/DATOS.md`; temario detallado en PLAN_CURSO
-- [ ] **Pestaña «Gráfico» en el resultado** (barras y líneas a partir de la tabla; cargar antes la skill `dataviz`) — necesaria para e3-05 y e3-06
+- [x] **Pestaña «Gráfico»** (`js/grafico.js`, `css/grafico.css`) en laboratorio y lección: barras/líneas automáticas, series por la 2.ª columna, un panel por medida, hover y teclado, paleta validada con la skill `dataviz`; campo de paso `grafico: true`; pruebas en `esc-laboratorio.mjs`
+- [x] Nombre «SQLearning» en Sixtyfour (la del prólogo) en todas las cabeceras; la lección ahora lo muestra
+- [x] Favicon en todos los tamaños + `apple-touch-icon`
+- [ ] El laboratorio carga `faro-e1`: ¿pasar a los datos de la etapa más avanzada desbloqueada? (para practicar GROUP BY con pedidos)
 - [ ] Índice de la etapa 3 en `js/curso.js` y lecciones (2 agentes `profesor-sql`)
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)

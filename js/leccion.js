@@ -149,7 +149,17 @@
       p.tabIndex = si ? 0 : -1;
     });
     document.querySelectorAll("[data-vista]").forEach(v => { v.hidden = v.dataset.vista !== nombre; });
+    if (nombre === "grafico") GRAFICO.pintar($("[data-vista=grafico]"), ultimoResultado);
   }
+  // El gráfico se dibuja al verlo (oculto no tiene ancho) y se redibuja si cambia el ancho
+  let ultimoResultado = null, anchoGrafico = 0;
+  const pestanaActual = () => document.querySelector("[data-pestana][aria-selected=true]")?.dataset.pestana;
+  new ResizeObserver(() => {
+    const v = $("[data-vista=grafico]");
+    if (v.hidden || v.clientWidth === anchoGrafico) return;
+    anchoGrafico = v.clientWidth;
+    GRAFICO.pintar(v, ultimoResultado);
+  }).observe($("[data-vista=grafico]"));
 
   let ocupado = false;
   async function ejecutar() {
@@ -162,7 +172,10 @@
     ocupado = true;
     $("[data-estado]").textContent = "Ejecutando…";
     const r = await MOTOR.ejecutar(sql);
-    mostrarPestana("resultado");
+    ultimoResultado = r.ok ? r.ultimo : null;
+    // Pasos con «grafico: true» abren el gráfico; si ya lo estaba mirando, sigue en él
+    const verGrafico = r.ok && (lec.pasos[actual]?.grafico || pestanaActual() === "grafico");
+    mostrarPestana(verGrafico ? "grafico" : "resultado");
     if (r.ok) {
       editor.limpiarError();
       RESULTADO.tabla($("[data-vista=resultado]"), r.ultimo);
@@ -242,6 +255,8 @@
     actual = i;
     terminado = false;
     montajePapel = null;
+    ultimoResultado = null;
+    if (pestanaActual() === "grafico") mostrarPestana("resultado");
     const p = lec.pasos[i];
     const caja = $("[data-paso]");
     pintarIndicePasos();

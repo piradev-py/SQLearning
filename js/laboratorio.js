@@ -20,6 +20,7 @@
   const estado = $("[data-estado]");
   const vistaResultado = $("[data-vista=resultado]");
   const vistaEsquema = $("[data-vista=esquema]");
+  const vistaGrafico = $("[data-vista=grafico]");
 
   const leer = (k, def) => { try { return localStorage.getItem(k) ?? def; } catch (e) { return def; } };
   const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* sin guardado */ } };
@@ -39,7 +40,16 @@
       p.tabIndex = si ? 0 : -1;
     });
     document.querySelectorAll("[data-vista]").forEach(v => { v.hidden = v.dataset.vista !== nombre; });
+    if (nombre === "grafico") GRAFICO.pintar(vistaGrafico, ultimo);
   }
+  // El gráfico se dibuja al verlo (oculto no tiene ancho) y se redibuja si cambia el ancho
+  let ultimo = null, anchoGrafico = 0;
+  const pestanaActual = () => pestanas.find(p => p.getAttribute("aria-selected") === "true")?.dataset.pestana;
+  new ResizeObserver(() => {
+    if (vistaGrafico.hidden || vistaGrafico.clientWidth === anchoGrafico) return;
+    anchoGrafico = vistaGrafico.clientWidth;
+    GRAFICO.pintar(vistaGrafico, ultimo);
+  }).observe(vistaGrafico);
   pestanas.forEach((p, i) => {
     p.addEventListener("click", () => mostrar(p.dataset.pestana));
     p.addEventListener("keydown", ev => {
@@ -66,7 +76,9 @@
     btnEjecutar.disabled = true;
     estado.textContent = "Ejecutando…";
     const r = await MOTOR.ejecutar(sql);
-    mostrar("resultado");
+    ultimo = r.ok ? r.ultimo : null;
+    // Si estaba mirando el gráfico y la consulta funciona, sigue en el gráfico
+    mostrar(r.ok && pestanaActual() === "grafico" ? "grafico" : "resultado");
     if (r.ok) {
       editor.limpiarError();
       RESULTADO.tabla(vistaResultado, r.ultimo);

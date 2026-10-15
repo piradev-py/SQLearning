@@ -9,11 +9,12 @@
   <meta name="description" content="Practica SQL libremente con la base de datos de Faro, sin miedo a romper nada.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
-  <link rel="stylesheet" href="css/tema.css?v=202610151043">
-  <link rel="stylesheet" href="css/fondo.css?v=202610151043">
-  <link rel="stylesheet" href="css/editor.css?v=202610151043">
-  <link rel="stylesheet" href="css/laboratorio.css?v=202610151043">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&family=Sixtyfour&display=swap">
+  <link rel="stylesheet" href="css/tema.css?v=202610151434">
+  <link rel="stylesheet" href="css/fondo.css?v=202610151434">
+  <link rel="stylesheet" href="css/editor.css?v=202610151434">
+  <link rel="stylesheet" href="css/grafico.css?v=202610151434">
+  <link rel="stylesheet" href="css/laboratorio.css?v=202610151434">
 </head>
 <body>
   <div class="escena escena--tenue" aria-hidden="true">
@@ -57,10 +58,12 @@
     <section class="lab-panel lab-resultado" aria-label="Resultado">
       <div class="lab-pestanas" role="tablist">
         <button type="button" role="tab" id="pest-resultado" aria-controls="vista-resultado" aria-selected="true" data-pestana="resultado">Resultado</button>
+        <button type="button" role="tab" id="pest-grafico" aria-controls="vista-grafico" aria-selected="false" data-pestana="grafico" tabindex="-1">Gráfico</button>
         <button type="button" role="tab" id="pest-esquema" aria-controls="vista-esquema" aria-selected="false" data-pestana="esquema" tabindex="-1">Esquema</button>
         <span class="lab-estado" data-estado aria-live="polite"></span>
       </div>
       <div class="lab-vista" id="vista-resultado" role="tabpanel" aria-labelledby="pest-resultado" data-vista="resultado"></div>
+      <div class="lab-vista" id="vista-grafico" role="tabpanel" aria-labelledby="pest-grafico" data-vista="grafico" hidden></div>
       <div class="lab-vista" id="vista-esquema" role="tabpanel" aria-labelledby="pest-esquema" data-vista="esquema" hidden></div>
     </section>
 
@@ -70,12 +73,13 @@
     </div>
   </main>
 
-  <script src="js/tema.js?v=202610151043"></script>
-  <script src="js/musica.js?v=202610151043"></script>
-  <script src="js/motor-sql.js?v=202610151043"></script>
-  <script src="js/traductor.js?v=202610151043"></script>
-  <script src="js/editor-sql.js?v=202610151043"></script>
-  <script src="js/resultado.js?v=202610151043"></script>
-  <script src="js/laboratorio.js?v=202610151043"></script>
+  <script src="js/tema.js?v=202610151434"></script>
+  <script src="js/musica.js?v=202610151434"></script>
+  <script src="js/motor-sql.js?v=202610151434"></script>
+  <script src="js/traductor.js?v=202610151434"></script>
+  <script src="js/editor-sql.js?v=202610151434"></script>
+  <script src="js/resultado.js?v=202610151434"></script>
+  <script src="js/grafico.js?v=202610151434"></script>
+  <script src="js/laboratorio.js?v=202610151434"></script>
 </body>
 </html>

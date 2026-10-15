@@ -95,6 +95,15 @@ El editor empieza **vacío** (o con `inicial`). El alumno pulsa **Revisar**; no 
   `information_schema`) y se comparan esos resultados.
 - Mensajes de fallo concretos: «te faltan 3 filas», «sobra la columna `stock`», «las filas no están en el orden pedido».
 
+**Pestaña «Gráfico»** (desde la etapa 3): cualquier paso con SQL admite `grafico: true`; tras ejecutar con
+éxito se abre la pestaña Gráfico en vez de Resultado. Cómo dibuja (`js/grafico.js`):
+- La **primera columna** son las etiquetas; las columnas **numéricas** de detrás, los valores.
+- Etiquetas tipo mes (`'2026-08'`) o fecha → **líneas** (en orden cronológico); si no → **barras** horizontales,
+  en el orden en que salen las filas (el `ORDER BY` del alumno se ve en el gráfico).
+- Tres columnas con la primera repetida (`mes, tienda_id, total`) → una **serie por valor** de la segunda (máx. 5).
+- Varias medidas (`tienda_id, pedidos, facturacion`) → un **panel por medida**, cada uno con su escala.
+- Si no se puede dibujar (una columna, etiquetas repetidas sin agrupar, más de 40 barras…), lo explica con un ejemplo.
+
 Reglas para el enunciado:
 - Debe decir **exactamente** qué columnas (y alias), qué filtro y qué orden: el alumno no puede adivinar.
 - Pide solo lo que se acaba de explicar. Distinto del reto: el ejercicio practica **una** idea.

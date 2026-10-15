@@ -115,6 +115,40 @@ export default async function (b) {
   await tecla("z", "KeyZ", 90, 2);
   comprobar("F17: Ctrl+Z recupera lo borrado con «Borrar»", (await b.eval("document.querySelector('.es-texto').value")) === antesDeBorrar);
 
+  // 6c. Pestaña Gráfico
+  await vaciar();
+  await teclear("SELECT categoria, COUNT(*) AS n FROM productos GROUP BY categoria ORDER BY n DESC;");
+  await b.eval("document.querySelector('[data-pestana=grafico]').click()");
+  await ctrlEnter();
+  await b.hasta("document.querySelectorAll('[data-vista=grafico] .gr-barra').length > 0", 10000);
+  comprobar("Gráfico: una barra por categoría (5)", (await b.eval("document.querySelectorAll('[data-vista=grafico] .gr-barra').length")) === 5);
+  comprobar("Gráfico: tras ejecutar sigue en la pestaña Gráfico", await b.eval("document.querySelector('[data-pestana=grafico]').getAttribute('aria-selected') === 'true'"));
+  comprobar("Gráfico: conteos con marcas enteras", await b.eval("[...document.querySelectorAll('.gr-eje')].every(t => !t.textContent.includes(','))"));
+  await b.eval("document.querySelector('.gr-marco').focus()");
+  await tecla("ArrowDown", "ArrowDown", 40);
+  comprobar("Gráfico: con el teclado se ve el valor (Informática 11)", /Informática.*11/.test(await b.eval("document.querySelector('.gr-tooltip:not([hidden])')?.textContent || ''")));
+  await vaciar();
+  await teclear("SELECT to_char(creado, 'YYYY-MM') AS mes, COUNT(*) AS altas FROM productos GROUP BY 1;");
+  await ctrlEnter();
+  await b.hasta("document.querySelector('[data-vista=grafico] .gr-linea') !== null", 10000);
+  comprobar("Gráfico: los meses se dibujan como líneas, ordenados", await b.eval("/Ordenado por/.test(document.querySelector('[data-vista=grafico]').textContent)"));
+  await vaciar();
+  await teclear("SELECT categoria, precio FROM productos;");
+  await ctrlEnter();
+  await b.hasta("document.querySelector('[data-vista=grafico] .r-aviso') !== null", 10000);
+  comprobar("Gráfico: si la etiqueta se repite, explica que hay que agrupar", await b.eval("/GROUP BY categoria/.test(document.querySelector('[data-vista=grafico] .r-aviso').textContent)"));
+  const sinGrafico = await b.eval(`[
+    GRAFICO.analizar({ columnas: ['mes', 'tienda_id', 'total'], tipos: ['text', 'integer', 'numeric'], filas: [['2026-02', 1, '10.5'], ['2026-01', 1, '3'], ['2026-01', 2, '4']] }),
+    GRAFICO.analizar({ columnas: ['tienda_id', 'pedidos', 'facturacion'], tipos: ['integer', 'bigint', 'numeric'], filas: [[1, 10, '100'], [2, 20, null]] }),
+    GRAFICO.analizar({ columnas: ['n'], tipos: ['bigint'], filas: [[3]] })
+  ]`);
+  comprobar("Gráfico: (mes, tienda, total) → líneas, una serie por tienda, meses en orden",
+    sinGrafico[0].forma === "lineas" && sinGrafico[0].paneles[0].series.length === 2 && sinGrafico[0].etiquetas.join() === "2026-01,2026-02" && sinGrafico[0].paneles[0].series[0].valores.join() === "3,10.5",
+    JSON.stringify(sinGrafico[0]));
+  comprobar("Gráfico: dos medidas → dos paneles (nunca dos ejes)", sinGrafico[1].paneles.length === 2 && sinGrafico[1].paneles[1].series[0].valores[1] === null);
+  comprobar("Gráfico: una sola columna no se dibuja", sinGrafico[2].ok === false);
+  await b.eval("document.querySelector('[data-pestana=resultado]').click()");
+
   // 7. Tema día y tamaños
   await b.eval("document.querySelector('[data-tema]').click()");
   await vaciar();

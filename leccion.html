@@ -8,11 +8,12 @@
   <link rel="apple-touch-icon" href="recursos/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
-  <link rel="stylesheet" href="css/tema.css?v=202610151043">
-  <link rel="stylesheet" href="css/fondo.css?v=202610151043">
-  <link rel="stylesheet" href="css/editor.css?v=202610151043">
-  <link rel="stylesheet" href="css/leccion.css?v=202610151043">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&family=Sixtyfour&display=swap">
+  <link rel="stylesheet" href="css/tema.css?v=202610151434">
+  <link rel="stylesheet" href="css/fondo.css?v=202610151434">
+  <link rel="stylesheet" href="css/editor.css?v=202610151434">
+  <link rel="stylesheet" href="css/grafico.css?v=202610151434">
+  <link rel="stylesheet" href="css/leccion.css?v=202610151434">
 </head>
 <body>
   <div class="escena escena--tenue" aria-hidden="true">
@@ -22,6 +23,9 @@
   </div>
 
   <header class="lec-cabecera">
+    <a class="marca" href="index.html#ruta" aria-label="SQLearning, volver a la hoja de ruta">
+      <span class="marca-faro" aria-hidden="true"></span><span>SQL<strong>earning</strong></span>
+    </a>
     <a class="lec-volver" href="index.html#ruta">‹ Hoja de ruta</a>
     <div class="lec-titulo">
       <span class="lec-codigo" data-codigo></span>
@@ -54,10 +58,12 @@
         <div class="lec-editor" data-editor></div>
         <div class="lec-pestanas" role="tablist">
           <button type="button" role="tab" id="pest-resultado" aria-controls="vista-resultado" aria-selected="true" data-pestana="resultado">Resultado</button>
+          <button type="button" role="tab" id="pest-grafico" aria-controls="vista-grafico" aria-selected="false" data-pestana="grafico" tabindex="-1">Gráfico</button>
           <button type="button" role="tab" id="pest-esquema" aria-controls="vista-esquema" aria-selected="false" data-pestana="esquema" tabindex="-1">Esquema</button>
           <span class="lec-estado" data-estado aria-live="polite"></span>
         </div>
         <div class="lec-vista" id="vista-resultado" role="tabpanel" aria-labelledby="pest-resultado" data-vista="resultado"></div>
+        <div class="lec-vista" id="vista-grafico" role="tabpanel" aria-labelledby="pest-grafico" data-vista="grafico" hidden></div>
         <div class="lec-vista" id="vista-esquema" role="tabpanel" aria-labelledby="pest-esquema" data-vista="esquema" hidden></div>
       </div>
       <div class="lec-mesa" data-zona-mesa hidden></div>
@@ -80,17 +86,18 @@
     </div>
   </dialog>
 
-  <script src="js/tema.js?v=202610151043"></script>
-  <script src="js/musica.js?v=202610151043"></script>
-  <script src="js/curso.js?v=202610151043"></script>
-  <script src="js/progreso.js?v=202610151043"></script>
-  <script src="js/motor-sql.js?v=202610151043"></script>
-  <script src="js/traductor.js?v=202610151043"></script>
-  <script src="js/revisor-sql.js?v=202610151043"></script>
-  <script src="js/pruebas.js?v=202610151043"></script>
-  <script src="js/editor-sql.js?v=202610151043"></script>
-  <script src="js/resultado.js?v=202610151043"></script>
-  <script src="js/papel.js?v=202610151043"></script>
-  <script src="js/leccion.js?v=202610151043"></script>
+  <script src="js/tema.js?v=202610151434"></script>
+  <script src="js/musica.js?v=202610151434"></script>
+  <script src="js/curso.js?v=202610151434"></script>
+  <script src="js/progreso.js?v=202610151434"></script>
+  <script src="js/motor-sql.js?v=202610151434"></script>
+  <script src="js/traductor.js?v=202610151434"></script>
+  <script src="js/revisor-sql.js?v=202610151434"></script>
+  <script src="js/pruebas.js?v=202610151434"></script>
+  <script src="js/editor-sql.js?v=202610151434"></script>
+  <script src="js/resultado.js?v=202610151434"></script>
+  <script src="js/grafico.js?v=202610151434"></script>
+  <script src="js/papel.js?v=202610151434"></script>
+  <script src="js/leccion.js?v=202610151434"></script>
 </body>
 </html>
