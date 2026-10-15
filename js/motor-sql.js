@@ -32,7 +32,12 @@
       if (fn) { pendientes.delete(m.id); fn(m); }
     });
     worker.addEventListener("error", ev => {
-      console.error("motor-worker:", ev.message);
+      // Si el worker ni siquiera carga (p. ej. abierto con doble clic, file://), avisa en vez de esperar para siempre
+      const arranque = pendientes.get(0);
+      if (arranque) {
+        pendientes.delete(0);
+        arranque({ ok: false, error: { mensaje: "No se pudo cargar el motor (" + (ev.message || "error de carga") + ")", codigo: "CARGA" } });
+      } else console.error("motor-worker:", ev.message);
     });
   }
 

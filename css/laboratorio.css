@@ -1,0 +1,160 @@
+/* ============================================================
+   SQLearning · Laboratorio
+   Pantalla completa sin scroll de página: editor | resultado.
+   ============================================================ */
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: transparent; }
+
+.solo-lector {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* --- Marca (la luz del faro) ----------------------------------- */
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--cian);
+  text-decoration: none;
+  font: 900 20px/1 var(--fuente-titulo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: var(--texto-neon-cian);
+}
+.marca strong { color: var(--acento); font-weight: 900; text-shadow: var(--texto-neon-magenta); }
+.marca-faro {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffd166;
+  box-shadow: 0 0 0 3px rgb(255 209 102 / 0.25), 0 0 16px 4px rgb(255 209 102 / 0.55);
+}
+.marca-faro.grande { width: 26px; height: 26px; animation: destello 2.4s ease-in-out infinite; }
+@keyframes destello {
+  50% { box-shadow: 0 0 0 8px rgb(255 209 102 / 0.18), 0 0 46px 16px rgb(255 209 102 / 0.5); }
+}
+
+/* --- Cabecera -------------------------------------------------- */
+.lab-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 10px 20px;
+  background: var(--superficie);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--acento);
+  box-shadow: 0 1px 0 var(--acento), 0 4px 22px rgb(255 60 172 / 0.25);
+}
+.lab-titulo { flex: 1; min-width: 0; }
+.lab-titulo h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--texto);
+}
+.lab-titulo p { margin: 0; font-size: 13px; color: var(--texto-suave); }
+.boton-tema { white-space: nowrap; }
+
+/* --- Zona de trabajo ------------------------------------------- */
+.lab {
+  --ancho-editor: 50%;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, var(--ancho-editor)) 10px minmax(0, 1fr);
+  padding: 14px 20px 16px;
+}
+.lab-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  padding: 12px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--sombra);
+}
+.lab-editor { border-top: 2px solid var(--cian); }
+.lab-resultado { border-top: 2px solid var(--acento); }
+
+.lab-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.lab-barra kbd { background: transparent; color: inherit; border-color: currentColor; opacity: 0.8; }
+.lab-ejemplos select {
+  font: inherit;
+  padding: 6px 10px;
+  border-radius: var(--radio);
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+}
+.lab-editor-caja { flex: 1; min-height: 0; }
+.lab-ayuda { margin: 8px 0 0; font-size: 12px; color: var(--texto-suave); }
+
+.lab-separador {
+  cursor: col-resize;
+  border-radius: 4px;
+  margin: 0 3px;
+  touch-action: none;
+}
+.lab-separador:hover, .lab-separador:focus-visible { background: var(--borde); }
+
+.lab-pestanas {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--borde);
+}
+.lab-pestanas [role="tab"] {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  background: none;
+  padding: 7px 14px;
+  color: var(--texto-suave);
+}
+.lab-pestanas [role="tab"]:hover { box-shadow: none; color: var(--texto); }
+.lab-pestanas [role="tab"][aria-selected="true"] {
+  color: var(--acento);
+  border-bottom-color: var(--acento);
+  font-weight: 700;
+  text-shadow: var(--texto-neon-magenta);
+}
+.lab-estado { margin-left: auto; font-size: 13px; color: var(--texto-suave); font-variant-numeric: tabular-nums; }
+.lab-vista { flex: 1; min-height: 0; overflow: auto; }
+.lab-vista[hidden] { display: none; }
+.lab-vista > .r-tabla-marco { max-height: 100%; }
+
+/* --- Cargando -------------------------------------------------- */
+.lab-cargando {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: color-mix(in srgb, var(--fondo) 75%, transparent);
+  font: 600 15px var(--fuente-titulo);
+  letter-spacing: 0.08em;
+  color: var(--cian);
+  text-shadow: var(--texto-neon-cian);
+  text-align: center;
+  padding: 20px;
+}
+.lab-cargando[hidden] { display: none; }
+.lab-cargando p { margin: 0; }
+.lab-cargando-detalle { font-size: 13px; color: var(--texto-suave); max-width: 520px; }
+
+/* Pantallas estrechas: una columna (no es la prioridad, pero no se rompe) */
+@media (max-width: 800px) {
+  body { height: auto; overflow: auto; }
+  .lab { grid-template-columns: 1fr; grid-template-rows: 55vh 60vh; gap: 16px; padding: 12px 16px; }
+  .lab-separador { display: none; }
+  .lab-titulo p { display: none; }
+}

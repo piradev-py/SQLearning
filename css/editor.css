@@ -1,0 +1,159 @@
+/* ============================================================
+   SQLearning · Editor SQL y vistas del resultado
+   ============================================================ */
+
+/* --- Editor --------------------------------------------------- */
+.editor-sql {
+  --es-fuente: 15px/1.6 var(--fuente-codigo);
+  position: relative;
+  display: flex;
+  min-height: 0;
+  background: var(--codigo-fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+.editor-sql:focus-within { border-color: var(--cian); box-shadow: var(--neon-cian); }
+.es-numeros {
+  flex: none;
+  width: 3.2em;
+  overflow: hidden;
+  padding: 12px 0;
+  font: var(--es-fuente);
+  color: var(--codigo-numeros);
+  text-align: right;
+  border-right: 1px solid var(--borde);
+  user-select: none;
+}
+.es-numeros-dentro div { padding-right: 10px; }
+.es-numeros-dentro .es-error { color: var(--error); font-weight: 700; background: var(--error-fondo); }
+.es-zona { position: relative; flex: 1; min-width: 0; overflow: hidden; }
+.es-resaltado, .es-texto {
+  margin: 0;
+  padding: 12px 14px;
+  font: var(--es-fuente);
+  tab-size: 2;
+  white-space: pre;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+.es-resaltado {
+  position: absolute;
+  inset: 0 auto auto 0;
+  min-width: 100%;
+  color: var(--codigo-texto);
+  pointer-events: none;
+}
+.es-texto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--codigo-texto);
+  overflow: auto;
+}
+.es-texto::selection { background: color-mix(in srgb, var(--primario) 30%, transparent); color: transparent; }
+
+.sql-clave { color: var(--sql-clave); font-weight: 600; }
+.sql-funcion { color: var(--sql-funcion); }
+.sql-texto { color: var(--sql-texto); }
+.sql-nombre { color: var(--sql-tabla); }
+.sql-numero { color: var(--sql-numero); }
+.sql-comentario { color: var(--sql-comentario); font-style: italic; }
+.sql-tabla { color: var(--sql-tabla); }
+.sql-signo { color: var(--sql-signo); }
+
+.es-sugerencias {
+  position: absolute;
+  z-index: 10;
+  min-width: 220px;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  font: 14px/1.4 var(--fuente-codigo);
+}
+.es-sugerencias li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.es-sugerencias li[aria-selected] { background: var(--primario); color: var(--primario-texto); }
+.es-sug-tipo { font: 12px var(--fuente); opacity: 0.7; }
+
+/* --- Tabla de resultados --------------------------------------- */
+.r-tabla-marco { overflow: auto; max-height: 100%; border: 1px solid var(--borde); border-radius: var(--radio); background: var(--superficie-solida); }
+.r-tabla { border-collapse: collapse; font-size: 14px; min-width: 100%; }
+.r-tabla th, .r-tabla td { padding: 6px 12px; border-bottom: 1px solid var(--borde); text-align: left; white-space: nowrap; }
+.r-tabla th {
+  position: sticky;
+  top: 0;
+  background: var(--superficie-2);
+  font-weight: 600;
+  vertical-align: bottom;
+  color: var(--cian);
+  box-shadow: inset 0 -1px 0 var(--cian);
+}
+.r-tabla th span { display: block; }
+.r-tabla th small { display: block; font-weight: 400; font-size: 11px; color: var(--texto-suave); }
+.r-tabla tbody tr:hover { background: var(--superficie-2); }
+.r-tabla .r-num { text-align: right; font-variant-numeric: tabular-nums; }
+.r-tabla .r-n { color: var(--texto-suave); text-align: right; font-size: 12px; width: 1%; }
+.r-nulo { color: var(--texto-suave); font-style: italic; font-size: 12px; }
+.r-bool { font-family: var(--fuente-codigo); font-size: 13px; }
+.r-vacio, .r-nota, .r-aviso { color: var(--texto-suave); margin: 10px 4px; }
+.r-aviso { color: var(--texto); }
+.r-aviso code, .r-error code { background: var(--superficie-2); padding: 0 4px; border-radius: 4px; }
+
+/* --- Esquema --------------------------------------------------- */
+.r-esquema { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.r-ficha { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); overflow: hidden; }
+.r-ficha header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: var(--superficie-2);
+  border-bottom: 2px solid var(--acento);
+}
+.r-ficha-nombre { font: 600 15px var(--fuente-codigo); color: var(--sql-tabla); }
+.r-ficha-filas { font-size: 12px; color: var(--texto-suave); }
+.r-ficha ul { list-style: none; margin: 0; padding: 4px 0; }
+.r-ficha li { display: flex; flex-wrap: wrap; gap: 2px 10px; padding: 3px 12px; font-size: 14px; }
+.r-col { font-family: var(--fuente-codigo); flex: 1; }
+.r-col-tipo { color: var(--texto-suave); font-size: 12px; }
+.r-col-tipo abbr { text-decoration: none; border-bottom: 1px dotted; }
+.r-col-fk { width: 100%; padding-left: 1.4em; font: 12px var(--fuente-codigo); color: var(--acento); }
+
+/* --- Errores --------------------------------------------------- */
+.r-error {
+  padding: 12px 16px;
+  border-radius: var(--radio);
+  background: var(--error-fondo);
+  border-left: 4px solid var(--error);
+}
+.r-error p { margin: 4px 0; }
+.r-error-titulo { font-weight: 600; color: var(--error); }
+.r-error-linea {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--error);
+  color: var(--superficie);
+  font-size: 12px;
+}
+.r-error details { margin-top: 8px; font-size: 13px; color: var(--texto-suave); }
+.r-error pre { white-space: pre-wrap; margin: 6px 0 0; }

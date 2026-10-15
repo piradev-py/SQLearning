@@ -1,0 +1,109 @@
+// Recorre el laboratorio como un usuario: escribe, autocompleta, ejecuta con Ctrl+Enter,
+// provoca un error, mira el esquema y hace fotos en claro/oscuro y a varios tamaños.
+// Uso: node tests/navegador/cdp.mjs esc-laboratorio.mjs
+export default async function (b) {
+  const fallos = [];
+  const comprobar = (nombre, ok, extra = "") => {
+    b.log((ok ? "✅ " : "❌ ") + nombre + (ok || !extra ? "" : " — " + extra));
+    if (!ok) fallos.push(nombre);
+  };
+  // Teclear de verdad (dispara input con inputType insertText, como una persona)
+  const teclear = async texto => {
+    for (const ch of texto) await b.cdp("Input.insertText", { text: ch });
+  };
+  const tecla = async (key, code, keyCode, modifiers = 0) => {
+    await b.cdp("Input.dispatchKeyEvent", { type: "rawKeyDown", key, code, windowsVirtualKeyCode: keyCode, modifiers });
+    await b.cdp("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode: keyCode, modifiers });
+  };
+  const ctrlEnter = () => tecla("Enter", "Enter", 13, 2);
+  const vaciar = async () => {
+    await b.eval("(() => { const a = document.querySelector('.es-texto'); a.focus(); a.select(); })()");
+    await tecla("Delete", "Delete", 46);
+  };
+  const filas = () => b.eval("document.querySelectorAll('[data-vista=resultado] tbody tr').length");
+
+  await b.tam(1366, 768);
+  await b.ir("laboratorio.html");
+  await b.eval("localStorage.clear()");
+  await b.ir("laboratorio.html");
+  const t0 = Date.now();
+  const listo = await b.hasta("document.querySelector('[data-cargando]').hidden", 60000);
+  comprobar("PostgreSQL arranca y la página queda lista", listo, "");
+  b.log(`   (lista en ${Date.now() - t0} ms)`);
+
+  // 1. Ejemplo inicial con Ctrl+Enter
+  await b.eval("document.querySelector('.es-texto').focus()");
+  await ctrlEnter();
+  await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length > 0", 10000);
+  comprobar("Ctrl+Enter ejecuta el ejemplo: 5 tiendas", (await filas()) === 5, String(await filas()));
+  comprobar("La cabecera muestra el tipo en español", await b.eval("document.querySelector('.r-tabla th:nth-child(4) small')?.textContent === 'fecha'"));
+  comprobar("Estado: «5 filas · N ms»", /^5 filas · \d+ ms$/.test(await b.eval("document.querySelector('[data-estado]').textContent")));
+
+  // 2. Escribir con autocompletado
+  await vaciar();
+  await teclear("SELECT nombre, prec");
+  comprobar("Sugerencias al escribir «prec»", await b.eval("!document.querySelector('.es-sugerencias').hidden && document.querySelector('.es-sugerencias li')?.textContent.startsWith('precio')"));
+  await tecla("Tab", "Tab", 9);
+  await teclear(" FROM pro");
+  comprobar("Tras FROM sugiere primero la tabla «productos»", await b.eval("document.querySelector('.es-sugerencias li .es-sug-texto')?.textContent === 'productos'"));
+  await tecla("Enter", "Enter", 13);
+  await teclear(";");
+  comprobar("El texto queda bien autocompletado", (await b.eval("document.querySelector('.es-texto').value")) === "SELECT nombre, precio FROM productos;",
+    await b.eval("document.querySelector('.es-texto').value"));
+  comprobar("Resaltado: SELECT y FROM pintados como palabra clave", (await b.eval("document.querySelectorAll('.es-resaltado .sql-clave').length")) === 2);
+  comprobar("Resaltado: «productos» pintado como tabla", await b.eval("document.querySelector('.es-resaltado .sql-tabla')?.textContent === 'productos'"));
+  await b.eval("document.querySelector('[data-ejecutar]').click()");
+  await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length === 40", 10000);
+  comprobar("Botón Ejecutar: 40 productos", (await filas()) === 40, String(await filas()));
+  comprobar("Los precios se alinean a la derecha", await b.eval("document.querySelector('.r-tabla td.r-num') !== null"));
+  await b.foto("lab-resultado-noche");
+
+  // 3. Error con línea marcada
+  await vaciar();
+  await teclear("SELECT *");
+  await tecla("Enter", "Enter", 13);
+  await teclear("FROM producto;");
+  await ctrlEnter();
+  await b.hasta("document.querySelector('.r-error') !== null", 10000);
+  comprobar("El error sugiere «productos»", await b.eval("/productos/.test(document.querySelector('.r-error').textContent)"));
+  comprobar("El error dice la línea 2", await b.eval("/Línea 2/.test(document.querySelector('.r-error-titulo').textContent)"));
+  comprobar("La línea 2 se marca en el editor", await b.eval("document.querySelector('.es-numeros .es-error')?.textContent === '2'"));
+  await b.foto("lab-error-noche");
+  await teclear(" ");
+  comprobar("Al escribir se quita la marca de error", await b.eval("document.querySelector('.es-numeros .es-error') === null"));
+
+  // 4. Esquema
+  await b.eval("document.querySelector('[data-pestana=esquema]').click()");
+  comprobar("Esquema: 3 fichas de tabla", (await b.eval("document.querySelectorAll('.r-ficha').length")) === 3);
+  comprobar("Esquema: tienda_id apunta a tiendas.id", await b.eval("/→ tiendas\\.id/.test(document.querySelector('[data-vista=esquema]').textContent)"));
+  await b.foto("lab-esquema-noche");
+
+  // 5. Borrador guardado al recargar
+  await b.ir("laboratorio.html");
+  await b.hasta("document.querySelector('[data-cargando]').hidden", 60000);
+  comprobar("El borrador sobrevive a la recarga", /FROM producto;/.test(await b.eval("document.querySelector('.es-texto').value")));
+
+  // 6. DML de práctica: no cambia nada
+  await vaciar();
+  await teclear("DELETE FROM productos;");
+  await ctrlEnter();
+  await b.hasta("/40 filas/.test(document.querySelector('.r-aviso')?.textContent || '')", 10000);
+  comprobar("DELETE avisa de 40 filas y de que se deshace", await b.eval("/40 filas/.test(document.querySelector('.r-aviso').textContent)"));
+
+  // 7. Tema día y tamaños
+  await b.eval("document.querySelector('[data-tema]').click()");
+  await vaciar();
+  await teclear("SELECT nombre, precio * stock AS valor -- inventario\nFROM productos\nORDER BY valor DESC\nLIMIT 8;");
+  await ctrlEnter();
+  await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length === 8", 10000);
+  await b.foto("lab-resultado-dia");
+  for (const [w, h] of [[1920, 1080], [1280, 720], [1024, 768]]) {
+    await b.tam(w, h);
+    await b.esperar(300);
+    const scroll = await b.eval("document.documentElement.scrollHeight > innerHeight || document.documentElement.scrollWidth > innerWidth");
+    comprobar(`Sin scroll de página a ${w}×${h}`, !scroll);
+  }
+  await b.foto("lab-1024-dia");
+
+  b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Laboratorio: todo correcto");
+}

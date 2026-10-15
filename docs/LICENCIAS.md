@@ -6,6 +6,8 @@ Todo lo que usa SQLearning es gratuito y de licencia libre (también para uso co
 |---|---|---|---|
 | PGlite 0.5.10 (ElectricSQL) | Apache 2.0 | `vendor/pglite/` | Conservar `vendor/pglite/LICENSE` y citarlo en el README |
 | PostgreSQL (dentro de PGlite) | PostgreSQL License | `vendor/pglite/` | Conservar el aviso de copyright (incluido) |
+| Fuentes Orbitron y JetBrains Mono (Google Fonts) | SIL Open Font License 1.1 | enlazadas desde Google Fonts | Ninguna para usarlas en una web |
+| Ciudad neón (`recursos/ciudad-neon.svg`) | Propia (generada por `herramientas/generar-ciudad.mjs`) | `recursos/` | — |
 | Lenguaje SQL | Estándar ISO/ANSI | — | Ninguna |
 | Historia, personajes, datos de Faro, lecciones, interfaz, gráficos | Propios del proyecto | todo lo demás | — |
 

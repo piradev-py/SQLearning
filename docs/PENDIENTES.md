@@ -23,8 +23,11 @@ quede pendiente y vuelve a pasar los tests.
 - [x] `herramientas/generar-datos.mjs` (semilla fija) → `datos/faro-e1.sql`
 - [x] Traductor de errores (`js/traductor.js`), revisor (`js/revisor-sql.js`), `PRUEBA` (`js/pruebas.js`)
 - [x] Batería `tests/probar-motor.html` + arnés `tests/navegador/cdp.mjs` (26/26)
-- [ ] Editor SQL (resaltado, autocompletado de tablas/columnas, Ctrl+Enter)
-- [ ] Resultado: tabla, esquema, mensajes de error traducidos (interfaz)
+- [x] Editor SQL propio (`js/editor-sql.js`): resaltado, números de línea, autocompletado según contexto, Ctrl+Enter, Tab/Mayús+Tab, Esc+Tab para salir, marca de línea con error
+- [x] Vistas del resultado (`js/resultado.js`): tabla con tipos en español y NULL, fichas de esquema con claves, errores explicados
+- [x] `laboratorio.html`: práctica libre, separador arrastrable, borrador guardado, ejemplos; prueba `esc-laboratorio.mjs`
+- [x] Estética **cyberpunk/retrowave** (petición del usuario): tema noche neón por defecto + día; ciudad neón propia
+  (`herramientas/generar-ciudad.mjs` → `recursos/ciudad-neon.svg`) con el faro; fuentes Orbitron + JetBrains Mono
 
 ## Fase 3 · Interfaz
 - [ ] Inicio + mapa + progreso + expediente (adaptados de CSS-HTML, identidad visual nueva)

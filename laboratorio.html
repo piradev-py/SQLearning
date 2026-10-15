@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratorio · SQLearning</title>
+  <meta name="description" content="Practica SQL libremente con la base de datos de Faro, sin miedo a romper nada.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/tema.css">
+  <link rel="stylesheet" href="css/fondo.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/laboratorio.css">
+</head>
+<body>
+  <div class="escena escena--tenue" aria-hidden="true">
+    <div class="escena-cielo"></div>
+    <img class="escena-ciudad" src="recursos/ciudad-neon.svg" alt="">
+    <div class="escena-suelo"></div>
+  </div>
+
+  <header class="lab-cabecera">
+    <a class="marca" href="index.html" aria-label="SQLearning, volver al inicio">
+      <span class="marca-faro" aria-hidden="true"></span>
+      <span>SQL<strong>earning</strong></span>
+    </a>
+    <div class="lab-titulo">
+      <h1>Laboratorio</h1>
+      <p>Practica libre con la base de datos de Faro. Nada de lo que hagas cambia los datos.</p>
+    </div>
+    <button type="button" class="boton-tema" data-tema aria-label="Cambiar tema">🌙 Noche</button>
+  </header>
+
+  <main class="lab" data-lab>
+    <section class="lab-panel lab-editor" aria-label="Consulta">
+      <div class="lab-barra">
+        <button type="button" class="boton-principal" data-ejecutar disabled>▶ Ejecutar <kbd>Ctrl</kbd>+<kbd>Enter</kbd></button>
+        <label class="lab-ejemplos">
+          <span class="solo-lector">Cargar un ejemplo</span>
+          <select data-ejemplos>
+            <option value="">Ejemplos…</option>
+          </select>
+        </label>
+        <button type="button" data-limpiar>Borrar</button>
+      </div>
+      <div class="lab-editor-caja" data-editor></div>
+      <p class="lab-ayuda"><kbd>Ctrl</kbd>+<kbd>Espacio</kbd> sugerencias · <kbd>Tab</kbd> sangría · <kbd>Esc</kbd> y <kbd>Tab</kbd> para salir del editor</p>
+    </section>
+
+    <div class="lab-separador" role="separator" aria-orientation="vertical" aria-label="Cambiar el ancho de los paneles"
+         tabindex="0" data-separador></div>
+
+    <section class="lab-panel lab-resultado" aria-label="Resultado">
+      <div class="lab-pestanas" role="tablist">
+        <button type="button" role="tab" id="pest-resultado" aria-controls="vista-resultado" aria-selected="true" data-pestana="resultado">Resultado</button>
+        <button type="button" role="tab" id="pest-esquema" aria-controls="vista-esquema" aria-selected="false" data-pestana="esquema" tabindex="-1">Esquema</button>
+        <span class="lab-estado" data-estado aria-live="polite"></span>
+      </div>
+      <div class="lab-vista" id="vista-resultado" role="tabpanel" aria-labelledby="pest-resultado" data-vista="resultado"></div>
+      <div class="lab-vista" id="vista-esquema" role="tabpanel" aria-labelledby="pest-esquema" data-vista="esquema" hidden></div>
+    </section>
+
+    <div class="lab-cargando" data-cargando role="status">
+      <span class="marca-faro grande" aria-hidden="true"></span>
+      <p>Encendiendo PostgreSQL…</p>
+    </div>
+  </main>
+
+  <script src="js/tema.js"></script>
+  <script src="js/motor-sql.js"></script>
+  <script src="js/traductor.js"></script>
+  <script src="js/editor-sql.js"></script>
+  <script src="js/resultado.js"></script>
+  <script src="js/laboratorio.js"></script>
+</body>
+</html>

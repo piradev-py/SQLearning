@@ -1,0 +1,96 @@
+/* ============================================================
+   SQLearning · Escena de fondo cyberpunk
+   <div class="escena" aria-hidden="true">
+     <div class="escena-cielo"></div>
+     <img class="escena-ciudad" src="recursos/ciudad-neon.svg" alt="">
+     <div class="escena-suelo"></div>
+   </div>
+   .escena--tenue: versión discreta para pantallas de trabajo.
+   ============================================================ */
+.escena {
+  --horizonte-y: 64%;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--fondo);
+}
+.escena-cielo {
+  position: absolute;
+  inset: 0 0 calc(100% - var(--horizonte-y)) 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 100%, color-mix(in srgb, var(--horizonte) 55%, transparent), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 20%, color-mix(in srgb, var(--cian) 18%, transparent), transparent 70%),
+    linear-gradient(to bottom, var(--fondo) 0%, var(--fondo-alto) 65%, color-mix(in srgb, var(--horizonte) 30%, var(--fondo-alto)) 100%);
+}
+/* Estrellas lejanas (puntos fijos) */
+.escena-cielo::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 35% 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff8, transparent),
+    radial-gradient(1px 1px at 27% 42%, #fff6, transparent),
+    radial-gradient(1px 1px at 46% 12%, #fff7, transparent),
+    radial-gradient(1px 1px at 63% 30%, #fff5, transparent),
+    radial-gradient(1.5px 1.5px at 78% 9%, #fff9, transparent),
+    radial-gradient(1px 1px at 88% 38%, #fff6, transparent),
+    radial-gradient(1px 1px at 5% 55%, #fff5, transparent);
+}
+.escena-ciudad {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 52%;
+  bottom: calc(100% - var(--horizonte-y));
+  object-fit: cover;
+  object-position: center bottom;
+  animation: parpadeo 7s ease-in-out infinite;
+}
+.escena-suelo {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  top: var(--horizonte-y);
+  bottom: 0;
+  perspective: 260px;
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, var(--horizonte) 35%, transparent), transparent 35%),
+    var(--fondo);
+}
+.escena-suelo::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -60% 0;
+  transform-origin: top center;
+  transform: rotateX(62deg);
+  background-image:
+    linear-gradient(to right, var(--rejilla) 1.5px, transparent 1.5px),
+    linear-gradient(to bottom, var(--rejilla-2) 1.5px, transparent 1.5px);
+  background-size: 64px 64px;
+  animation: avanzar 4s linear infinite;
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000);
+}
+/* Reflejo de la ciudad en el suelo mojado */
+.escena-suelo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--acento) 18%, transparent), transparent 40%);
+}
+@keyframes avanzar { to { background-position: 0 64px; } }
+@keyframes parpadeo {
+  0%, 100% { filter: brightness(1); }
+  48% { filter: brightness(1); }
+  50% { filter: brightness(0.82); }
+  52% { filter: brightness(1.05); }
+}
+
+/* Versión discreta: detrás del espacio de trabajo */
+.escena--tenue { --horizonte-y: 78%; }
+.escena--tenue .escena-ciudad { opacity: 0.45; height: 40%; }
+.escena--tenue .escena-suelo::before { opacity: 0.4; }
+
+:root[data-theme="light"] .escena-ciudad { opacity: 0.35; filter: saturate(0.8); animation: none; }
+:root[data-theme="light"] .escena-cielo::before { display: none; }

@@ -10,6 +10,7 @@ node tests/navegador/cdp.mjs esc-motor.mjs
 | Escenario | Qué hace | Tiempo |
 |---|---|---|
 | `esc-motor.mjs` | Batería de `tests/probar-motor.html`: motor, aislamiento, tiempo límite, errores traducidos, revisor, PRUEBA | ~10 s |
+| `esc-laboratorio.mjs` | Laboratorio como usuario: teclea, autocompleta, Ctrl+Enter, error con línea, esquema, borrador, tema día, tamaños; fotos en `salida/` | ~30 s |
 
 ## API del escenario
 `export default async function (b) { … }` con:
