@@ -143,7 +143,8 @@ WHERE p.tienda_id = 5
           inicial: "",
           comprobaciones: [
             { texto: "Tiene las columnas pedidos, clientes, importe, primero y ultimo", prueba: (r) => PRUEBA.columnas(r, ["pedidos", "clientes", "importe", "primero", "ultimo"]) },
-            { texto: "Son 63 pedidos de 10 clientes distintos", prueba: (r) => (r?.filas?.length ?? 0) === 1 && PRUEBA.valor(r, 0, "pedidos") === 63 && PRUEBA.valor(r, 0, "clientes") === 10 },
+            { texto: "Cuenta los pedidos y los clientes distintos", prueba: (r) => (r?.filas?.length ?? 0) === 1 && PRUEBA.valor(r, 0, "pedidos") === 63 && PRUEBA.valor(r, 0, "clientes") === 10 },
+            { texto: "Lo calcula la consulta (COUNT sobre pedidos y envíos), no escrito a mano", prueba: () => /\bcount\s*\(/i.test(PRUEBA.codigo()) && /\benvios\b/i.test(PRUEBA.codigo()) },
             { texto: "El importe y las fechas son los de esos pedidos", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT COUNT(*) AS pedidos, COUNT(DISTINCT p.cliente_id) AS clientes, SUM(p.total) AS importe, MIN(p.fecha) AS primero, MAX(p.fecha) AS ultimo
 FROM pedidos AS p
 LEFT JOIN envios AS e ON e.pedido_id = p.id
@@ -191,7 +192,7 @@ ORDER BY p.id;`
         {
           tipo: "interpretar",
           pregunta: "Los 6 envíos están `devuelto` y ninguno tiene fecha de `entrega`, aunque los devueltos normales sí la tienen. ¿Qué **almacén** los firma todos? Escribe su nombre.",
-          respuesta: ["Almacén central", "central", "Getafe", "Almacén central (Getafe)", "Almacén de Getafe"],
+          respuesta: ["Almacén central", "central", "Getafe", "Almacén central (Getafe)", "Almacén de Getafe", "Almacén central de Getafe", "el almacén central", "el central", "almacén central Getafe"],
           pistas: [
             "Mira la columna `almacen` de la parte anterior: es el mismo en las 6 filas.",
             "Todos salen del Almacén central, el de Getafe: escribe Almacén central."

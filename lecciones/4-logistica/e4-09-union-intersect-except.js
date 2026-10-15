@@ -102,6 +102,7 @@ ORDER BY ciudad;`,
       comprobaciones: [
         { texto: "Tiene una sola columna, ciudad", prueba: (r) => PRUEBA.columnas(r, ["ciudad"]) },
         { texto: "Salen 2 ciudades", prueba: (r) => (r?.filas?.length ?? 0) === 2 },
+        { texto: "Las saca de las tablas almacenes y tiendas (no escritas a mano)", prueba: () => /\balmacenes\b/i.test(PRUEBA.codigo()) && /\btiendas\b/i.test(PRUEBA.codigo()) },
         { texto: "Son las ciudades con almacén y sin tienda, en orden alfabético", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT ciudad
 FROM almacenes
 EXCEPT

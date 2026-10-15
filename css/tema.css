@@ -28,6 +28,7 @@
   --error: #d0607a;
   --error-fondo: rgb(208 96 122 / 0.1);
   --foco: #4fa3b3;
+  --oro: #c9a66b;                 /* casos y créditos */
 
   --neon-magenta: 0 0 2px rgb(192 80 143 / 0.6), 0 0 12px rgb(192 80 143 / 0.22);
   --neon-cian: 0 0 2px rgb(79 163 179 / 0.6), 0 0 12px rgb(79 163 179 / 0.2);
@@ -79,7 +80,7 @@
 
 :root[data-theme="light"] {
   /* Amanecer pastel: lavanda y crema rosada, nada de blanco puro; acentos apagados (rosa empolvado,
-     verde azulado). Texto ≥ 4,5:1 sobre todas las superficies. */
+     verde azulado). Texto ≥ 4,5:1 sobre todas las superficies (también la cabecera translúcida). */
   --fondo: #ece6f2;
   --fondo-alto: #e2d9ee;
   --horizonte: #f0bccb;
@@ -89,18 +90,19 @@
   --borde: #d8cce0;
   --texto: #2e2a3d;
   --texto-suave: #5f5874;
-  --acento: #a3436b;
+  --acento: #963a62;
   --acento-fondo: rgb(163 67 107 / 0.09);
-  --cian: #2c6f7c;
+  --cian: #256470;
   --cian-fondo: rgb(44 111 124 / 0.09);
   --primario: #3d7480;
   --primario-texto: #fbf7f9;
   --primario-hover: #356873;
-  --ok: #2e7550;
+  --ok: #286a47;
   --ok-fondo: #e3efe6;
   --error: #ad3c5a;
   --error-fondo: #f6e3e8;
   --foco: #3d7480;
+  --oro: #76591f;
   --neon-magenta: 0 0 0 1px rgb(163 67 107 / 0.16), 0 4px 16px rgb(163 67 107 / 0.1);
   --neon-cian: 0 0 0 1px rgb(44 111 124 / 0.16), 0 4px 16px rgb(44 111 124 / 0.09);
   --texto-neon-magenta: none;
@@ -205,7 +207,7 @@ kbd {
 
 .aviso-prueba {
   margin: 0; padding: 6px; text-align: center;
-  font: 700 12px var(--fuente-titulo); letter-spacing: 0.12em; color: var(--fondo);
+  font: 700 12px var(--fuente-titulo); letter-spacing: 0.12em; color: #2e2a3d;   /* oscuro en los dos temas: el oro es el mismo */
   background: repeating-linear-gradient(-45deg, #c9a66b 0 14px, #b08f55 14px 28px);
 }
 .lec-final-aviso { color: var(--error); }
@@ -228,3 +230,6 @@ kbd {
   /* Duración 0 (no 0.01ms): con 0.01ms, CUALQUIER cambio de estilo pasa a ser una transición diminuta */
   *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; }
 }
+
+/* El botón de tema no se parte en dos líneas en cabeceras apretadas (1024 px) */
+.boton-tema { white-space: nowrap; }

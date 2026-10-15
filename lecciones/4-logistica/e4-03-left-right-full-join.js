@@ -84,7 +84,7 @@ ORDER BY a.id, t.id;`,
     {
       tipo: "interpretar",
       pregunta: "Hay dos almacenes sin responsable. Uno es el de Zaragoza, que abrió hace nada. ¿Cuál es el **otro**, que lleva años funcionando sin responsable asignado? Escribe su nombre.",
-      respuesta: ["Almacén Norte", "Norte", "Almacén Norte (Bilbao)", "Bilbao"],
+      respuesta: ["Almacén Norte", "Norte", "Almacén Norte (Bilbao)", "Bilbao", "Norte (Bilbao)", "el Norte", "el almacén Norte"],
       pistas: [
         "Une `almacenes` con `empleados` con un LEFT JOIN y busca los almacenes cuyo responsable sale `NULL`. O mira directamente qué almacenes tienen `responsable_id` vacío.",
         "SELECT nombre, apertura FROM almacenes WHERE responsable_id IS NULL; Uno abrió en 2026; el otro es el Almacén Norte."

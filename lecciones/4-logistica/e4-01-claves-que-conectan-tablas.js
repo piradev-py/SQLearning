@@ -99,7 +99,8 @@ WHERE id = 4;`,
       comprobaciones: [
         { texto: "La última consulta devuelve una sola fila", prueba: (r) => (r?.filas?.length ?? 0) === 1 },
         { texto: "Muestra solo una columna, con el nombre", prueba: (r) => (r?.columnas?.length ?? 0) === 1 },
-        { texto: "Es la persona responsable del Almacén Levante", prueba: (r) => (r?.filas ?? []).some(f => (f ?? []).includes("Óscar Medina")) }
+        { texto: "Es la persona responsable del Almacén Levante", prueba: (r) => (r?.filas ?? []).some(f => (f ?? []).includes("Óscar Medina")) },
+        { texto: "Lo buscas en las tablas almacenes y empleados", prueba: () => /\balmacenes\b/i.test(PRUEBA.codigo()) && /\bfrom\s+empleados\b/i.test(PRUEBA.codigo()) }
       ],
       pistas: [
         "Primero: `SELECT responsable_id FROM almacenes WHERE nombre = 'Almacén Levante';`. Apunta el número que sale y úsalo en un `WHERE id = …` sobre `empleados`.",

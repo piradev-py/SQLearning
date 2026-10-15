@@ -97,7 +97,8 @@ FROM clientes;`
       comprobaciones: [
         { texto: "Tiene una sola columna llamada pedidos_online", prueba: (r) => PRUEBA.columnas(r, ["pedidos_online"]) },
         { texto: "Devuelve una sola fila", prueba: (r) => (r?.filas?.length ?? 0) === 1 },
-        { texto: "Cuenta los 1 527 pedidos de la tienda online", prueba: (r) => PRUEBA.valor(r, 0, "pedidos_online") === 1527 }
+        { texto: "Cuenta bien los pedidos de la tienda online", prueba: (r) => PRUEBA.valor(r, 0, "pedidos_online") === 1527 },
+        { texto: "Lo cuenta con COUNT (no vale escribir el número a mano)", prueba: () => /\b(count|sum)\s*\(/i.test(PRUEBA.codigo()) && /\bfrom\s+pedidos\b/i.test(PRUEBA.codigo()) }
       ],
       pistas: [
         "Filtra los pedidos con `WHERE tienda_id = 5` y cuenta las filas que quedan con `COUNT(*)`. No olvides el alias.",

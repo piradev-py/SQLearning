@@ -124,6 +124,7 @@ ORDER BY t.id;`,
       comprobaciones: [
         { texto: "Tiene las columnas id y nombre", prueba: (r) => PRUEBA.columnas(r, ["id", "nombre"]) },
         { texto: "Encuentra el único almacén sin envíos", prueba: (r) => (r?.filas?.length ?? 0) === 1 && PRUEBA.contiene(r, "nombre", "Almacén Zaragoza") },
+        { texto: "Lo descubre la consulta mirando la tabla envios (no escrito a mano)", prueba: () => /\benvios\b/i.test(PRUEBA.codigo()) },
         { texto: "Es el resultado de buscar almacenes sin pareja en envíos", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT a.id, a.nombre
 FROM almacenes AS a
 LEFT JOIN envios AS e ON e.almacen_id = a.id

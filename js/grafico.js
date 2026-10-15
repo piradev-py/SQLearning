@@ -27,7 +27,24 @@
   const pareceMes = s => /^\d{4}-\d{2}(-\d{2})?([ T].*)?$/.test(s);
 
   // --- Análisis: ¿se puede dibujar? ¿cómo? ---------------------------------
+  // Además de la forma, descarta lo que no se puede dibujar con sentido: todo NULL, o valores
+  // gigantes o infinitos (1e308 dejaba sin fin el bucle de marcas)
+  const MAX_VALOR = 1e15;
   function analizar(r) {
+    const a = analizarForma(r);
+    if (!a.ok) return a;
+    for (const panel of a.paneles) {
+      const vals = panel.series.flatMap(s => s.valores).filter(v => v !== null);
+      if (!vals.length) {
+        return { ok: false, motivo: `Todos los valores de «${panel.medida}» son NULL: no hay nada que dibujar. (Un \`SUM\` sin filas da NULL, no 0.)` };
+      }
+      if (vals.some(v => !Number.isFinite(v) || Math.abs(v) > MAX_VALOR || (v !== 0 && Math.abs(v) < 1e-9))) {
+        return { ok: false, motivo: `Hay valores de «${panel.medida}» demasiado grandes, diminutos o infinitos para dibujarlos. Míralos en la pestaña **Resultado**.` };
+      }
+    }
+    return a;
+  }
+  function analizarForma(r) {
     const no = motivo => ({ ok: false, motivo });
     if (!r || !r.columnas || !r.columnas.length) return no("Ejecuta una consulta que devuelva una tabla para verla como gráfico.");
     if (!r.filas.length) return no("La consulta no devuelve filas: no hay nada que dibujar.");
@@ -35,6 +52,9 @@
       return no("Para dibujar hacen falta **dos columnas**: la primera con las etiquetas y otra con números. Por ejemplo: `SELECT categoria, COUNT(*) FROM productos GROUP BY categoria;`");
     }
     const num = i => NUMERICOS.has(r.tipos[i]);
+    // Para los avisos: sin comillas invertidas (rompían el formato `código`) y sin textos kilométricos
+    const c = r.columnas.map(x => x.split("`").join("'"));
+    const corto = v => { const t = etiqueta(v).split("`").join("'"); return t.length > 40 ? t.slice(0, 40) + "…" : t; };
     const etiquetas0 = r.filas.map(f => etiqueta(f[0]));
     const repetidas = new Set(etiquetas0).size < etiquetas0.length;
     const temporal = FECHAS.has(r.tipos[0]) || etiquetas0.every(pareceMes);
@@ -48,18 +68,18 @@
       const grupos = [...new Set(r.filas.map(f => etiqueta(f[1])))]
         .sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
       if (grupos.length > MAX_SERIES) {
-        return no(`La columna \`${r.columnas[1]}\` tiene ${grupos.length} valores distintos y el gráfico dibuja como mucho ${MAX_SERIES} series. Quédate con menos usando \`WHERE\`.`);
+        return no(`La columna \`${c[1]}\` tiene ${grupos.length} valores distintos y el gráfico dibuja como mucho ${MAX_SERIES} series. Quédate con menos usando \`WHERE\`.`);
       }
       const valores = grupos.map(() => xs.map(() => null));
       for (const f of r.filas) {
         const g = grupos.indexOf(etiqueta(f[1])), x = xs.indexOf(etiqueta(f[0]));
         if (valores[g][x] !== null) {
-          return no(`Hay dos filas con \`${r.columnas[0]}\` = ${etiqueta(f[0])} y \`${r.columnas[1]}\` = ${etiqueta(f[1])}. Agrupa por las dos columnas: \`GROUP BY ${r.columnas[0]}, ${r.columnas[1]}\`.`);
+          return no(`Hay dos filas con \`${c[0]}\` = ${corto(f[0])} y \`${c[1]}\` = ${corto(f[1])}. Agrupa por las dos columnas: \`GROUP BY ${c[0]}, ${c[1]}\`.`);
         }
         valores[g][x] = numero(f[2]);
       }
       const limite = forma === "barras" ? MAX_BARRAS : MAX_PUNTOS;
-      if (xs.length > limite) return demasiadas(xs.length, limite, r.columnas[0]);
+      if (xs.length > limite) return demasiadas(xs.length, limite, c[0]);
       return {
         ok: true, forma, x: r.columnas[0], etiquetas: xs, ordenado: !!ordenar,
         paneles: [{ titulo: `${r.columnas[2]} por ${r.columnas[0]} y ${r.columnas[1]}`, medida: r.columnas[2],
@@ -68,14 +88,14 @@
     }
 
     if (repetidas) {
-      return no(`La primera columna (\`${r.columnas[0]}\`) repite valores, así que cada barra no sería un único grupo. Resume con \`GROUP BY ${r.columnas[0]}\` para tener una fila por grupo.`);
+      return no(`La primera columna (\`${c[0]}\`) repite valores, así que cada barra no sería un único grupo. Resume con \`GROUP BY ${c[0]}\` para tener una fila por grupo.`);
     }
     const medidas = r.columnas.map((c, i) => i).filter(i => i > 0 && num(i));
     if (!medidas.length) {
-      return no(`Ninguna columna después de \`${r.columnas[0]}\` es numérica. El gráfico necesita la primera columna con las etiquetas y, detrás, alguna con números (un \`COUNT(*)\`, un \`SUM(...)\`…).`);
+      return no(`Ninguna columna después de \`${c[0]}\` es numérica. El gráfico necesita la primera columna con las etiquetas y, detrás, alguna con números (un \`COUNT(*)\`, un \`SUM(...)\`…).`);
     }
     const limite = forma === "barras" ? MAX_BARRAS : MAX_PUNTOS;
-    if (r.filas.length > limite) return demasiadas(r.filas.length, limite, r.columnas[0]);
+    if (r.filas.length > limite) return demasiadas(r.filas.length, limite, c[0]);
 
     let filas = r.filas;
     if (ordenar) filas = [...filas].sort((a, b) => ordenar(etiqueta(a[0]), etiqueta(b[0])));
@@ -113,10 +133,16 @@
     lienzo.font = `${px}px "Segoe UI", system-ui, sans-serif`;
     return lienzo.measureText(s).width;
   }
+  // Corte por bisección y con tope de letras: medir letra a letra un texto de 20 000 congelaba la página
   function recortar(s, max, px = 12) {
-    if (ancho(s, px) <= max) return s;
-    while (s.length > 1 && ancho(s + "…", px) > max) s = s.slice(0, -1);
-    return s + "…";
+    if (s.length <= 200 && ancho(s, px) <= max) return s;
+    s = s.slice(0, 200);
+    let bien = 0, mal = s.length;
+    while (mal - bien > 1) {
+      const medio = (bien + mal) >> 1;
+      if (ancho(s.slice(0, medio) + "…", px) <= max) bien = medio; else mal = medio;
+    }
+    return s.slice(0, Math.max(1, bien)) + "…";
   }
   // Escala «bonita»: 0 siempre dentro, marcas redondas (1, 2, 2,5 o 5 × 10^n)
   // Con valores enteros (conteos) las marcas también son enteras: nada de «2,5 pedidos»
@@ -128,7 +154,7 @@
     const paso = [1, 2, 2.5, 5, 10].map(m => m * mag).find(p => p >= paso0 && (!enteros || Number.isInteger(p))) || Math.ceil(paso0);
     const lo = Math.floor(min / paso) * paso, hi = Math.ceil(max / paso) * paso;
     const ticks = [];
-    for (let v = lo; v <= hi + paso / 2; v += paso) ticks.push(Math.round(v / paso) * paso);
+    for (let v = lo; v <= hi + paso / 2 && ticks.length < 50; v += paso) ticks.push(Math.round(v / paso) * paso);
     return { lo, hi, ticks };
   }
   const tick = v => (Math.abs(v) >= 1000 ? fmtCorto.format(v) : fmt.format(v));
@@ -151,7 +177,7 @@
         t.replaceChildren();
         const cab = document.createElement("div");
         cab.className = "gr-tooltip-titulo";
-        cab.textContent = titulo;
+        cab.textContent = titulo.length > 160 ? titulo.slice(0, 160) + "…" : titulo;
         t.appendChild(cab);
         for (const f of filas) {
           const fila = document.createElement("div");
@@ -268,12 +294,16 @@
       texto(textos, izq - 8, sy(t) + 4, tick(t), { class: "gr-eje", "text-anchor": "end" });
     }
     // Etiquetas del eje X: tantas como quepan sin pisarse
-    const anchoEtiq = Math.max(...a.etiquetas.map(et => ancho(et, 11))) + 12;
+    // (recortadas a 140 px; la primera y la última se anclan hacia dentro para no salirse por los lados)
+    const visibles = a.etiquetas.map(et => recortar(et, 140, 11));
+    const anchoEtiq = Math.max(...visibles.map(et => ancho(et, 11))) + 12;
     const cada = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(anchoPlot / anchoEtiq))));
-    a.etiquetas.forEach((et, i) => {
+    visibles.forEach((et, i) => {
       if (i % cada && i !== n - 1) return;
       if (i === n - 1 && i % cada && sx(i) - sx(i - (i % cada)) < anchoEtiq) return;
-      texto(textos, sx(i), alto - 10, et, { class: "gr-eje", "text-anchor": "middle" });
+      const ancla = n > 1 && i === 0 && sx(0) - ancho(et, 11) / 2 < 0 ? "start"
+        : n > 1 && i === n - 1 && sx(i) + ancho(et, 11) / 2 > anchoTotal ? "end" : "middle";
+      texto(textos, sx(i), alto - 10, et, { class: "gr-eje", "text-anchor": ancla });
     });
     const conPuntos = n <= 40;
     panel.series.forEach(s => {
@@ -330,6 +360,9 @@
   // --- Pintar -----------------------------------------------------------
   function pintar(div, r) {
     const a = analizar(r);
+    // Al repintar (p. ej. al cambiar el ancho) el foco no se pierde: vuelve al panel en el que estaba
+    const marcos = [...div.querySelectorAll(".gr-marco")];
+    const conFoco = marcos.indexOf(document.activeElement);
     div.replaceChildren();
     if (!a.ok) {
       RESULTADO.aviso(div, "📊 " + a.motivo);
@@ -377,11 +410,12 @@
     p.className = "r-nota";
     p.innerHTML = RESULTADO.md(notas.join(" "));
     raiz.appendChild(p);
+    if (conFoco >= 0) div.querySelectorAll(".gr-marco")[Math.min(conFoco, a.paneles.length - 1)]?.focus({ preventScroll: true });
     return a;
   }
   function resumen(a, panel) {
     const tipo = a.forma === "barras" ? "Gráfico de barras" : "Gráfico de líneas";
-    const partes = panel.series.map(s => `${s.nombre}: ` + a.etiquetas.map((e, i) => `${e} ${s.valores[i] === null ? "NULL" : fmt.format(s.valores[i])}`).slice(0, 12).join(", ") + (a.etiquetas.length > 12 ? "…" : ""));
+    const partes = panel.series.map(s => `${s.nombre}: ` + a.etiquetas.map((e, i) => `${e.slice(0, 60)} ${s.valores[i] === null ? "NULL" : fmt.format(s.valores[i])}`).slice(0, 12).join(", ") + (a.etiquetas.length > 12 ? "…" : ""));
     return `${tipo}: ${panel.titulo}. ${partes.join(". ")}. Usa las flechas para recorrerlo.`;
   }
 

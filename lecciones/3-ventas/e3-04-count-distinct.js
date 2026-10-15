@@ -79,7 +79,8 @@ WHERE tienda_id = 4;`,
       comprobaciones: [
         { texto: "Tiene una sola columna llamada clientes_online", prueba: (r) => PRUEBA.columnas(r, ["clientes_online"]) },
         { texto: "Devuelve una sola fila", prueba: (r) => (r?.filas?.length ?? 0) === 1 },
-        { texto: "Cuenta clientes distintos, no pedidos: son 284", prueba: (r) => PRUEBA.valor(r, 0, "clientes_online") === 284 }
+        { texto: "Cuenta clientes distintos, no pedidos", prueba: (r) => PRUEBA.valor(r, 0, "clientes_online") === 284 },
+        { texto: "Lo cuenta la consulta sobre pedidos (no vale escribir el número a mano)", prueba: () => /\bcount\s*\(/i.test(PRUEBA.codigo()) && /\bpedidos\b/i.test(PRUEBA.codigo()) }
       ],
       pistas: [
         "Filtra los pedidos online con `WHERE tienda_id = 5` y cuenta los `cliente_id` diferentes.",

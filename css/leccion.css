@@ -88,7 +88,7 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
 .lec-comprobaciones li.ok::before { content: "✔"; }
 .lec-comprobaciones li.mal { color: var(--error); }
 .lec-comprobaciones li.mal::before { content: "✘"; }
-.lec-bonus { color: #c9a66b; font-size: 14px; }
+.lec-bonus { color: var(--oro); font-size: 14px; }
 
 .lec-ayuda { margin-top: 14px; }
 .lec-pistas { margin: 0 0 8px; padding-left: 20px; color: var(--texto); }
@@ -169,14 +169,14 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
   border-radius: var(--radio);
   box-shadow: var(--neon-cian);
 }
-.lec-final::backdrop { background: rgb(4 3 10 / 0.75); }
+.lec-final::backdrop { background: color-mix(in srgb, var(--fondo) 75%, transparent); }
 .lec-final-sello { font: 900 14px var(--fuente-titulo); letter-spacing: 0.2em; color: var(--cian); margin: 0; }
 .lec-final h2 { margin: 6px 0 16px; font-size: 18px; }
 .lec-final-bloques { display: flex; align-items: center; gap: 6px; }
 .lec-final-bloques i { width: 22px; height: 12px; transform: skewX(-20deg); border: 1px solid var(--borde); }
 .lec-final-bloques i.b-lleno { background: var(--cian); border-color: var(--cian); box-shadow: 0 0 8px var(--cian); }
 .lec-final-bloques span { margin-left: 8px; color: var(--texto-suave); }
-.lec-final-creditos { font: 700 20px var(--fuente-codigo); color: #c9a66b; }
+.lec-final-creditos { font: 700 20px var(--fuente-codigo); color: var(--oro); }
 .lec-final-credenciales { padding-left: 0; list-style: none; }
 .lec-final-pista { margin: 14px 0; padding: 12px 14px; border-left: 2px solid var(--acento); background: var(--acento-fondo); }
 .lec-final-pista h3 { margin: 4px 0; }

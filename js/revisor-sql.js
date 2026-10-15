@@ -240,7 +240,8 @@
   /** ¿La respuesta escrita coincide con paso.respuesta (texto, lista de textos válidos o número con tolerancia)? */
   function respuestaCorrecta(dada, paso) {
     if (typeof paso.respuesta === "number") {
-      let t = String(dada).replace(/\s/g, "").replace(/[€◈]/g, "");
+      // Fuera espacios, unidades y marcas que un novato añade al número («6,7 %», «#2210», «pedido 2210»)
+      let t = String(dada).replace(/\s/g, "").replace(/[€◈%#]/g, "").replace(/^(pedido|n\.?º)/i, "");
       // Formato español con punto de miles («-1.548», «12.345,67»): se quitan los puntos y la coma pasa a ser decimal
       if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, "");
       const n = Number(t.replace(",", "."));

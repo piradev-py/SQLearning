@@ -66,7 +66,19 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Datos `faro-e4.sql` (almacenes, transportistas, envíos, `empleados.jefe_id`; e1–e3 sin cambios) y cifras en `docs/DATOS.md`
 - [x] Temario detallado (10 niveles) y **etapa completa** (2 agentes `profesor-sql`; verificador 47/47, `npm test` verde). Cifras deducidas por los profesores comprobadas con PGlite; corregido un falso positivo («uso estrella»)
 
-- [ ] Revisión del siguiente bloque (etapas 3 y 4 ya listas: lanzarla ahora o tras la 5): `qa-estres` + `alumno-novato` **cuando haya 2 o 3 expedientes nuevos** (decisión del usuario: se revisa por bloques, como el 0–2, no etapa a etapa)
+- [x] Revisión de las etapas 3 y 4: `qa-estres` hecha (`docs/revisiones/2026-10-15-qa-etapas-3-4.md`, 🔴1 🟠4 🟡17). Arreglados F1 (texto
+  largo congelaba el gráfico: recorte por bisección con tope), F2 (valores gigantes, diminutos, infinitos o NaN: aviso; tope de marcas),
+  F3 (pestañas de la lección con flechas/Inicio/Fin), F4 (variable `--oro` por tema, franja MODO PRUEBA legible, velos de diálogo con el color
+  del tema), F5 (retos que se aprobaban escribiendo la cifra: la comprobación ya no la muestra y exige consultar la tabla) y de los menores:
+  todo NULL avisa, comillas invertidas en nombres de columna, etiquetas del eje X recortadas y ancladas, foco al repintar, doble clic en
+  «Siguiente», indicador del caso, parte del caso guardada al recargar, «%»/«#»/«pedido» en respuestas numéricas, tolerancia 0,05,
+  más formas de respuesta en e3-09/e4-03/e4-10, acentos de día ≥ 4,5:1 sobre la cabecera, botón de tema sin partir.
+  Quedan (menores):
+  - [ ] Retos que aprueban por casualidad de los datos (e3-03, e3-05, e3-06 orden, e3-07 `>= 15`, e4-05): reforzar con `igualA` o datos
+  - [ ] e4-06: `COALESCE(SUM(...), 0)` se rechaza sin decir por qué (el enunciado pide dejar el NULL)
+  - [ ] `UPDATE` dentro de un CTE altera lo que ve la comprobación (trampa avanzada): `SET TRANSACTION READ ONLY` en retos sin `verificar`
+  - [ ] `COPY … TO STDOUT` dice «Consulta ejecutada» sin más
+- [ ] Revisión de las etapas 3 y 4: `alumno-novato`
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)

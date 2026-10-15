@@ -71,7 +71,7 @@ ORDER BY tienda_id;`
           tipo: "interpretar",
           pregunta: "Con las dos tablas anteriores: ¿qué **porcentaje** de los pedidos de la tienda online (`tienda_id` 5) acaba reembolsado? Redondea a un decimal y escribe solo el número.",
           respuesta: 6.7,
-          tolerancia: 0.1,
+          tolerancia: 0.05,
           pistas: [
             "Divide los reembolsos de la tienda 5 entre sus pedidos y multiplica por 100. Puedes hacerlo con una calculadora o en el editor.",
             "103 reembolsos de 1 527 pedidos: SELECT ROUND(103 * 100.0 / 1527, 1); da 6,7."
@@ -85,7 +85,7 @@ WHERE tienda_id = 5
           tipo: "interpretar",
           pregunta: "Ahora las tiendas físicas **juntas** (todas menos la 5; Barcelona aún no tiene pedidos): suma sus reembolsos y sus pedidos de las tablas anteriores. ¿Qué porcentaje se reembolsa? Redondea a un decimal y escribe solo el número.",
           respuesta: 2.0,
-          tolerancia: 0.1,
+          tolerancia: 0.05,
           pistas: [
             "Suma los reembolsos de las tiendas 1 a 4, súmalos también en pedidos, divide y multiplica por 100.",
             "7 + 2 + 6 + 5 = 20 reembolsos de 429 + 187 + 225 + 156 = 997 pedidos: 20 * 100.0 / 997 da 2,0."
@@ -122,7 +122,7 @@ ORDER BY mes;`
         {
           tipo: "interpretar",
           pregunta: "¿En qué **mes** hubo más reembolsos online? Escríbelo como aparece en la columna `mes` (por ejemplo, `2025-03`).",
-          respuesta: ["2026-08", "agosto 2026", "agosto de 2026"],
+          respuesta: ["2026-08", "2026/08", "08/2026", "2026-8", "agosto", "agosto 2026", "agosto de 2026"],
           pistas: [
             "Busca el pico de la línea en el gráfico, u ordena la consulta anterior por `reembolsos DESC`.",
             "El pico es agosto de 2026, con 19 reembolsos: escribe 2026-08."

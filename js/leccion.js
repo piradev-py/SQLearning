@@ -37,16 +37,17 @@
   const leerAyudas = () => { try { return JSON.parse(localStorage.getItem(CLAVE_AYUDAS) || "{}"); } catch (e) { return {}; } };
   const guardadas = leerAyudas()[id] || {};
   const ayudas = { pistas: Number(guardadas.pistas) || 0, solucion: !!guardadas.solucion };
+  // Parte del caso por la que iba (recargar a mitad de un caso no vuelve a la parte 1)
+  let parteCaso = Math.max(0, Math.floor(Number(guardadas.parte)) || 0);
   function guardarAyudas(borrar = false) {
     try {
       const todas = leerAyudas();
-      if (borrar) delete todas[id]; else todas[id] = { ...ayudas };
+      if (borrar) delete todas[id]; else todas[id] = { ...ayudas, parte: parteCaso };
       localStorage.setItem(CLAVE_AYUDAS, JSON.stringify(todas));
     } catch (e) { /* sin guardado */ }
   }
   let editor = null;
   let montajePapel = null;
-  let parteCaso = 0;
   let temporizadorParte = null;
   let terminado = false;
 
@@ -161,9 +162,12 @@
     GRAFICO.pintar(v, ultimoResultado);
   }).observe($("[data-vista=grafico]"));
 
-  let ocupado = false;
+  // Un clic mientras se ejecuta otra consulta no se pierde: se ejecuta después. Y el resultado de un paso
+  // que ya se ha dejado atrás (doble clic en «Siguiente») no se pinta en el nuevo.
+  let ocupado = false, pendiente = false;
   async function ejecutar() {
-    if (!usaSQL || ocupado) return;
+    if (!usaSQL) return;
+    if (ocupado) { pendiente = true; return; }
     const sql = editor.valor();
     if (!MOTOR.sinComentarios(sql).trim()) {
       RESULTADO.aviso($("[data-vista=resultado]"), "Escribe una consulta y pulsa **Ejecutar**.");
@@ -171,7 +175,13 @@
     }
     ocupado = true;
     $("[data-estado]").textContent = "Ejecutando…";
+    const paso = actual;
     const r = await MOTOR.ejecutar(sql);
+    if (paso !== actual || pendiente) {
+      ocupado = false;
+      if (pendiente) { pendiente = false; return ejecutar(); }
+      return r;
+    }
     ultimoResultado = r.ok ? r.ultimo : null;
     // Pasos con «grafico: true» abren el gráfico; si ya lo estaba mirando, sigue en él
     const verGrafico = r.ok && (lec.pasos[actual]?.grafico || pestanaActual() === "grafico");
@@ -422,6 +432,7 @@
 
   // --- Caso: varias partes en orden ------------------------------------------
   function pintarCaso(p, caja, i) {
+    parteCaso = Math.min(parteCaso, p.partes.length - 1);
     const parte = p.partes[parteCaso];
     const cabecera = `${cabeceraPersonaje(p.de)}<p class="lec-enunciado">${md(p.enunciado)}</p>
       <p class="lec-etiqueta">Parte ${parteCaso + 1} de ${p.partes.length}</p>`;
@@ -432,6 +443,7 @@
       avanzada = true;
       if (parteCaso < p.partes.length - 1) {
         parteCaso++;
+        guardarAyudas();
         temporizadorParte = setTimeout(() => pintarCaso(p, caja, i), 700);
       } else terminar({});
     };
@@ -443,7 +455,7 @@
       bPista?.addEventListener("click", () => { ayudas.pistas++; guardarAyudas(); });
       bSol?.addEventListener("click", () => { ayudas.solucion = true; guardarAyudas(); });
       const form = $("[data-form-respuesta]");
-      form.addEventListener("submit", () => { if (superados.has(i)) { superados.delete(i); siguienteParte(); } });
+      form.addEventListener("submit", () => { if (superados.has(i)) { superados.delete(i); pintarIndicePasos(); siguienteParte(); } });
     } else {
       pasoConRevision(parte, caja, i, "reto", { cabecera, cuenta: true, alSuperar: siguienteParte });
     }
@@ -500,11 +512,23 @@
   // --- Eventos generales -----------------------------------------------------
   $("[data-anterior]").addEventListener("click", () => { if (actual > 0) mostrarPaso(actual - 1); });
   $("[data-siguiente]").addEventListener("click", () => {
-    if (superados.has(actual) && actual < lec.pasos.length - 1) { parteCaso = 0; mostrarPaso(actual + 1); }
+    if (superados.has(actual) && actual < lec.pasos.length - 1) mostrarPaso(actual + 1);
   });
   $("[data-ejecutar]").addEventListener("click", ejecutar);
   $("[data-revisar]").addEventListener("click", revisar);
-  document.querySelectorAll("[data-pestana]").forEach(p => p.addEventListener("click", () => mostrarPestana(p.dataset.pestana)));
+  // Pestañas con flechas, Inicio y Fin (patrón ARIA tabs, como en el laboratorio)
+  const pestanas = [...document.querySelectorAll("[data-pestana]")];
+  pestanas.forEach((p, k) => {
+    p.addEventListener("click", () => mostrarPestana(p.dataset.pestana));
+    p.addEventListener("keydown", ev => {
+      const destino = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: pestanas.length - 1 }[ev.key];
+      if (destino === undefined) return;
+      ev.preventDefault();
+      const otra = pestanas[(destino + pestanas.length) % pestanas.length];
+      otra.focus();
+      mostrarPestana(otra.dataset.pestana);
+    });
+  });
 
   // Para las pruebas automáticas
   window.LECCION = {
