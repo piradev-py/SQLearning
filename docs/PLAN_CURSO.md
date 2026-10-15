@@ -776,8 +776,129 @@ diseñar sin redundancia (normalización 1FN–3FN), acelerar consultas con índ
 
 ---
 
-## Etapas 7–8
-Se detallan aquí (mismo formato) antes de escribir sus lecciones. Contenido previsto:
+## Etapa 7 · Dirección 🧭 — «Preguntas dentro de preguntas»
 
-- **7 · Dirección 🧭:** subconsultas, `EXISTS`, CTE, CTE recursiva, funciones ventana, `LAG/LEAD`, acumulados, medias móviles, `NTILE`, `FILTER`, `generate_series`. Caso: *La coartada de Iván*.
+**Historia:** **Ana Beltrán**, la directora general, ha oído lo de `admin_temp` y quiere dos cosas: informes serios para
+el consejo («nada de tablas sueltas: rankings, evolución, comparaciones») y la verdad sobre Iván antes de tomar una
+decisión. Lucía te pone a trabajar con consultas de nivel senior: consultas dentro de consultas, pasos con nombre
+(CTE), jerarquías y funciones ventana. Para Ana, informes de ventas y equipo; para el caso, **dónde estaba cada uno**:
+`vacaciones`, `fichajes` y `sesiones`. Al final, la coartada de Iván se sostiene… y aparece un nombre nuevo.
+
+**Tablas** (`datos/faro-e7.sql`, ver `docs/DATOS.md`): las de la etapa 6 + `vacaciones` (46), `fichajes` (4 108) y
+`sesiones` (689), de 2026-01-05 a 2026-09-30. Las comprobaciones siguen sin depender de `CURRENT_DATE`/`now()`.
+Los ejercicios de ventana sobre ventas usan `pedidos` (ene 2024 – sep 2026) y la columna `mes` o `date_trunc`.
+Cuidado con el orden: si una solución usa `ROW_NUMBER`/`RANK` u `ORDER BY` dentro de `OVER`, desempatar del todo.
+
+**Al terminarla, el alumno sabrá:** usar subconsultas (escalares, con `IN`, en `FROM`, correlacionadas), `EXISTS`/
+`NOT EXISTS` (y por qué es más seguro que `NOT IN` con `NULL`), organizar consultas largas con CTE, recorrer
+jerarquías con CTE recursivas, contar con condiciones usando `FILTER`, rellenar huecos con `generate_series`, y usar
+funciones ventana: rankings (`ROW_NUMBER`, `RANK`, `DENSE_RANK`), `PARTITION BY`, `LAG`/`LEAD`, acumulados y medias
+móviles (`ROWS BETWEEN`) y `NTILE`.
+
+### e7-01 · Una consulta dentro de otra: subconsultas · 35 ◈ 🚧
+- **Conceptos nuevos:** subconsulta **escalar** (devuelve un valor) en `WHERE` y en `SELECT`: productos más caros que la
+  media (`WHERE precio > (SELECT AVG(precio) FROM productos)`), cada pedido junto al ticket medio; subconsulta con `IN`
+  (clientes que han reclamado: `WHERE id IN (SELECT cliente_id FROM reclamaciones)`); se ejecuta «de dentro afuera»;
+  cuándo una subconsulta y cuándo un `JOIN`. Historia: Ana pide «los que están por encima de la media».
+- **Trampas:** una subconsulta escalar que devuelve varias filas → error **21000**; `NOT IN` con un `NULL` en la lista
+  no devuelve nada (recordar e2-08; arreglarlo con `WHERE … IS NOT NULL` o, mejor, con `NOT EXISTS` en e7-03).
+- **Reto:** pedidos de la tienda online por encima del ticket medio **de la tienda online** (subconsulta con el mismo
+  filtro): `id`, `total`, de mayor a menor con desempate por `id`, `LIMIT 10`.
+
+### e7-02 · Tablas que salen de una consulta: subconsultas en FROM · 35 ◈ 🚧
+- **Conceptos nuevos:** una subconsulta en `FROM` es una tabla temporal con alias obligatorio (`FROM (SELECT …) AS t`);
+  agregar en dos pasos: «media de pedidos por cliente» (primero contar por cliente, luego `AVG` de esos recuentos);
+  subconsulta correlacionada en `SELECT` (para cada empleado, cuántos días fichó: `(SELECT COUNT(*) FROM fichajes f
+  WHERE f.empleado_id = e.id)`), y por qué puede ser lenta frente a un `JOIN … GROUP BY`.
+- **Trampas:** olvidar el alias de la subconsulta en `FROM` (error); `AVG` de un `AVG` que no pondera.
+- **Reto:** por tienda, el gasto medio por cliente (primero `SUM(total)` por tienda y cliente, después `AVG` por tienda):
+  `tienda_id`, `gasto_medio` redondeado a 2, ordenado por `tienda_id`.
+
+### e7-03 · ¿Existe o no?: EXISTS y NOT EXISTS · 40 ◈ 🚧
+- **Conceptos nuevos:** `EXISTS (subconsulta correlacionada)` responde sí/no por cada fila; `NOT EXISTS` para «los que
+  no tienen»: clientes sin pedidos (6, como el `LEFT JOIN … IS NULL` de e4-04), empleados sin vacaciones en agosto;
+  `SELECT 1` dentro de `EXISTS` (da igual lo que se seleccione); `NOT EXISTS` no sufre la trampa del `NULL` de `NOT IN`.
+- **Predicción:** misma pregunta con `NOT IN` sobre una columna con `NULL` → 0 filas; con `NOT EXISTS` → las correctas.
+- **Reto:** empleados que **no** tienen ningún fichaje en el Almacén central (`NOT EXISTS`): `id`, `nombre`, por `id`.
+
+### e7-04 · Paso a paso: CTE con WITH · 40 ◈ 🚧
+- **Conceptos nuevos:** `WITH nombre AS (SELECT …) SELECT … FROM nombre;` varios pasos encadenados
+  (`WITH a AS (…), b AS (… FROM a …)`); leer una consulta larga de arriba abajo como una receta; CTE frente a subconsulta
+  en `FROM` (lo mismo, más legible) y frente a vista (la CTE solo vive en esa consulta). Historia: el informe mensual de
+  Ana en tres pasos (ventas por mes → media de los meses → meses por encima de la media).
+- **Reto:** con dos CTE: facturación por tienda en 2026 y la media de las tiendas; devolver las tiendas por encima de
+  esa media: `tienda_id`, `facturacion`, por `tienda_id`.
+
+### e7-05 · Jerarquías: CTE recursiva · 45 ◈ 🚧
+- **Conceptos nuevos:** `WITH RECURSIVE`: una parte inicial (Ana, la que no tiene jefe) `UNION ALL` una parte que se
+  llama a sí misma (los que dependen de los ya encontrados); el `nivel` que va sumando 1; cuándo para (cuando no
+  encuentra a nadie más). El organigrama completo de Faro: niveles **1 · 6 · 12 · 4** (23 empleados). Ruta de cada
+  empleado hasta Ana (`ruta || ' > ' || nombre`).
+- **Trampas:** olvidar la condición que avanza → recursión sin fin (el motor corta a los 4 s); `UNION` frente a `UNION ALL`.
+- **Reto:** todos los que dependen (directa o indirectamente) de **Elena Ruiz** (id 4), sin incluirla: `id`, `nombre`,
+  `nivel` (1 = sus directos), por `nivel` e `id`.
+
+### e7-06 · Contar con condiciones y rellenar huecos: FILTER y generate_series · 40 ◈ 🚧
+- **Conceptos nuevos:** `COUNT(*) FILTER (WHERE …)` y `SUM(…) FILTER (WHERE …)` (varias cuentas en una fila: pedidos,
+  reembolsados y cancelados por tienda; antes se hacía con `CASE` de e5-06); `generate_series(inicio, fin, paso)`
+  para fabricar una lista de números o fechas (un calendario); `LEFT JOIN` del calendario con los datos para que los
+  meses sin filas salgan con 0 (`COALESCE`): los reembolsos online de 2024-01 a 2026-09 → **33** meses, **13** con 0
+  (el gráfico ya no junta los meses vacíos, `grafico: true`).
+- **Reto (`grafico: true`):** reembolsos online por mes con todos los meses: `mes` (date), `reembolsos`, por `mes` → 33 filas.
+
+### e7-07 · Rankings: funciones ventana · 45 ◈ 🚧
+- **Conceptos nuevos:** `funcion() OVER (…)`: calcula sobre un grupo de filas **sin juntarlas** (a diferencia de
+  `GROUP BY`); `SUM(total) OVER ()` (el total al lado de cada fila, porcentaje del total); `PARTITION BY` (el grupo);
+  `ORDER BY` dentro de `OVER`; `ROW_NUMBER`, `RANK`, `DENSE_RANK` y en qué se diferencian con empates; el «top N por
+  grupo» (envolver en CTE y filtrar `WHERE puesto <= 3`: no se puede usar una ventana en `WHERE`).
+- **Trampas:** filtrar por la ventana en el mismo `WHERE` (error); empates mal resueltos con `ROW_NUMBER`.
+- **Reto:** los 3 productos con más unidades vendidas de cada categoría (`ROW_NUMBER` con desempate por `producto_id`):
+  `categoria`, `producto`, `unidades`, `puesto`, por `categoria` y `puesto`.
+
+### e7-08 · Antes y después: LAG y LEAD · 45 ◈ 🚧
+- **Conceptos nuevos:** `LAG(col) OVER (ORDER BY …)` (el valor de la fila anterior) y `LEAD` (la siguiente); con
+  `PARTITION BY`; diferencia con el mes anterior (variación y porcentaje), el `NULL` de la primera fila; tiempo entre
+  dos sucesos (días entre pedidos de un cliente, `fecha - LAG(fecha)`). Historia: Ana quiere «cómo vamos frente al mes
+  pasado»; Lucía lo usa para medir cuánto pasa entre dos fichajes.
+- **Reto:** facturación mensual de 2026 con la del mes anterior y la diferencia: `mes`, `facturacion`, `anterior`,
+  `diferencia`, por `mes` (enero con `anterior` NULL).
+
+### e7-09 · Acumulados y medias móviles · 45 ◈ 🚧
+- **Conceptos nuevos:** acumulado con `SUM(…) OVER (ORDER BY mes)`; el marco de la ventana `ROWS BETWEEN 2 PRECEDING AND
+  CURRENT ROW` para una **media móvil** de 3 meses (suaviza los picos); acumulado por grupo (`PARTITION BY tienda_id`);
+  `RANGE` frente a `ROWS` (con empates en el `ORDER BY`, `RANGE` suma todos los empatados) en un quiz.
+- **Reto (`grafico: true`):** pedidos por mes de 2025–2026 con su media móvil de 3 meses: `mes`, `pedidos`, `media_3m`
+  (redondeada a 1).
+
+### e7-10 · Repartir en grupos: NTILE y percentiles · 40 ◈ 🚧
+- **Conceptos nuevos:** `NTILE(4) OVER (ORDER BY …)` (cuartiles de clientes por gasto); `PERCENT_RANK`/`CUME_DIST`
+  (en qué percentil está cada uno) y los agregados `percentile_cont(0.5) WITHIN GROUP (ORDER BY …)` (la mediana, frente
+  a la media que estiran los atípicos, como el `999999.00` de e5-10).
+- **Reto:** clientes por cuartil de gasto total (solo pedidos no cancelados): `cuartil`, `clientes`, `gasto_min`,
+  `gasto_max`, por `cuartil`.
+
+### e7-11 · Caso: La coartada de Iván · 80 ◈ 🚧
+- **Caso:** Ana Beltrán quiere una respuesta antes del consejo: ¿suspende a Iván? Lucía: «Una cuenta no tiene cara.
+  Veamos dónde estaba cada persona cuando actuó `admin_temp`». Partes:
+  1. Acciones de admin_temp durante las vacaciones de Iván (`EXISTS` con `vacaciones` del empleado 7, o `JOIN` por rango
+     de fechas): **14** acciones (13 en agosto + 1 en abril). `interpretar`: ¿cuántas?
+  2. ¿Trabajó Iván esos días? Sesiones de `ivan.soler` y fichajes de Iván en sus vacaciones → **0**. Y las sesiones de
+     admin_temp: siempre desde **ALM-GET-03** (el terminal del muelle del Almacén central, en Getafe). `interpretar`: ¿desde
+     qué puesto?
+  3. ¿Quién estaba en el Almacén central? Para cada sesión de admin_temp, los fichajes del Almacén central que la cubren
+     (`inicio BETWEEN entrada AND salida`), contados por empleado → **Héctor Vidal (5) en las 75**. `interpretar`: ¿quién?
+  4. Con ventanas: línea de tiempo (CTE con `UNION ALL` de fichajes del Almacén central y acciones de admin_temp) y `LAG`
+     para ver qué pasó justo antes de cada acción → siempre un fichaje de Héctor o otra acción suya; minutos entre su
+     entrada y el inicio de la sesión: entre **2 y 17** (media **10,1**). `interpretar`: ¿cuántos minutos como máximo?
+  → Pista del Expediente: **La coartada de Iván**.
+- **Regla del misterio:** Iván queda **limpio** (estaba de vacaciones, sin sesiones, y nunca en Getafe de noche). Por
+  primera vez se **nombra a Héctor** como sospechoso: el jefe simpático que siempre ayudaba. Lucía, prudente: «Que
+  estuviera allí no prueba que lo hiciera. Necesitamos cuantificar el daño y ver si el patrón es suyo» → etapa 8.
+  La dirección de Olmo (etapa 5) se explica: Héctor conocía la dirección de Iván (compañeros desde hace años) y la usó.
+
+---
+
+## Etapa 8
+Se detalla aquí (mismo formato) antes de escribir sus lecciones. Contenido previsto:
+
 - **8 · Analítica 📈:** KPIs, MoM/YoY, cohortes y retención, embudos, RFM, estadística descriptiva, z-score, A/B test, pivotes, dashboard, informe. Caso final: *Caso cerrado*.
