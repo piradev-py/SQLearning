@@ -3,3 +3,9 @@ node_modules/
 tests/navegador/perfil-*/
 tests/navegador/salida/
 tests/navegador/agentes/
+
+# Archivos que crea Windows al reproducir música o abrir carpetas
+Folder.jpg
+AlbumArt*.jpg
+desktop.ini
+Thumbs.db
