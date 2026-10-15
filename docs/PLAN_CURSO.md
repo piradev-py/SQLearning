@@ -15,8 +15,8 @@ Estado: ✅ escrito · 🚧 pendiente
 
 | Etapa | Niveles | Estado |
 |---|---|---|
-| 0 · El archivo de papel 🗂️ *(opcional)* | 10 | 🚧 |
-| 1 · Primer día 🎒 | 9 | 🚧 |
+| 0 · El archivo de papel 🗂️ *(opcional)* | 10 | ✅ |
+| 1 · Primer día 🎒 | 9 | ✅ |
 | 2 · Atención al cliente ☎️ | 9 | 🚧 |
 | 3 · Ventas 💶 | 9 | 🚧 |
 | 4 · Logística 📦 | 10 | 🚧 |
@@ -42,43 +42,43 @@ diseñar en papel cómo debería guardarse. (Autónoma: no contiene pistas del F
 tablas, razonar con lógica Y/O/NO y con conjuntos, identificar entidades y relaciones, leer y dibujar un diagrama
 entidad-relación, describir el ciclo del análisis y los roles de datos, y tratar datos personales con cuidado.
 
-### e0-01 · ¿Qué es un dato? · 20 ◈ 🚧
+### e0-01 · ¿Qué es un dato? · 20 ◈ ✅
 - **Conceptos:** dato vs información, tipos (texto, número entero/decimal, fecha, sí/no), cualitativo vs cuantitativo, el dato vacío (lo que más tarde será `NULL`).
 - **Reto (`clasificar`):** clasificar los datos de una ficha de cliente de 1998 por tipo.
 
-### e0-02 · Del Excel gigante a las tablas · 25 ◈ 🚧
+### e0-02 · Del Excel gigante a las tablas · 25 ◈ ✅
 - **Conceptos:** tabla, fila, columna, una tabla = un tipo de cosa, problemas de repetir datos (cambiar un teléfono en 40 sitios, erratas).
 - **Reto (`seleccionar`):** marcar en el Excel las celdas que se repiten y que deberían vivir en otra tabla.
 
-### e0-03 · Verdadero o falso: lógica Y/O/NO · 30 ◈ 🚧
+### e0-03 · Verdadero o falso: lógica Y/O/NO · 30 ◈ ✅
 - **Conceptos:** condición, verdadero/falso, Y (todas), O (alguna), NO, paréntesis, tablas de verdad, «no sé» (lógica de 3 valores, primer contacto).
 - **Reto (`seleccionar`):** marcar a mano las fichas que cumplen «de Madrid Y (compró en 1999 O gastó más de 100 €)».
 
-### e0-04 · Conjuntos: unir, cruzar y restar · 30 ◈ 🚧
+### e0-04 · Conjuntos: unir, cruzar y restar · 30 ◈ ✅
 - **Conceptos:** conjunto, diagramas de Venn, unión, intersección, diferencia (base de `UNION`, `JOIN` y `EXCEPT`).
 - **Reto (`clasificar`):** colocar clientes en un Venn «compró audio» / «compró gaming».
 
-### e0-05 · Entidades y atributos · 30 ◈ 🚧
+### e0-05 · Entidades y atributos · 30 ◈ ✅
 - **Conceptos:** entidad (cliente, producto, pedido…), atributo, entidad vs atributo (¿la ciudad es una cosa o un dato?).
 - **Reto (`clasificar`):** separar entidades y atributos del archivo de la tienda.
 
-### e0-06 · Relaciones y claves · 35 ◈ 🚧
+### e0-06 · Relaciones y claves · 35 ◈ ✅
 - **Conceptos:** relación 1:1, 1:N, N:M; clave primaria («el DNI de cada fila»), clave foránea («la fila que apunta a otra»), tabla intermedia para N:M.
 - **Reto (`quiz` + `clasificar`):** decidir el tipo de cada relación (cliente–pedido, pedido–producto, empleado–tienda…).
 
-### e0-07 · Diagramas entidad-relación · 40 ◈ 🚧
+### e0-07 · Diagramas entidad-relación · 40 ◈ ✅
 - **Conceptos:** cajas, líneas, notación pata de gallo (crow's foot), leer un diagrama, cardinalidad mínima (opcional/obligatoria).
 - **Reto (`diagrama`):** conectar las entidades de la tienda y elegir la cardinalidad de cada línea.
 
-### e0-08 · El ciclo del análisis y los roles · 25 ◈ 🚧
+### e0-08 · El ciclo del análisis y los roles · 25 ◈ ✅
 - **Conceptos:** pregunta → datos → limpieza → análisis → comunicar → decisión; Data Analyst vs Data Scientist vs Data Engineer vs BI; buenas preguntas de negocio.
 - **Reto (`ordenar` + `clasificar`):** ordenar los pasos de un análisis real y asignar tareas a cada rol.
 
-### e0-09 · Privacidad y ética de los datos · 25 ◈ 🚧
+### e0-09 · Privacidad y ética de los datos · 25 ◈ ✅
 - **Conceptos:** dato personal y dato sensible, RGPD (principios básicos: finalidad, minimización, acceso), anonimizar vs seudonimizar, sesgos.
 - **Reto (`seleccionar`):** marcar qué columnas de un informe no deberían salir de la empresa.
 
-### e0-10 · Caso: Ordenar el archivo · 60 ◈ 🚧
+### e0-10 · Caso: Ordenar el archivo · 60 ◈ ✅
 - **Caso:** a partir del Excel gigante de 1998, diseñar el diagrama completo de la tienda (entidades, atributos clave, relaciones y cardinalidades) y responder tres preguntas sobre él. → Credencial **Arquitecto de datos**.
 
 ---
@@ -94,39 +94,39 @@ apertura), `empleados` (id, nombre, departamento, tienda_id, email).
 **Al terminarla, el alumno sabrá:** qué es una base de datos relacional, leer un esquema, y escribir consultas
 `SELECT` que eligen, calculan, renombran, quitan repetidos, ordenan y limitan resultados.
 
-### e1-01 · ¿Qué es una base de datos? · 20 ◈ 🚧
+### e1-01 · ¿Qué es una base de datos? · 20 ◈ ✅
 - **Conceptos nuevos:** base de datos, tabla, fila (registro), columna (campo), SQL, consulta, `SELECT * FROM`, el `;` final.
 - **Reto:** ver la tabla `tiendas` entera.
 
-### e1-02 · Elegir columnas · 25 ◈ 🚧
+### e1-02 · Elegir columnas · 25 ◈ ✅
 - **Conceptos nuevos:** `SELECT col1, col2`, orden de las columnas, por qué no abusar de `*`, mayúsculas en palabras clave (convención).
 - **Reto:** listado de empleados con nombre y departamento para el directorio interno.
 
-### e1-03 · Leer el esquema y los tipos · 25 ◈ 🚧
+### e1-03 · Leer el esquema y los tipos · 25 ◈ ✅
 - **Conceptos nuevos:** pestaña Esquema, tipos `integer`, `numeric`, `text`, `date`, `boolean`; clave primaria `id` (primer contacto).
 - **Reto (interpretar + consulta):** ¿qué tipo tiene `precio`? Lista nombre, precio y si está activo.
 
-### e1-04 · Columnas calculadas · 30 ◈ 🚧
+### e1-04 · Columnas calculadas · 30 ◈ ✅
 - **Conceptos nuevos:** operadores `+ - * /`, división entera vs decimal, concatenar texto con `||`.
 - **Reto:** valor del inventario por producto (`precio * stock`).
 
-### e1-05 · Ponerle nombre: alias · 30 ◈ 🚧
+### e1-05 · Ponerle nombre: alias · 30 ◈ ✅
 - **Conceptos nuevos:** `AS`, alias con espacios entre comillas dobles, alias de tabla (primer contacto).
 - **Reto:** el informe anterior con columnas `producto` y `valor_inventario`.
 
-### e1-06 · Sin repetir: DISTINCT · 30 ◈ 🚧
+### e1-06 · Sin repetir: DISTINCT · 30 ◈ ✅
 - **Conceptos nuevos:** `DISTINCT`, `DISTINCT` sobre varias columnas.
 - **Reto:** ¿qué categorías y qué proveedores tenemos?
 
-### e1-07 · Ordenar resultados · 35 ◈ 🚧
+### e1-07 · Ordenar resultados · 35 ◈ ✅
 - **Conceptos nuevos:** `ORDER BY`, `ASC`/`DESC`, ordenar por varias columnas, por alias y por expresión.
 - **Reto:** productos del más caro al más barato y, a igual precio, por nombre.
 
-### e1-08 · Los primeros N: LIMIT y OFFSET · 35 ◈ 🚧
+### e1-08 · Los primeros N: LIMIT y OFFSET · 35 ◈ ✅
 - **Conceptos nuevos:** `LIMIT`, `OFFSET`, paginar, «top N». 🌍 `TOP` en SQL Server, `FETCH FIRST` estándar.
 - **Reto:** los 5 productos con más stock; después, la «página 2».
 
-### e1-09 · Caso: El inventario imposible · 50 ◈ 🚧
+### e1-09 · Caso: El inventario imposible · 50 ◈ ✅
 - **Conceptos nuevos:** comentarios `--` y `/* */`; combinar todo lo anterior.
 - **Caso:** el informe de inventario de Lucía «no cuadra». Ordenando por stock aparece un producto con stock
   **negativo**. → Pista del Expediente: **El inventario imposible**.

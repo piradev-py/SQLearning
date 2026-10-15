@@ -169,13 +169,15 @@
 
   // --- Pistas y solución --------------------------------------------------
   // `cuenta`: las ayudas de este paso cuentan para los bloques (reto/caso)
+  // Los pasos sobre el papel no tienen solucion escrita, pero sí saben mostrarla (PAPEL.mostrarSolucion)
+  const tieneSolucion = paso => !!paso.solucion || PASOS_PAPEL.has(paso.tipo);
   function htmlPistas(pasoAyuda) {
-    if (!pasoAyuda.pistas?.length && !pasoAyuda.solucion) return "";
+    if (!pasoAyuda.pistas?.length && !tieneSolucion(pasoAyuda)) return "";
     return `<div class="lec-ayuda">
       <ol class="lec-pistas" data-lista-pistas></ol>
       <div class="lec-ayuda-botones">
         ${pasoAyuda.pistas?.length ? `<button type="button" data-pista>💡 Pista</button>` : ""}
-        <button type="button" data-ver-solucion ${pasoAyuda.pistas?.length ? "hidden" : ""}>👁 Ver la solución</button>
+        ${tieneSolucion(pasoAyuda) ? `<button type="button" data-ver-solucion ${pasoAyuda.pistas?.length ? "hidden" : ""}>👁 Ver la solución</button>` : ""}
       </div>
     </div>`;
   }
@@ -193,7 +195,7 @@
       vistas++;
       if (cuenta) ayudas.pistas++;
       rotular();
-      if (vistas >= total) { bPista.hidden = true; if (pasoAyuda.solucion) bSol.hidden = false; }
+      if (vistas >= total) { bPista.hidden = true; if (bSol) bSol.hidden = false; }
     });
     bSol?.addEventListener("click", () => {
       if (cuenta) ayudas.solucion = true;

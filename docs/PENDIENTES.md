@@ -47,10 +47,14 @@ quede pendiente y vuelve a pasar los tests.
 - [ ] Revisión fin de fase 3 (`qa-estres` + `alumno-novato` con e0-01 y e1-01)
 
 ## Fase 4 · Primer hito jugable
-- [ ] Etapa 1 completa + tests → publicar en GitHub Pages
-- [ ] Etapa 0 completa
+- [x] Etapa 0 completa (10 niveles) y Etapa 1 completa (9 niveles): verificador 19/19 y `npm test` en verde
+- [x] Música de fondo (2 pistas en bucle, play/stop y volumen en todas las páginas) y locución del prólogo (`js/musica.js`)
+- [ ] Confirmar origen/licencia de los audios antes de publicar (`docs/LICENCIAS.md`)
+- [ ] Revisión de sección (etapas 0 y 1): `qa-estres` (retomar la de fase 3, cortada por el límite de uso) + `alumno-novato`
+- [ ] Publicar en GitHub Pages
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
+- [ ] **Analizar el prólogo propuesto por el usuario** (`docs/PROLOGO_PROPUESTO.md`) como posible prólogo de la historia
 - [ ] Prólogo con movimiento reducido: ¿frase a frase con fundido (sin movimiento) en vez de todo de golpe? (el Windows del usuario lo tiene activado)
 - [ ] Figuras del ambiente historia (lluvia, carteles, siluetas de personajes, el Fantasma) — ver `docs/ESTILO.md`
 - [ ] Pulido visual de la página de lección, pasos «sobre el papel» y pantalla de diligencia superada

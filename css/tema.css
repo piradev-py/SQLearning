@@ -195,6 +195,13 @@ kbd {
   50% { box-shadow: 0 0 0 7px rgb(201 166 107 / 0.1), 0 0 36px 12px rgb(201 166 107 / 0.3); }
 }
 
+/* Control de la música de fondo (js/musica.js) */
+.musica { display: inline-flex; align-items: center; gap: 6px; }
+.musica-boton { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }
+.musica-nota { color: var(--texto-suave); }
+.musica-volumen { width: 84px; accent-color: var(--acento); }
+.prologo-musica { position: absolute; top: 16px; right: 16px; }
+
 /* Panel de cristal oscuro con borde neón */
 .panel-neon {
   background: var(--superficie);

@@ -13,7 +13,7 @@ CURSO.registrar({
     {
       tipo: "explicacion",
       titulo: "Dato e información",
-      texto: "Un **dato** es un valor suelto: `Madrid`, `245,90`, `12/03/1998`. Por sí solo dice poco.\nLa **información** aparece cuando los datos se relacionan: «Rosa, de Madrid, gastó 245,90 € en 1998».\nCada dato tiene un **tipo**: **texto** (nombres, ciudades), **número** (cantidades, precios), **fecha** o **sí/no**.",
+      texto: "Un **dato** es un valor suelto: `Madrid`, `40.900`, `12/03/1998`. Por sí solo dice poco.\nLa **información** aparece cuando los datos se relacionan: «Rosa, de Madrid, gastó 40.900 pesetas en 1998».\nCada dato tiene un **tipo**: **texto** (nombres, ciudades), **número** (cantidades, precios), **fecha** o **sí/no**.",
       consejo: "Un teléfono o un código postal se escriben con cifras, pero son **texto**: nunca vas a sumarlos ni a calcular su media."
     },
     {
@@ -25,7 +25,7 @@ CURSO.registrar({
         { texto: "Ciudad: Madrid", grupo: "Texto" },
         { texto: "Teléfono: 915 552 311", grupo: "Texto" },
         { texto: "Compras este año: 7", grupo: "Número" },
-        { texto: "Gasto total: 245,90 €", grupo: "Número" },
+        { texto: "Gasto total: 40.900 pts", grupo: "Número" },
         { texto: "Fecha de alta: 12/03/1998", grupo: "Fecha" },
         { texto: "Socia del club: sí", grupo: "Sí / No" },
         { texto: "Recibe publicidad: no", grupo: "Sí / No" }

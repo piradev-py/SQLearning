@@ -54,6 +54,8 @@
     sello.hidden = true;
     boton.hidden = true;
     raiz.hidden = false;
+    // Locución del prólogo (solo aquí); si el navegador la bloquea, empieza con el primer clic
+    window.MUSICA?.voz("recursos/spech_intropage.mp3");
 
     function terminar() {
       if (terminado) return;
@@ -96,7 +98,7 @@
     }
 
     // Clic o Enter/Espacio adelantan la frase siguiente (se ven todas igualmente)
-    raiz.onclick = ev => { if (!ev.target.closest("[data-continuar]") && !terminado && !reducido()) siguiente(); };
+    raiz.onclick = ev => { if (ev.target.closest("[data-musica]")) return; if (!ev.target.closest("[data-continuar]") && !terminado && !reducido()) siguiente(); };
     raiz.onkeydown = ev => {
       if ((ev.key === "Enter" || ev.key === " ") && !ev.target.closest("[data-continuar]") && !terminado && !reducido()) {
         ev.preventDefault();
@@ -104,6 +106,7 @@
       }
     };
     boton.onclick = () => {
+      window.MUSICA?.callar();
       raiz.hidden = true;
       alTerminar?.();
     };

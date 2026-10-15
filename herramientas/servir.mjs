@@ -20,6 +20,7 @@ const TIPOS = {
   ".png": "image/png",
   ".ico": "image/x-icon",
   ".wasm": "application/wasm",
+  ".mp3": "audio/mpeg",
   ".data": "application/octet-stream",
   ".tar.gz": "application/gzip"
 };

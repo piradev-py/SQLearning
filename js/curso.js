@@ -17,29 +17,29 @@
       opcional: true, datos: null,
       niveles: [
         { id: "e0-01", archivo: "e0-01-que-es-un-dato.js", titulo: "¿Qué es un dato?", listo: true },
-        { id: "e0-02", archivo: "e0-02-del-excel-a-las-tablas.js", titulo: "Del Excel gigante a las tablas", listo: false },
-        { id: "e0-03", archivo: "e0-03-logica-y-o-no.js", titulo: "Verdadero o falso: lógica Y/O/NO", listo: false },
-        { id: "e0-04", archivo: "e0-04-conjuntos.js", titulo: "Conjuntos: unir, cruzar y restar", listo: false },
-        { id: "e0-05", archivo: "e0-05-entidades-y-atributos.js", titulo: "Entidades y atributos", listo: false },
-        { id: "e0-06", archivo: "e0-06-relaciones-y-claves.js", titulo: "Relaciones y claves", listo: false },
-        { id: "e0-07", archivo: "e0-07-diagramas-er.js", titulo: "Diagramas entidad-relación", listo: false },
-        { id: "e0-08", archivo: "e0-08-ciclo-del-analisis.js", titulo: "El ciclo del análisis y los roles", listo: false },
-        { id: "e0-09", archivo: "e0-09-privacidad-y-etica.js", titulo: "Privacidad y ética de los datos", listo: false },
-        { id: "e0-10", archivo: "e0-10-caso-ordenar-el-archivo.js", titulo: "Caso: Ordenar el archivo", listo: false, caso: true }
+        { id: "e0-02", archivo: "e0-02-del-excel-a-las-tablas.js", titulo: "Del Excel gigante a las tablas", listo: true },
+        { id: "e0-03", archivo: "e0-03-logica-y-o-no.js", titulo: "Verdadero o falso: lógica Y/O/NO", listo: true },
+        { id: "e0-04", archivo: "e0-04-conjuntos.js", titulo: "Conjuntos: unir, cruzar y restar", listo: true },
+        { id: "e0-05", archivo: "e0-05-entidades-y-atributos.js", titulo: "Entidades y atributos", listo: true },
+        { id: "e0-06", archivo: "e0-06-relaciones-y-claves.js", titulo: "Relaciones y claves", listo: true },
+        { id: "e0-07", archivo: "e0-07-diagramas-er.js", titulo: "Diagramas entidad-relación", listo: true },
+        { id: "e0-08", archivo: "e0-08-ciclo-del-analisis.js", titulo: "El ciclo del análisis y los roles", listo: true },
+        { id: "e0-09", archivo: "e0-09-privacidad-y-etica.js", titulo: "Privacidad y ética de los datos", listo: true },
+        { id: "e0-10", archivo: "e0-10-caso-ordenar-el-archivo.js", titulo: "Caso: Ordenar el archivo", listo: true, caso: true }
       ]
     },
     {
       n: 1, carpeta: "1-primer-dia", titulo: "Primer día", departamento: "Datos · Onboarding", datos: "faro-e1",
       niveles: [
         { id: "e1-01", archivo: "e1-01-que-es-una-base-de-datos.js", titulo: "¿Qué es una base de datos?", listo: true },
-        { id: "e1-02", archivo: "e1-02-elegir-columnas.js", titulo: "Elegir columnas", listo: false },
-        { id: "e1-03", archivo: "e1-03-leer-el-esquema.js", titulo: "Leer el esquema y los tipos", listo: false },
-        { id: "e1-04", archivo: "e1-04-columnas-calculadas.js", titulo: "Columnas calculadas", listo: false },
-        { id: "e1-05", archivo: "e1-05-alias.js", titulo: "Ponerle nombre: alias", listo: false },
-        { id: "e1-06", archivo: "e1-06-distinct.js", titulo: "Sin repetir: DISTINCT", listo: false },
-        { id: "e1-07", archivo: "e1-07-ordenar.js", titulo: "Ordenar resultados", listo: false },
-        { id: "e1-08", archivo: "e1-08-limit-offset.js", titulo: "Los primeros N: LIMIT y OFFSET", listo: false },
-        { id: "e1-09", archivo: "e1-09-caso-inventario-imposible.js", titulo: "Caso: El inventario imposible", listo: false, caso: true }
+        { id: "e1-02", archivo: "e1-02-elegir-columnas.js", titulo: "Elegir columnas", listo: true },
+        { id: "e1-03", archivo: "e1-03-leer-el-esquema.js", titulo: "Leer el esquema y los tipos", listo: true },
+        { id: "e1-04", archivo: "e1-04-columnas-calculadas.js", titulo: "Columnas calculadas", listo: true },
+        { id: "e1-05", archivo: "e1-05-alias.js", titulo: "Ponerle nombre: alias", listo: true },
+        { id: "e1-06", archivo: "e1-06-distinct.js", titulo: "Sin repetir: DISTINCT", listo: true },
+        { id: "e1-07", archivo: "e1-07-ordenar.js", titulo: "Ordenar resultados", listo: true },
+        { id: "e1-08", archivo: "e1-08-limit-offset.js", titulo: "Los primeros N: LIMIT y OFFSET", listo: true },
+        { id: "e1-09", archivo: "e1-09-caso-inventario-imposible.js", titulo: "Caso: El inventario imposible", listo: true, caso: true }
       ]
     },
     { n: 2, carpeta: "2-atencion-cliente", titulo: "Atención al cliente", departamento: "Atención al cliente", datos: "faro-e2", niveles: pendientes(2, 9) },

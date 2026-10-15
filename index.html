@@ -21,6 +21,7 @@
 
   <!-- 1. Prólogo: siempre al entrar -->
   <section class="prologo" data-prologo tabindex="-1" aria-labelledby="prologo-titulo">
+    <div class="prologo-musica" data-musica></div>
     <h1 class="prologo-marca" id="prologo-titulo">SQL<strong>earning</strong></h1>
     <div class="prologo-texto" data-lineas aria-live="polite"></div>
     <p class="prologo-sello" data-sello hidden>
@@ -47,6 +48,7 @@
         <button type="button" data-abrir-expediente>📁 Expediente</button>
         <button type="button" data-abrir-credenciales>🪪 Credenciales</button>
         <a class="boton-enlace" href="laboratorio.html">⌨ Laboratorio</a>
+        <div data-musica></div>
         <button type="button" data-abrir-ajustes aria-label="Ajustes">⚙</button>
         <button type="button" class="boton-tema" data-tema aria-label="Cambiar tema">🌙 Noche</button>
       </nav>
@@ -80,6 +82,7 @@
   </div>
 
   <script src="js/tema.js"></script>
+  <script src="js/musica.js"></script>
   <script src="js/curso.js"></script>
   <script src="js/progreso.js"></script>
   <script src="js/prologo.js"></script>

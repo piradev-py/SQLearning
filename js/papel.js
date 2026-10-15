@@ -196,13 +196,17 @@
       const lienzo = div.querySelector("[data-lienzo]"), svg = div.querySelector("[data-lineas]");
       if (!lienzo) return;
       const caja = lienzo.getBoundingClientRect();
+      // Si entretanto se montó otro paso en la mesa, sus entidades pueden no existir: se salta esa línea
       const centro = idE => {
-        const r = lienzo.querySelector(`[data-entidad="${CSS.escape(idE)}"]`).getBoundingClientRect();
+        const el = lienzo.querySelector(`[data-entidad="${CSS.escape(idE)}"]`);
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
         return { x: r.left - caja.left + r.width / 2, y: r.top - caja.top + r.height / 2 };
       };
       svg.setAttribute("viewBox", `0 0 ${caja.width} ${caja.height}`);
       svg.innerHTML = rels.map(r => {
         const a = centro(r.de), b = centro(r.a);
+        if (!a || !b) return "";
         const [ta, tb] = r.tipo === "1:1" ? ["1", "1"] : r.tipo === "1:N" ? ["1", "N"] : ["N", "M"];
         const p = t => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
         const pa = p(0.3), pb = p(0.7);
