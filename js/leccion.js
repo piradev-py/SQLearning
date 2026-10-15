@@ -31,10 +31,23 @@
   let actual = 0;
   const superados = new Set();
   const borradores = {};                 // índice de paso -> texto del editor
-  const ayudas = { pistas: 0, solucion: false };  // solo cuentan en el reto / caso
+  // Ayudas usadas en el reto / caso. Se guardan en el navegador: recargar la página no las borra
+  // (si no, ver la solución y pulsar F5 daría 3 bloques). Se olvidan al superar la diligencia.
+  const CLAVE_AYUDAS = "sqlearning-ayudas";
+  const leerAyudas = () => { try { return JSON.parse(localStorage.getItem(CLAVE_AYUDAS) || "{}"); } catch (e) { return {}; } };
+  const guardadas = leerAyudas()[id] || {};
+  const ayudas = { pistas: Number(guardadas.pistas) || 0, solucion: !!guardadas.solucion };
+  function guardarAyudas(borrar = false) {
+    try {
+      const todas = leerAyudas();
+      if (borrar) delete todas[id]; else todas[id] = { ...ayudas };
+      localStorage.setItem(CLAVE_AYUDAS, JSON.stringify(todas));
+    } catch (e) { /* sin guardado */ }
+  }
   let editor = null;
   let montajePapel = null;
   let parteCaso = 0;
+  let temporizadorParte = null;
   let terminado = false;
 
   // --- Carga ---------------------------------------------------------------
@@ -55,6 +68,7 @@
   async function iniciar() {
     ref = id && CURSO.buscar(id);
     if (!ref || !ref.nivel.archivo) return fallo("Esta diligencia no existe.");
+    if (!ref.nivel.listo) return fallo("Esta diligencia aún está **en preparación**.");
     if (!PROGRESO.disponible(id) && !PROGRESO.completado(id))
       return fallo("Esta diligencia aún está **bloqueada**. Supera las anteriores en la hoja de ruta.");
     try {
@@ -66,6 +80,7 @@
     if (!lec) return fallo("No se ha podido leer la diligencia.");
 
     document.title = `${CURSO.codigo(id)} · ${lec.titulo} · SQLearning`;
+    if (PROGRESO.enPrueba()) document.querySelector(".lec-cabecera").insertAdjacentHTML("afterend", `<p class="aviso-prueba">MODO PRUEBA · todo desbloqueado · no se guarda en tu progreso real</p>`);
     $("[data-codigo]").textContent = (ref.nivel.caso ? "CASO " : "") + CURSO.codigo(id);
     $("[data-titulo]").textContent = lec.titulo;
 
@@ -193,12 +208,12 @@
       if (vistas >= total) return;
       lista.insertAdjacentHTML("beforeend", `<li>${md(pasoAyuda.pistas[vistas])}</li>`);
       vistas++;
-      if (cuenta) ayudas.pistas++;
+      if (cuenta) { ayudas.pistas++; guardarAyudas(); }
       rotular();
       if (vistas >= total) { bPista.hidden = true; if (bSol) bSol.hidden = false; }
     });
     bSol?.addEventListener("click", () => {
-      if (cuenta) ayudas.solucion = true;
+      if (cuenta) { ayudas.solucion = true; guardarAyudas(); }
       alVerSolucion?.();
       bSol.disabled = true;
       bSol.textContent = "👁 Solución en el editor";
@@ -223,6 +238,7 @@
   }
 
   function mostrarPaso(i) {
+    clearTimeout(temporizadorParte);
     actual = i;
     terminado = false;
     montajePapel = null;
@@ -394,10 +410,14 @@
     const parte = p.partes[parteCaso];
     const cabecera = `${cabeceraPersonaje(p.de)}<p class="lec-enunciado">${md(p.enunciado)}</p>
       <p class="lec-etiqueta">Parte ${parteCaso + 1} de ${p.partes.length}</p>`;
+    // Cada parte avanza una sola vez (un doble Enter o doble Revisar no debe saltarse la siguiente)
+    let avanzada = false;
     const siguienteParte = () => {
+      if (avanzada) return;
+      avanzada = true;
       if (parteCaso < p.partes.length - 1) {
         parteCaso++;
-        setTimeout(() => pintarCaso(p, caja, i), 700);
+        temporizadorParte = setTimeout(() => pintarCaso(p, caja, i), 700);
       } else terminar({});
     };
     if (parte.tipo === "interpretar") {
@@ -405,8 +425,8 @@
       caja.insertAdjacentHTML("afterbegin", cabecera);
       // Las ayudas del caso cuentan para los bloques
       const bPista = $("[data-pista]"), bSol = $("[data-ver-solucion]");
-      bPista?.addEventListener("click", () => { ayudas.pistas++; });
-      bSol?.addEventListener("click", () => { ayudas.solucion = true; });
+      bPista?.addEventListener("click", () => { ayudas.pistas++; guardarAyudas(); });
+      bSol?.addEventListener("click", () => { ayudas.solucion = true; guardarAyudas(); });
       const form = $("[data-form-respuesta]");
       form.addEventListener("submit", () => { if (superados.has(i)) { superados.delete(i); siguienteParte(); } });
     } else {
@@ -440,6 +460,7 @@
     const bloques = ayudas.solucion ? 1 : ayudas.pistas > 0 ? 2 : 3;
     const extra = r?.bonus ? (lec.pasos[actual].bonus?.xp || 10) : 0;
     const res = PROGRESO.registrar(id, bloques, lec.xp || 0, extra);
+    guardarAyudas(true);
     const ultimoPaso = lec.pasos[lec.pasos.length - 1];
     const pista = ultimoPaso.tipo === "caso" && ultimoPaso.expediente ? ultimoPaso.expediente : null;
     const pistaNueva = pista ? PROGRESO.anadirPista({ ...pista, nivel: id }) : false;
@@ -450,6 +471,7 @@
         ${[1, 2, 3].map(k => `<i class="${k <= bloques ? "b-lleno" : ""}"></i>`).join("")}
         <span>${bloques === 3 ? "Verificación limpia: sin pistas." : bloques === 2 ? "Verificada con pistas." : "Verificada viendo la solución."}</span>
       </p>
+      ${res.guardado === false ? `<p class="lec-final-aviso">⚠️ No se ha podido guardar el progreso (¿almacenamiento del navegador lleno o bloqueado?).</p>` : ""}
       <p class="lec-final-creditos">${res.creditos > 0 ? `+${res.creditos} ◈` : "Sin créditos nuevos (ya la tenías con estos bloques)"}${extra ? " · incluye el extra ⚡" : ""}</p>
       ${res.subeAutorizacion ? `<p class="lec-final-aut">Nueva autorización: <strong>L${res.subeAutorizacion.nivel} · ${esc(res.subeAutorizacion.nombre)}</strong></p>` : ""}
       ${res.credenciales.length ? `<ul class="lec-final-credenciales">${res.credenciales.map(c => `<li>🪪 Credencial: <strong>${esc(c.nombre)}</strong> — ${esc(c.desc)}</li>`).join("")}</ul>` : ""}

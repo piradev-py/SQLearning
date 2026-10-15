@@ -28,7 +28,7 @@
     const venn = { tipo: "clasificar", venn: true, enunciado: "Venn", grupos: ["Audio", "Gaming"], elementos: [
       { texto: "Ana", grupo: ["Audio"] }, { texto: "Luis", grupo: ["Audio", "Gaming"] }, { texto: "Eva", grupo: [] }, { texto: "Pau", grupo: ["Gaming"] }] };
     let m = PAPEL.montar(mesa, venn);
-    prueba("Venn: 4 regiones (solo A, A y B, solo B, ninguno)", () => mesa.querySelectorAll("section[data-zona]").length === 4);
+    prueba("Venn: 4 regiones (solo A, A y B, solo B, ninguno)", () => mesa.querySelectorAll(".papel-zona").length === 4);
     prueba("Venn: sin colocar no aprueba", () => !m.revisar().ok);
     m.mostrarSolucion();
     prueba("Venn: la solución aprueba", () => m.revisar().ok || m.revisar());

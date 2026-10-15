@@ -89,6 +89,20 @@
   vigilar(actual);
   vigilar(otro);
 
+  // Varias pestañas abiertas: solo suena la última que empezó; las demás se pausan
+  // (sin cambiar la preferencia) y vuelven a sonar con el siguiente clic en ellas.
+  const miId = Math.random().toString(36).slice(2);
+  let canal = null;
+  try { canal = new BroadcastChannel("sqlearning-musica"); } catch (e) { /* navegador antiguo: sin coordinación */ }
+  [actual, otro].forEach(a => a.addEventListener("play", () => canal?.postMessage({ suena: miId })));
+  if (canal) canal.onmessage = ev => {
+    if (ev.data?.suena && ev.data.suena !== miId && !actual.paused) {
+      fundiendo = false;
+      [actual, otro].forEach(a => a.pause());
+      pendiente = true;
+    }
+  };
+
   function intentar() {
     aplicarVolumen();
     const p = actual.play();

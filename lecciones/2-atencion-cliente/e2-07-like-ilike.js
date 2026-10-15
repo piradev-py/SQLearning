@@ -75,23 +75,23 @@ WHERE motivo LIKE 'producto%';`,
     {
       tipo: "reto",
       de: "marcos",
-      enunciado: "Quiero revisar todas las reclamaciones por **retrasos**. Muéstrame `id`, `fecha`, `motivo` y `estado` de las reclamaciones cuyo motivo contenga la palabra «retraso» **en cualquier posición y sin importar mayúsculas**. Ordénalas por `fecha` y, a igual fecha, por `id`.",
+      enunciado: "Quiero revisar todas las reclamaciones sobre **productos**. Muéstrame `id`, `fecha`, `motivo` y `estado` de las reclamaciones cuyo motivo contenga la palabra «producto» **en cualquier posición y sin importar mayúsculas**. Ordénalas por `fecha` y, a igual fecha, por `id`.",
       inicial: "-- Escribe tu consulta aquí\n",
       comprobaciones: [
         { texto: "Tiene las columnas id, fecha, motivo y estado", prueba: (r) => PRUEBA.columnas(r, ["id", "fecha", "motivo", "estado"]) },
-        { texto: "Encuentra las 6 reclamaciones por retraso", prueba: (r) => (r?.filas?.length ?? 0) === 6 },
+        { texto: "Encuentra las 8 reclamaciones sobre productos", prueba: (r) => (r?.filas?.length ?? 0) === 8 },
         { texto: "Son las reclamaciones pedidas, ordenadas por fecha", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT id, fecha, motivo, estado
 FROM reclamaciones
-WHERE motivo ILIKE '%retraso%'
+WHERE motivo ILIKE '%producto%'
 ORDER BY fecha, id;`) }
       ],
       pistas: [
         "«En cualquier posición» = `%` delante y detrás. «Sin importar mayúsculas» = `ILIKE`.",
-        "SELECT id, fecha, motivo, estado FROM reclamaciones WHERE motivo ILIKE '%retraso%' ORDER BY fecha, id;"
+        "SELECT id, fecha, motivo, estado FROM reclamaciones WHERE motivo ILIKE '%producto%' ORDER BY fecha, id;"
       ],
       solucion: `SELECT id, fecha, motivo, estado
 FROM reclamaciones
-WHERE motivo ILIKE '%retraso%'
+WHERE motivo ILIKE '%producto%'
 ORDER BY fecha, id;`
     }
   ]

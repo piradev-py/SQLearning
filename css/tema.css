@@ -195,6 +195,13 @@ kbd {
   50% { box-shadow: 0 0 0 7px rgb(201 166 107 / 0.1), 0 0 36px 12px rgb(201 166 107 / 0.3); }
 }
 
+.aviso-prueba {
+  margin: 0; padding: 6px; text-align: center;
+  font: 700 12px var(--fuente-titulo); letter-spacing: 0.12em; color: var(--fondo);
+  background: repeating-linear-gradient(-45deg, #c9a66b 0 14px, #b08f55 14px 28px);
+}
+.lec-final-aviso { color: var(--error); }
+
 /* Control de la música de fondo (js/musica.js) */
 .musica { display: inline-flex; align-items: center; gap: 6px; }
 .musica-boton { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }

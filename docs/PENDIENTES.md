@@ -52,7 +52,7 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Volver de una lección o del laboratorio lleva a la hoja de ruta (`index.html#ruta`), sin repetir el prólogo
 - [x] Audios hechos con Suno por el usuario (atribución en README y `docs/LICENCIAS.md`)
 - [x] **Etapa 2 completa** (9 niveles, verificador 28/28, `npm test` verde)
-- [ ] Revisión de sección (etapas 0, 1 y 2, juntas para ahorrar uso): `qa-estres` (retomar la de fase 3, cortada por el límite de uso) + `alumno-novato`
+- [~] Revisión de sección (etapas 0, 1 y 2): `qa-estres` hecha (`docs/revisiones/2026-10-15-qa-etapas-0-2.md`, 🔴1 🟠5 🟡17). Arreglados F1 (doble envío en casos), F2 (progreso entre pestañas), F3 (ayudas tras recargar), F4 (progreso corrupto validado pieza a pieza), F5 (e2-07 exige ILIKE), F6 (foco del teclado en clasificar y diagrama) y de los menores: diligencias no listas no se abren por URL, aviso de modo prueba en la lección, aviso si no se pudo guardar, una sola música con varias pestañas. Pendiente: `alumno-novato`: `qa-estres` (retomar la de fase 3, cortada por el límite de uso) + `alumno-novato`
 - [x] **Publicado** (2026-10-15): https://piradev-py.github.io/SQLearning/ (repo público github.com/piradev-py/SQLearning, Pages desde `main`, `/`). Comprobado: PGlite viaja con gzip (≈6 MB la primera visita), laboratorio listo en ~1,8 s, lecciones y prólogo funcionan
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)

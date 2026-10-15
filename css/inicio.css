@@ -160,15 +160,6 @@ body { background: transparent; min-height: 100vh; }
   text-decoration: none;
 }
 .boton-enlace:hover { border-color: var(--acento); box-shadow: var(--neon-magenta); }
-.aviso-prueba {
-  margin: 0;
-  padding: 6px;
-  text-align: center;
-  font: 700 12px var(--fuente-titulo);
-  letter-spacing: 0.12em;
-  color: var(--fondo);
-  background: repeating-linear-gradient(-45deg, #c9a66b 0 14px, #b08f55 14px 28px);
-}
 
 /* --- Bloques verificados ---------------------------------------- */
 .bloques { display: inline-flex; gap: 3px; vertical-align: middle; }

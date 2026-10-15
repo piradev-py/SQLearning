@@ -57,26 +57,43 @@
       if (!crudo) return vacio();
       const d = JSON.parse(crudo);
       if (!d || typeof d !== "object") return vacio();
-      const base = vacio();
+      // Se valida pieza a pieza: un dato basura se descarta sin romper la página
+      const completados = {};
+      if (d.completados && typeof d.completados === "object") {
+        for (const [id, c] of Object.entries(d.completados)) {
+          const b = Math.round(Number(c?.bloques));
+          if (/^e\d+-\d\d$/.test(id) && b >= 1 && b <= 3) completados[id] = { bloques: b, fecha: typeof c.fecha === "string" ? c.fecha : null };
+        }
+      }
+      const texto = v => (typeof v === "string" ? v : "");
+      const dias = Math.round(Number(d.turnos?.dias));
       return {
-        creditos: Number.isFinite(d.creditos) ? d.creditos : 0,
-        completados: d.completados && typeof d.completados === "object" ? d.completados : {},
-        credenciales: Array.isArray(d.credenciales) ? d.credenciales : [],
-        expediente: Array.isArray(d.expediente) ? d.expediente : [],
-        turnos: Object.assign(base.turnos, d.turnos),
-        ultimo: typeof d.ultimo === "string" ? d.ultimo : null,
-        ajustes: Object.assign(base.ajustes, d.ajustes)
+        creditos: Number.isFinite(d.creditos) && d.creditos >= 0 ? Math.round(d.creditos) : 0,
+        completados,
+        credenciales: Array.isArray(d.credenciales) ? d.credenciales.filter(c => CREDENCIALES.some(x => x.id === c)) : [],
+        expediente: Array.isArray(d.expediente)
+          ? d.expediente.filter(p => p && typeof p === "object" && texto(p.id) && texto(p.titulo))
+              .map(p => ({ id: p.id, titulo: p.titulo, texto: texto(p.texto), nivel: texto(p.nivel) || null }))
+          : [],
+        turnos: {
+          dias: Number.isFinite(dias) && dias >= 0 ? dias : 0,
+          ultimo: /^\d{4}-\d{2}-\d{2}$/.test(d.turnos?.ultimo) ? d.turnos.ultimo : null
+        },
+        ultimo: typeof d.ultimo === "string" && completados[d.ultimo] ? d.ultimo : null,
+        ajustes: { desbloquearTodo: d.ajustes?.desbloquearTodo === true }
       };
     } catch (e) {
       return vacio();           // JSON roto o almacenamiento bloqueado: se empieza de cero sin romper nada
     }
   }
 
+  let ultimoGuardadoOk = true;
   function guardar(d) {
     try {
       if (modoPrueba) sessionStorage.setItem(CLAVE_PRUEBA, JSON.stringify(d));
       else localStorage.setItem(CLAVE, JSON.stringify(d));
-    } catch (e) { /* sin guardado: el progreso dura lo que la página */ }
+      ultimoGuardadoOk = true;
+    } catch (e) { ultimoGuardadoOk = false; /* almacenamiento lleno o bloqueado */ }
   }
 
   let datos = cargar();
@@ -120,6 +137,7 @@
    * Devuelve { creditos, bloquesNuevos, credenciales: [nuevas], subeAutorizacion }.
    */
   function registrar(id, bloques, creditosBase = 0, extra = 0) {
+    datos = cargar();                    // otra pestaña pudo guardar avance mientras tanto
     bloques = Math.max(1, Math.min(3, Math.round(bloques)));
     const antes = datos.completados[id];
     const autAntes = autorizacion().nivel;
@@ -151,12 +169,14 @@
       creditos: ganados,
       bloquesNuevos: antes ? Math.max(0, bloques - antes.bloques) : bloques,
       credenciales: nuevas.filter(Boolean),
-      subeAutorizacion: autorizacion().nivel > autAntes ? autorizacion() : null
+      subeAutorizacion: autorizacion().nivel > autAntes ? autorizacion() : null,
+      guardado: ultimoGuardadoOk
     };
   }
 
   /** Añade una pista al expediente del caso (solo una vez). */
   function anadirPista(pista) {
+    datos = cargar();
     if (!pista?.id || datos.expediente.some(p => p.id === pista.id)) return false;
     datos.expediente.push({ id: pista.id, titulo: pista.titulo, texto: pista.texto, nivel: pista.nivel || null });
     guardar(datos);
@@ -170,7 +190,10 @@
     bloquesDe: id => datos.completados[id]?.bloques || 0,
     registrar, anadirPista,
     enPrueba: () => modoPrueba,
-    ajustar(clave, valor) { datos.ajustes[clave] = valor; guardar(datos); },
+    ajustar(clave, valor) { datos = cargar(); datos.ajustes[clave] = valor; guardar(datos); },
+    /** Vuelve a leer el progreso (p. ej. si otra pestaña lo ha cambiado). */
+    recargar() { datos = cargar(); },
+    CLAVE,
     /** Modo prueba: progreso de usar y tirar (sessionStorage), con todo desbloqueado. */
     entrarPrueba() {
       try { sessionStorage.setItem(CLAVE_PRUEBA, JSON.stringify(Object.assign(vacio(), { ajustes: { desbloquearTodo: true } }))); } catch (e) { /* solo en memoria */ }

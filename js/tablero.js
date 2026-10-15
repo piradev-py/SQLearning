@@ -10,8 +10,8 @@
   const $ = sel => document.querySelector(sel);
   const fmt = n => n.toLocaleString("es");
 
-  const bloquesHTML = (n, total = 3) =>
-    `<span class="bloques" aria-label="${n} de ${total} bloques verificados">${"<i class=\"b-lleno\"></i>".repeat(n)}${"<i></i>".repeat(total - n)}</span>`;
+  const bloquesHTML = (n, total = 3) => { n = Math.max(0, Math.min(total, Math.round(Number(n)) || 0)); return (
+    `<span class="bloques" aria-label="${n} de ${total} bloques verificados">${"<i class=\"b-lleno\"></i>".repeat(n)}${"<i></i>".repeat(total - n)}</span>`); };
 
   // Posición en zigzag: filas de `cols`, una hacia la derecha y la siguiente hacia la izquierda
   function celda(i, cols) {
@@ -146,6 +146,8 @@
   function preparar() {
     if (preparado) return;
     preparado = true;
+    // Si otra pestaña cambia el progreso, se vuelve a leer y se repinta
+    addEventListener("storage", ev => { if (ev.key === PROGRESO.CLAVE) { PROGRESO.recargar(); pintar(); } });
     let ultimoCols = columnas();
     new ResizeObserver(() => {
       if (columnas() !== ultimoCols) { ultimoCols = columnas(); pintar(); }

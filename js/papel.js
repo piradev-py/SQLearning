@@ -34,35 +34,37 @@
     const colocado = {};                         // i -> clave de zona
     let elegido = null;
 
-    function pintar() {
+    // Repinta y devuelve el foco a lo que se estaba usando (ficha o grupo), para que el teclado no se pierda
+    function pintar(foco) {
       const ficha = e => `<button type="button" class="papel-ficha${elegido === e.i ? " papel-ficha--elegida" : ""}" draggable="true"
           data-ficha="${e.i}" aria-pressed="${elegido === e.i}">${esc(e.texto)}</button>`;
       div.innerHTML = `<div class="papel papel-clasificar${paso.venn ? " papel-venn" : ""}">
         <p class="papel-ayuda">Pulsa una ficha y luego el grupo donde va (o arrástrala).</p>
-        <div class="papel-monton" data-zona="__monton" aria-label="Fichas sin colocar">
+        <section class="papel-monton" data-zona="__monton" tabindex="0" role="button" aria-label="Fichas sin colocar (pulsa aquí para devolver una ficha)">
           ${elementos.filter(e => colocado[e.i] === undefined).map(ficha).join("") || `<span class="papel-vacio">Todas colocadas</span>`}
-        </div>
+        </section>
         <div class="papel-zonas">${zonas.map(z => `
           <section class="papel-zona" data-zona="${esc(z.clave)}" tabindex="0" role="button" aria-label="Grupo ${esc(z.nombre)}">
             <h3>${esc(z.nombre)}</h3>
             <div class="papel-zona-fichas">${elementos.filter(e => colocado[e.i] === z.clave).map(ficha).join("")}</div>
           </section>`).join("")}
         </div></div>`;
+      if (foco) div.querySelector(foco)?.focus();
     }
     function mover(i, clave) {
       if (clave === "__monton") delete colocado[i]; else colocado[i] = clave;
       elegido = null;
-      pintar();
+      pintar(`[data-zona="${CSS.escape(clave)}"]`);
     }
     div.onclick = ev => {
       const f = ev.target.closest("[data-ficha]");
-      if (f) { const i = Number(f.dataset.ficha); elegido = elegido === i ? null : i; pintar(); return; }
+      if (f) { const i = Number(f.dataset.ficha); elegido = elegido === i ? null : i; pintar(`[data-ficha="${i}"]`); return; }
       const z = ev.target.closest("[data-zona]");
       if (z && elegido !== null) mover(elegido, z.dataset.zona);
     };
     div.onkeydown = ev => {
       const z = ev.target.closest("section[data-zona]");
-      if (z && (ev.key === "Enter" || ev.key === " ") && elegido !== null) { ev.preventDefault(); mover(elegido, z.dataset.zona); }
+      if (z && !ev.target.closest("[data-ficha]") && (ev.key === "Enter" || ev.key === " ") && elegido !== null) { ev.preventDefault(); mover(elegido, z.dataset.zona); }
     };
     div.ondragstart = ev => { const f = ev.target.closest("[data-ficha]"); if (f) ev.dataTransfer.setData("text/plain", f.dataset.ficha); };
     div.ondragover = ev => { if (ev.target.closest("[data-zona]")) ev.preventDefault(); };
@@ -170,7 +172,7 @@
       return { par: invertir ? `${r.a}|${r.de}` : `${r.de}|${r.a}`, tipo };
     };
 
-    function pintar() {
+    function pintar(foco) {
       const cols = Math.min(3, ent.length);
       div.innerHTML = `<div class="papel papel-diagrama">
         <p class="papel-ayuda">Elige dos entidades y el tipo de relación, y pulsa «Unir».</p>
@@ -191,6 +193,7 @@
         </li>`).join("") || `<li class="papel-vacio">Aún no hay relaciones.</li>`}</ul>
       </div>`;
       requestAnimationFrame(lineas);
+      if (foco) div.querySelector(foco)?.focus();
     }
     function lineas() {
       const lienzo = div.querySelector("[data-lienzo]"), svg = div.querySelector("[data-lineas]");
@@ -221,11 +224,11 @@
       const n = norma({ de, a, tipo });
       rels = rels.filter(r => norma(r).par !== n.par || r.fija);       // una sola relación por pareja
       if (!rels.some(r => norma(r).par === n.par)) rels.push({ de, a, tipo });
-      pintar();
+      pintar("[data-unir] button");
     };
     div.onclick = ev => {
       const q = ev.target.closest("[data-quitar]");
-      if (q) { rels.splice(Number(q.dataset.quitar), 1); pintar(); }
+      if (q) { rels.splice(Number(q.dataset.quitar), 1); pintar("[data-de]"); }
     };
     pintar();
     return {
