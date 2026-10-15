@@ -132,3 +132,7 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
   .lab-titulo { order: 3; flex-basis: 100%; }
   .boton-tema { margin-left: auto; }
 }
+
+/* Qué datos carga el laboratorio (los de la etapa más avanzada abierta) */
+.lab-datos { color: var(--cian); white-space: nowrap; }
+.lab-datos:empty { display: none; }

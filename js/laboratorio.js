@@ -4,7 +4,12 @@
 (function () {
   const CLAVE_BORRADOR = "sqlearning-lab-borrador";
   const CLAVE_ANCHO = "sqlearning-lab-ancho";
-  const DATOS = "faro-e1";
+  // Datos de la etapa más avanzada que el alumno tiene abierta y ya jugable (con alguna diligencia lista):
+  // así practica con las tablas que conoce (pedidos, líneas…) sin destapar las de expedientes clasificados.
+  const ETAPA_DATOS = CURSO.ETAPAS
+    .filter(e => e.datos && e.niveles.some(n => n.listo) && PROGRESO.etapaAbierta(e))
+    .pop() || CURSO.ETAPAS.find(e => e.datos);
+  const DATOS = ETAPA_DATOS.datos;
 
   const EJEMPLOS = [
     { nombre: "Ver todas las tiendas", sql: "SELECT *\nFROM tiendas;" },
@@ -150,6 +155,7 @@
       RESULTADO.esquema(vistaEsquema, esquema);
       RESULTADO.aviso(vistaResultado, "PostgreSQL está listo. Escribe una consulta y pulsa **Ejecutar** (o `Ctrl+Enter`).");
       estado.textContent = `${esquema.length} tablas`;
+      $("[data-datos-lab]").textContent = `Datos del EXP.${ETAPA_DATOS.n} · ${ETAPA_DATOS.titulo}`;
       btnEjecutar.disabled = false;
       $("[data-cargando]").hidden = true;
       paneles.forEach(p => { p.inert = false; });

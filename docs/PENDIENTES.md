@@ -60,7 +60,7 @@ quede pendiente y vuelve a pasar los tests.
 - [x] **Pestaña «Gráfico»** (`js/grafico.js`, `css/grafico.css`) en laboratorio y lección: barras/líneas automáticas, series por la 2.ª columna, un panel por medida, hover y teclado, paleta validada con la skill `dataviz`; campo de paso `grafico: true`; pruebas en `esc-laboratorio.mjs`
 - [x] Nombre «SQLearning» en Sixtyfour (la del prólogo) en todas las cabeceras; la lección ahora lo muestra
 - [x] Favicon en todos los tamaños + `apple-touch-icon`
-- [ ] El laboratorio carga `faro-e1`: ¿pasar a los datos de la etapa más avanzada desbloqueada? (para practicar GROUP BY con pedidos)
+- [x] El laboratorio carga los datos de la etapa más avanzada abierta y jugable (lo indica junto al título); prueba en `esc-laboratorio.mjs`
 - [ ] Índice de la etapa 3 en `js/curso.js` y lecciones (2 agentes `profesor-sql`)
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)

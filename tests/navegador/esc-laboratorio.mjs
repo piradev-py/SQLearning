@@ -164,5 +164,15 @@ export default async function (b) {
   }
   await b.foto("lab-1024-dia");
 
+  // 8. Datos: los de la etapa más avanzada abierta (sin progreso → EXP.1)
+  comprobar("Sin progreso carga los datos del EXP.1", /EXP\.1 /.test(await b.eval("document.querySelector('[data-datos-lab]').textContent")));
+  await b.eval("localStorage.setItem('sqlearning-progreso-v1', JSON.stringify({ creditos: 0, completados: {}, credenciales: [], expediente: [], turnos: { dias: 0, ultimo: null }, ultimo: null, ajustes: { desbloquearTodo: true } }))");
+  await b.ir("laboratorio.html");
+  await b.hasta("document.querySelector('[data-cargando]').hidden", 60000);
+  const esperada = await b.eval("CURSO.ETAPAS.filter(e => e.datos && e.niveles.some(n => n.listo)).pop().n");
+  comprobar(`Con todo abierto carga los datos del EXP.${esperada}`, (await b.eval("document.querySelector('[data-datos-lab]').textContent")).includes(`EXP.${esperada} `));
+  comprobar("Con todo abierto el esquema tiene pedidos", await b.eval("[...document.querySelectorAll('.r-ficha-nombre')].some(n => n.textContent === 'pedidos')"));
+  await b.eval("localStorage.removeItem('sqlearning-progreso-v1')");
+
   b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Laboratorio: todo correcto");
 }
