@@ -10,7 +10,7 @@
   // Texto del usuario (ver docs/HISTORIA.md). Las 3 primeras frases presentan el caso; la última cierra.
   const FRASES = [
     "La ciudad tiene secretos. Y algunos se esconden en los datos.",
-    "En **Faro**, una empresa tecnológica con cuatro tiendas y una tienda online, algo extraño está ocurriendo: productos que desaparecen, clientes que nunca existieron y reembolsos imposibles.",
+    "En **Faro**, una empresa tecnológica con cinco tiendas y una tienda online, algo extraño está ocurriendo: productos que desaparecen, clientes que nunca existieron y reembolsos imposibles.",
     "Alguien está detrás de todo. Le llaman **el Fantasma**.",
     "Lucía Mora, jefa de datos, te ha elegido para descubrir la verdad. Tu única herramienta es **SQL**. Tus únicas pistas, miles de registros.",
     "Cada consulta revela una pista. Cada error oculta un secreto.",

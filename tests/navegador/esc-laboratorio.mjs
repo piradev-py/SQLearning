@@ -35,9 +35,9 @@ export default async function (b) {
   await b.eval("document.querySelector('.es-texto').focus()");
   await ctrlEnter();
   await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length > 0", 10000);
-  comprobar("Ctrl+Enter ejecuta el ejemplo: 5 tiendas", (await filas()) === 5, String(await filas()));
+  comprobar("Ctrl+Enter ejecuta el ejemplo: 6 tiendas", (await filas()) === 6, String(await filas()));
   comprobar("La cabecera muestra el tipo en español", await b.eval("document.querySelector('.r-tabla th:nth-child(4) small')?.textContent === 'fecha'"));
-  comprobar("Estado: «5 filas · N ms»", /^5 filas · \d+ ms$/.test(await b.eval("document.querySelector('[data-estado]').textContent")));
+  comprobar("Estado: «6 filas · N ms»", /^6 filas · \d+ ms$/.test(await b.eval("document.querySelector('[data-estado]').textContent")));
 
   // 2. Escribir con autocompletado
   await vaciar();

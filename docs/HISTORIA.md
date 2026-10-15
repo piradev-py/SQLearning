@@ -4,8 +4,8 @@
 > El alumno nunca lo ve. Cualquier lección, ticket o dato del Fantasma debe ser coherente con lo que hay aquí.
 
 ## La empresa
-**Faro** es una cadena de tiendas de tecnología y hogar con cinco puntos de venta: **Madrid, Valencia, Sevilla,
-Bilbao y la tienda online**. Tiene almacén central en Getafe (Madrid). Vende productos de varias categorías
+**Faro** es una empresa tecnológica con **cinco tiendas físicas y una tienda online**: **Madrid, Valencia, Sevilla,
+Bilbao, Barcelona (recién inaugurada) y la online**. Tiene almacén central en Getafe (Madrid). Vende productos de varias categorías
 (informática, telefonía, audio, hogar, gaming) a clientes particulares.
 
 El alumno entra como **becario/a de datos** en el equipo de Lucía. No tiene nombre en la historia: los personajes
@@ -16,10 +16,10 @@ Secuencia breve (~30–40 s): las frases aparecen una a una sobre la ciudad de n
 «Continuar a la hoja de ruta». Hacer clic adelanta la frase siguiente (se leen todas igualmente). Con movimiento
 reducido aparecen todas a la vez y el botón llega a los pocos segundos. Texto (en `js/prologo.js`):
 
-Texto definitivo del usuario (adaptado: «cuatro tiendas y una tienda online», para cuadrar con los datos):
+Texto definitivo del usuario (igual que la locución, que no se puede cambiar):
 
 1. La ciudad tiene secretos. Y algunos se esconden en los datos.
-2. En **Faro**, una empresa tecnológica con cuatro tiendas y una tienda online, algo extraño está ocurriendo: productos que desaparecen, clientes que nunca existieron y reembolsos imposibles.
+2. En **Faro**, una empresa tecnológica con cinco tiendas y una tienda online, algo extraño está ocurriendo: productos que desaparecen, clientes que nunca existieron y reembolsos imposibles.
 3. Alguien está detrás de todo. Le llaman **el Fantasma**.
 4. Lucía Mora, jefa de datos, te ha elegido para descubrir la verdad. Tu única herramienta es **SQL**. Tus únicas pistas, miles de registros.
 5. Cada consulta revela una pista. Cada error oculta un secreto.
@@ -38,6 +38,15 @@ Antes del primer día, Lucía pone al candidato una prueba: ordenar el archivo d
 que llevaba todo en fichas de papel y un Excel gigante. Es una historia **autónoma** (sin pistas del Fantasma),
 para que quien se la salte no pierda nada de la trama. Sus datos son pequeños y viven dentro de cada nivel
 (fichas y tablas de ejemplo), no en `datos/`.
+
+## La tienda nueva: Barcelona
+Faro acaba de inaugurar su quinta tienda física, **Barcelona** (1 de octubre de 2026, tienda id 6). En las etapas
+1–5 no tiene ventas: es la «recién llegada». Idea del usuario: **aprovecharla en los temas avanzados**:
+- **Etapa 6 (IT):** darla de alta de verdad en la base de datos — `INSERT` de su plantilla y su stock inicial,
+  restricciones (`CHECK`, `FOREIGN KEY`), transacciones (si falla algo, no se queda a medias).
+- **Etapas 7–8 (Dirección / Analítica):** sus primeras semanas de ventas frente a las otras tiendas (crecimiento,
+  ventanas, comparación con aperturas anteriores, cohortes de sus primeros clientes) y el informe para Ana Beltrán.
+- Posible pista falsa: su apertura coincide en el tiempo con el final de la trama; sus datos deben estar limpios.
 
 ## Personajes
 | Personaje | Rol | Etapa principal | Tono |

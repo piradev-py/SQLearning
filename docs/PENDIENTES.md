@@ -55,7 +55,7 @@ quede pendiente y vuelve a pasar los tests.
 - [x] **Publicado** (2026-10-15): https://piradev-py.github.io/SQLearning/ (repo público github.com/piradev-py/SQLearning, Pages desde `main`, `/`). Comprobado: PGlite viaja con gzip (≈6 MB la primera visita), laboratorio listo en ~1,8 s, lecciones y prólogo funcionan
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
-- [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cuatro tiendas y una tienda online» para cuadrar con los datos
+- [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)
 - [ ] Prólogo con movimiento reducido: ¿frase a frase con fundido (sin movimiento) en vez de todo de golpe? (el Windows del usuario lo tiene activado)
 - [ ] Figuras del ambiente historia (lluvia, carteles, siluetas de personajes, el Fantasma) — ver `docs/ESTILO.md`
 - [ ] Pulido visual de la página de lección, pasos «sobre el papel» y pantalla de diligencia superada

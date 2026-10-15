@@ -139,7 +139,7 @@ apertura), `empleados` (id, nombre, departamento, tienda_id, email).
 entre miles. Le enseñas a filtrar. Al final, una clienta de Bilbao reclama un pedido que no hizo, y tirando del hilo
 aparecen clientes que nadie recuerda, todos dados de alta de madrugada.
 
-**Tablas** (`datos/faro-e2.sql`, ver `docs/DATOS.md`): las de la etapa 1 más `clientes` (300), `pedidos` (2 486),
+**Tablas** (`datos/faro-e2.sql`, ver `docs/DATOS.md`): las de la etapa 1 más `clientes` (300), `pedidos` (2 524),
 `reclamaciones` (40).
 
 **Al terminarla, el alumno sabrá:** filtrar filas con `WHERE` combinando condiciones, listas, rangos, patrones de

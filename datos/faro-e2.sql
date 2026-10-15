@@ -61,7 +61,8 @@ INSERT INTO tiendas (id, ciudad, apertura) VALUES
   (2, 'Valencia', '2004-09-20'),
   (3, 'Sevilla', '2009-02-11'),
   (4, 'Bilbao', '2014-06-02'),
-  (5, 'Online', '2017-11-15');
+  (5, 'Online', '2017-11-15'),
+  (6, 'Barcelona', '2026-10-01');
 
 INSERT INTO empleados (id, nombre, departamento, tienda_id, email) VALUES
   (1, 'Ana Beltrán', 'Dirección', 1, 'ana.beltran@faro.example'),

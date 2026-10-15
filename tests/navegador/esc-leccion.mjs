@@ -31,8 +31,8 @@ export default async function (b) {
   comprobar("Paso 1: ticket de Lucía", await b.eval("/Lucía Mora/.test(document.querySelector('[data-paso]').textContent)"));
   await b.foto("leccion-ticket");
   await siguiente();
-  await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length === 5", 8000);
-  comprobar("Paso 2: el ejemplo se ejecuta solo (5 tiendas)", (await b.eval("document.querySelectorAll('[data-vista=resultado] tbody tr').length")) === 5);
+  await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length === 6", 8000);
+  comprobar("Paso 2: el ejemplo se ejecuta solo (6 tiendas)", (await b.eval("document.querySelectorAll('[data-vista=resultado] tbody tr').length")) === 6);
   await b.foto("leccion-explicacion");
   await siguiente();
   await siguiente();
@@ -63,8 +63,8 @@ export default async function (b) {
   await clic("[data-opcion='0']");
   comprobar("Opción mala → prueba otra vez", /otra vez/.test(await feedback()));
   await clic("[data-opcion='1']");
-  await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length === 5", 5000);
-  comprobar("Opción buena → se ejecuta la consulta", (await b.eval("document.querySelectorAll('[data-vista=resultado] tbody tr').length")) === 5);
+  await b.hasta("document.querySelectorAll('[data-vista=resultado] tbody tr').length === 6", 5000);
+  comprobar("Opción buena → se ejecuta la consulta", (await b.eval("document.querySelectorAll('[data-vista=resultado] tbody tr').length")) === 6);
   await siguiente();
   await clic("[data-opcion='1']");
   await siguiente();

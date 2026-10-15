@@ -4,8 +4,8 @@
 > Una vez escritas las lecciones de una etapa, sus datos **no se tocan** (las cifras de las lecciones dependen de ellos).
 > Cada etapa tiene su archivo `datos/faro-eN.sql`, que contiene todas las tablas vistas hasta entonces.
 
-## Etapa 1 · `faro-e1.sql` (semilla 1998) — CONGELADO
-`tiendas` (5) · `empleados` (22) · `productos` (40). Pista: «Auriculares Sonora Pulse» con stock −12.
+## Etapa 1 · `faro-e1.sql` (semilla 1998) — CONGELADO (salvo la tienda 6, añadida para cuadrar con la locución del prólogo)
+`tiendas` (6: 1 Madrid, 2 Valencia, 3 Sevilla, 4 Bilbao, 5 Online, 6 Barcelona inaugurada el 2026-10-01, **sin pedidos** hasta las etapas avanzadas) · `empleados` (22) · `productos` (40). Pista: «Auriculares Sonora Pulse» con stock −12.
 
 ## Universo de clientes y pedidos (semilla 2026) — desde la etapa 2
 Un único universo que las etapas siguientes van mostrando por partes:
@@ -32,7 +32,7 @@ Un único universo que las etapas siguientes van mostrando por partes:
 - Los reembolsos online quedan claramente por encima del resto de tiendas (pista de la etapa 3).
 
 ### Cifras comprobadas de `faro-e2.sql` (consultadas con PGlite)
-- 300 clientes (291 reales + 9 falsos, ids 292–300), 2 486 pedidos, 40 reclamaciones. 40 clientes sin teléfono, 10 sin ciudad.
+- 300 clientes (291 reales + 9 falsos, ids 292–300), 2 524 pedidos, 40 reclamaciones. 40 clientes sin teléfono, 10 sin ciudad.
 - 10 clientes **reales** dados de alta antes de las 06:00.
 - Falsos: altas entre 02:00 y 04:59 (marzo–agosto 2026); 68 pedidos suyos, todos online, de madrugada, `reembolsado`.
 - La reclamación clave: **Iratxe Muñoz** (Bilbao), motivo «No reconozco este pedido: yo no lo hice», pedido **2210**,

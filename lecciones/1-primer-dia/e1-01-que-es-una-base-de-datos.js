@@ -36,9 +36,9 @@ CURSO.registrar({
       tipo: "prediccion",
       consulta: "SELECT *\nFROM tiendas;",
       pregunta: "¿Cuántas filas devolverá esta consulta?",
-      opciones: ["3", "5", "22"],
+      opciones: ["5", "6", "22"],
       correcta: 1,
-      explicacion: "Faro tiene 5 tiendas (Madrid, Valencia, Sevilla, Bilbao y la tienda online): una fila por tienda."
+      explicacion: "Faro tiene 6 tiendas: cinco físicas (Madrid, Valencia, Sevilla, Bilbao y Barcelona, que acaba de abrir) y la tienda online. Una fila por tienda."
     },
     {
       tipo: "quiz",

@@ -42,7 +42,20 @@
         { id: "e1-09", archivo: "e1-09-caso-inventario-imposible.js", titulo: "Caso: El inventario imposible", listo: true, caso: true }
       ]
     },
-    { n: 2, carpeta: "2-atencion-cliente", titulo: "Atención al cliente", departamento: "Atención al cliente", datos: "faro-e2", niveles: pendientes(2, 9) },
+    {
+      n: 2, carpeta: "2-atencion-cliente", titulo: "Atención al cliente", departamento: "Atención al cliente", datos: "faro-e2",
+      niveles: [
+        { id: "e2-01", archivo: "e2-01-where.js", titulo: "Filtrar filas: WHERE", listo: false },
+        { id: "e2-02", archivo: "e2-02-comparar.js", titulo: "Comparar: mayor, menor, distinto", listo: false },
+        { id: "e2-03", archivo: "e2-03-and-or-not.js", titulo: "Combinar condiciones: AND, OR, NOT", listo: false },
+        { id: "e2-04", archivo: "e2-04-parentesis.js", titulo: "Paréntesis y prioridad", listo: false },
+        { id: "e2-05", archivo: "e2-05-in.js", titulo: "Listas: IN y NOT IN", listo: false },
+        { id: "e2-06", archivo: "e2-06-between-fechas.js", titulo: "Rangos y fechas: BETWEEN", listo: false },
+        { id: "e2-07", archivo: "e2-07-like-ilike.js", titulo: "Buscar texto: LIKE e ILIKE", listo: false },
+        { id: "e2-08", archivo: "e2-08-null.js", titulo: "El vacío: NULL", listo: false },
+        { id: "e2-09", archivo: "e2-09-caso-clientes-de-madrugada.js", titulo: "Caso: Clientes de madrugada", listo: false, caso: true }
+      ]
+    },
     { n: 3, carpeta: "3-ventas", titulo: "Ventas", departamento: "Ventas", datos: "faro-e3", niveles: pendientes(3, 9) },
     { n: 4, carpeta: "4-logistica", titulo: "Logística", departamento: "Logística", datos: "faro-e4", niveles: pendientes(4, 10) },
     { n: 5, carpeta: "5-migracion", titulo: "Migración", departamento: "Sistemas · Migración", datos: "faro-e5", niveles: pendientes(5, 10) },

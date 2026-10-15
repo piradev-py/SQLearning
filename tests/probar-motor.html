@@ -45,9 +45,9 @@
         const e = esquema.find(t => t.nombre === "empleados");
         return esquema.length === 3 && p.filas === 40 && p.columnas[0].pk && e.columnas.find(c => c.nombre === "tienda_id").fk?.tabla === "tiendas" || esquema;
       });
-      await prueba("SELECT básico: 5 tiendas", async () => {
+      await prueba("SELECT básico: 6 tiendas", async () => {
         const r = await MOTOR.ejecutar("SELECT * FROM tiendas;");
-        return r.ok && r.ultimo.filas.length === 5 && r.ultimo.columnas.join() === "id,ciudad,apertura" && r.ultimo.filas[0][2] === "1998-05-04" || r;
+        return r.ok && r.ultimo.filas.length === 6 && r.ultimo.columnas.join() === "id,ciudad,apertura" && r.ultimo.filas[0][2] === "1998-05-04" || r;
       });
       await prueba("Tipos: numeric como texto exacto, count como número", async () => {
         const r = await MOTOR.ejecutar("SELECT precio, (SELECT count(*) FROM productos) FROM productos WHERE id = 1;");
@@ -65,7 +65,7 @@
       await prueba("Aislamiento: COMMIT del alumno no deja huella", async () => {
         await MOTOR.ejecutar("COMMIT; DELETE FROM tiendas WHERE id = 5; COMMIT;");
         const r = await MOTOR.ejecutar("SELECT count(*) FROM tiendas;");
-        return r.ultimo.filas[0][0] === 5 || r;
+        return r.ultimo.filas[0][0] === 6 || r;
       });
       await prueba("Error traducido: tabla mal escrita sugiere el nombre", async () => {
         const r = await MOTOR.ejecutar("SELECT *\nFROM producto;");
@@ -190,7 +190,7 @@
         return !r.ok && r.error.codigo === "STDIN" && r.ms < 100 || r;
       });
       await prueba("Tras todos los ataques, la base sigue intacta", async () =>
-        (await cuenta("productos")) === 40 && (await cuenta("empleados")) === 22 && (await cuenta("tiendas")) === 5);
+        (await cuenta("productos")) === 40 && (await cuenta("empleados")) === 22 && (await cuenta("tiendas")) === 6);
 
       // --- Reto con PRUEBA ---
       const reto = {

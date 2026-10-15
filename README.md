@@ -4,7 +4,7 @@
 
 ▶ **Jugar:** https://piradev-py.github.io/SQLearning/
 
-En Faro, una empresa tecnológica con cuatro tiendas y una tienda online, algo extraño está ocurriendo: productos
+En Faro, una empresa tecnológica con cinco tiendas y una tienda online, algo extraño está ocurriendo: productos
 que desaparecen, clientes que nunca existieron y reembolsos imposibles. Le llaman **el Fantasma**. Lucía Mora, jefa
 de datos, te ha elegido para descubrir la verdad. Tu única herramienta es SQL.
 
