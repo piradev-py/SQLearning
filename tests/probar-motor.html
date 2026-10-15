@@ -201,6 +201,27 @@
         const r = await MOTOR.ejecutar("COPY productos FROM STDIN;");
         return !r.ok && r.error.codigo === "STDIN" && r.ms < 100 || r;
       });
+      // Revisión etapas 5–7
+      await prueba("QA57-F1: COMMIT; BEGIN; <error> no deja cambios", async () => {
+        await MOTOR.ejecutar("DELETE FROM productos WHERE id > 30; COMMIT; BEGIN; SELECT 1/0;");
+        return (await cuenta("productos")) === 40 || "quedaron cambios";
+      });
+      await prueba("QA57-F9: fingir la marca tras COMMIT no engaña al motor", async () => {
+        await MOTOR.ejecutar("COMMIT; CREATE TABLE basura (x int); SET sqlearning.marca = '1';");
+        return !(await MOTOR.ejecutar("SELECT * FROM basura;")).ok || "la tabla sigue";
+      });
+      await prueba("QA57-F2: las fechas con zona salen en UTC", async () => {
+        const r = await MOTOR.ejecutar("SELECT '2024-01-01'::timestamptz AS t;");
+        return /\+00$/.test(String(r.ultimo.filas[0][0])) || r.ultimo.filas;
+      });
+      await prueba("QA57-F10: JSON se muestra como JSON", async () => {
+        const r = await MOTOR.ejecutar(`SELECT '[1,2]'::jsonb AS a;`);
+        return r.ultimo.filas[0][0] === "[1,2]" || r.ultimo.filas;
+      });
+      await prueba("QA57-F4: errores de la etapa 6 traducidos", async () => {
+        const r = await MOTOR.ejecutar("CREATE TABLE t (id int GENERATED ALWAYS AS IDENTITY); INSERT INTO t (id) VALUES (1);");
+        return /se numera sola/.test(r.error?.explicacion || "") || r.error;
+      });
       await prueba("Tras todos los ataques, la base sigue intacta", async () =>
         (await cuenta("productos")) === 40 && (await cuenta("empleados")) === 22 && (await cuenta("tiendas")) === 6);
 

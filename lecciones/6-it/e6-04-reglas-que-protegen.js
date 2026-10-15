@@ -6,10 +6,12 @@
   };
   // ¿La base rechaza esta orden? Se prueba en un punto de guardado y se deshace siempre
   const rechaza = async (db, sql) => {
-    try { await db.consulta("SAVEPOINT prueba_regla;"); } catch (e) { return false; }
+    // Si el alumno cerró la transacción con COMMIT, no hay punto de guardado posible: se abre una y se deshace
+    let propia = false;
+    try { await db.consulta("SAVEPOINT prueba_regla;"); } catch (e) { await db.consulta("BEGIN;"); propia = true; }
     let rechazada = false;
     try { await db.consulta(sql); } catch (e) { rechazada = true; }
-    try { await db.consulta("ROLLBACK TO SAVEPOINT prueba_regla;"); } catch (e) { /* nada que deshacer */ }
+    try { await db.consulta(propia ? "ROLLBACK;" : "ROLLBACK TO SAVEPOINT prueba_regla;"); } catch (e) { /* nada que deshacer */ }
     return rechazada;
   };
 

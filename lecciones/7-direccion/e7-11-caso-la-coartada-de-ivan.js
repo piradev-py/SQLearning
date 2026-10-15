@@ -88,6 +88,10 @@ WHERE a.usuario = 'admin_temp'
           inicial: "",
           comprobaciones: [
             { texto: "Tiene las columnas sesiones y fichajes, en una sola fila", prueba: (r) => PRUEBA.columnas(r, ["sesiones", "fichajes"]) && (r?.filas?.length ?? 0) === 1 },
+            { texto: "Lo cuentas consultando las tablas sesiones, fichajes y vacaciones", prueba: () => {
+              const sql = MOTOR.sinComentarios(MOTOR.sinTextos(PRUEBA.codigo()));
+              return /\bsesiones\b/i.test(sql) && /\bfichajes\b/i.test(sql) && /\bvacaciones\b/i.test(sql) && /\bCOUNT\s*\(/i.test(sql);
+            } },
             { texto: "Cuenta las sesiones y los fichajes de Iván en sus vacaciones", prueba: (r) => PRUEBA.valor(r, 0, "sesiones") === 0 && PRUEBA.valor(r, 0, "fichajes") === 0 }
           ],
           pistas: [

@@ -122,7 +122,7 @@ WHERE ciudad <> initcap(trim(ciudad));`
               `VALUES ('Madrid', 93), ('Sevilla', 48), ('Valencia', 45), ('Bilbao', 36), ('Valladolid', 28), ('Barcelona', 24), ('Zaragoza', 20), ('Málaga', 18), ('Getafe', 9), ('', 4), (NULL, 7);`,
               { nombres: false }) },
           { texto: "Solo has cambiado las 126 filas que lo necesitaban",
-            prueba: async (r, db) => (await texto(db, `SELECT COUNT(*) FROM crm_clientes WHERE xmin::text = (txid_current() % 4294967296)::text;`)) === "126" },
+            prueba: async (r, db) => (await texto(db, `SELECT COUNT(*) FROM crm_clientes WHERE xmin::text <> (SELECT xmin::text FROM crm_clientes GROUP BY 1 ORDER BY COUNT(*) DESC LIMIT 1);`)) === "126" },
           { texto: "Termina mostrando ciudad y clientes, una fila por ciudad",
             prueba: (r) => PRUEBA.columnas(r, ["ciudad", "clientes"]) && (r?.filas?.length ?? 0) === 11 }
         ],

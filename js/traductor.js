@@ -37,8 +37,20 @@
   const joinSinOn = s => (s.match(/\bjoin\b/gi) || []).length - (s.match(/\b(cross|natural)\s+join\b/gi) || []).length >
     (s.match(/\b(on|using)\b/gi) || []).length;
 
+  // El detalle de las claves, en español: «Key (id)=(1) already exists.» → «`id` = `1` ya existe»
+  function detalleClave(d) {
+    const m = String(d || "").match(/Key \((.+?)\)=\((.*?)\)\s+(already exists|is not present in table "([^"]+)"|is still referenced from table "([^"]+)")/);
+    if (!m) return "";
+    const par = `\`${m[1]}\` = \`${m[2]}\``;
+    if (m[4]) return ` (${par} no existe en \`${m[4]}\`)`;
+    if (m[5]) return ` (${par}: todavía lo usan filas de \`${m[5]}\`)`;
+    return ` (${par} ya existe)`;
+  }
+
   const CODIGOS = {
     "42601": (e, sql) => {
+      if (/subquery must return only one column/.test(e.mensaje))
+        return "Esa subconsulta devuelve **varias columnas** y aquí solo cabe una: deja una sola columna en su `SELECT`.";
       const cerca = entre(e.mensaje, /at or near "([^"]*)"/);
       const s = limpio(sql);
       if (cerca && /^on$/i.test(cerca) && /\bcross\s+join\b/i.test(s))
@@ -120,16 +132,40 @@
     },
     "42804": () => "Los tipos de datos no encajan: estás mezclando, por ejemplo, texto con números o fechas.",
     "22P02": (e) => `El valor ${entre(e.mensaje, /: (".*")$/) || ""} no tiene el formato que espera la columna (¿un texto donde va un número o una fecha?).`,
-    "22007": () => "La fecha u hora no tiene un formato válido. Escríbela así: `'2024-03-31'`.",
+    "22007": (e) => /interval/.test(e.mensaje)
+      ? "Ese intervalo no tiene un formato válido. Escríbelo así: `INTERVAL '3 days'` o `'2 hours 30 minutes'`."
+      : "La fecha u hora no tiene un formato válido. Escríbela así: `'2024-03-31'`.",
     "22008": () => "Esa fecha no existe o se sale de rango.",
     "22012": () => "Estás dividiendo entre cero. Usa `NULLIF(divisor, 0)` para evitarlo.",
-    "23505": (e) => `Ya existe una fila con ese valor y la columna no admite repetidos (${e.detalle || "restricción UNIQUE"}).`,
-    "23503": (e) => `Esa fila apunta a otra que no existe (o la estás borrando y otras dependen de ella). ${e.detalle || ""}`.trim(),
+    "23505": (e) => `Ya existe una fila con ese valor y la columna no admite repetidos (PRIMARY KEY o UNIQUE)${detalleClave(e.detalle)}.`,
+    "23503": (e) => /still referenced/.test(e.detalle || "")
+      ? `No puedes borrar (o cambiar) esa fila: otras la necesitan (FOREIGN KEY)${detalleClave(e.detalle)}.`
+      : `Esa fila apunta a otra que no existe (FOREIGN KEY)${detalleClave(e.detalle)}.`,
     "23502": (e) => `La columna \`${entre(e.mensaje, /column "([^"]+)"/)}\` no puede quedar vacía (NOT NULL).`,
     "23514": (e) => `El valor no cumple la regla \`${entre(e.mensaje, /constraint "([^"]+)"/)}\` (CHECK) de la tabla.`,
     "42P07": (e) => `Ya existe algo llamado \`${entre(e.mensaje, /"([^"]+)"/)}\`.`,
     "42712": (e) => `Usas el nombre \`${entre(e.mensaje, /"([^"]+)"/)}\` dos veces en el \`FROM\`. Si unes una tabla consigo misma, dale un alias distinto a cada copia (por ejemplo \`em\` y \`j\`).`,
     "42P10": () => "En `ORDER BY` con `DISTINCT`, solo puedes ordenar por columnas que estén en el `SELECT`.",
+    "2BP01": () => "No se puede borrar: otras tablas, vistas o claves dependen de esto. Habría que quitar antes lo que depende (o usar `CASCADE`, que lo borra todo en cadena: peligroso).",
+    "428C9": (e) => `La columna \`${entre(e.mensaje, /column "([^"]+)"/)}\` se numera sola (GENERATED ALWAYS AS IDENTITY): no le des valor, quítala de la lista del \`INSERT\`.`,
+    "3B001": () => "No existe ningún punto de guardado (`SAVEPOINT`) con ese nombre.",
+    "25P01": () => "`SAVEPOINT` solo funciona dentro de una transacción (después de `BEGIN`).",
+    "42701": (e) => `La columna \`${entre(e.mensaje, /"([^"]+)"/)}\` está repetida: cada columna necesita un nombre distinto.`,
+    "42P16": () => "Esa definición no es válida: una tabla solo puede tener una clave primaria, y `CREATE OR REPLACE VIEW` no puede quitar ni cambiar columnas (bórrala con `DROP VIEW` y créala de nuevo).",
+    "22001": () => "El texto es más largo de lo que admite la columna (por ejemplo, `varchar(3)`).",
+    "42704": (e) => `No existe \`${entre(e.mensaje, /"([^"]+)"/)}\` (¿está bien escrito el nombre?).`,
+    "42809": () => "Esa orden no vale para ese tipo de objeto (por ejemplo, `DROP VIEW` con una tabla o `DROP TABLE` con una vista).",
+    "55000": () => "Esa vista no se puede modificar: tiene `GROUP BY`, funciones o varias tablas. Cambia los datos en la tabla original.",
+    "25006": () => "La transacción es de solo lectura: no puede cambiar datos.",
+    "2201B": () => "La expresión regular está mal escrita (¿un paréntesis o un corchete sin cerrar?). Para buscar un `(` tal cual, escríbelo `\\(`.",
+    "22011": () => "La longitud de `substring` no puede ser negativa.",
+    "22023": () => "Uno de los valores que le pasas a la función no es válido (por ejemplo, la posición 0 en `split_part` o un paso 0 en `generate_series`).",
+    "22003": () => "El número es demasiado grande para ese tipo de dato.",
+    "2201W": () => "`LIMIT` no puede ser negativo.",
+    "2201X": () => "`OFFSET` no puede ser negativo.",
+    "42P20": () => "Las funciones ventana (`… OVER (…)`) no se pueden usar en `WHERE`, `GROUP BY` ni dentro de otra ventana. Calcula la ventana en una CTE o subconsulta y filtra fuera.",
+    "42P19": () => "La CTE recursiva está mal montada: la parte que se llama a sí misma va después de `UNION ALL` y usa la CTE una sola vez.",
+    "22014": () => "`NTILE` necesita un número de grupos mayor que 0.",
     "21000": () => "Una subconsulta que debía devolver un solo valor devuelve varios.",
     "25P02": () => "Un error anterior ha dejado la transacción bloqueada: haz `ROLLBACK;` y vuelve a empezar.",
     "25001": () => "Esa orden no se puede usar aquí: no funciona dentro de una transacción (y en SQLearning todo lo que ejecutas va dentro de una, para no romper nada).",

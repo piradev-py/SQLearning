@@ -93,17 +93,15 @@ quede pendiente y vuelve a pasar los tests.
 
 ## Etapa 5 · Migración
 - [x] Datos `faro-e5.sql` (CRM antiguo sucio + fichas de empleados; pista falsa contra Iván, decisión del usuario), temario (11 niveles) y **etapa completa** (2 agentes `profesor-sql`; verificador 58/58). Cifras de los profesores comprobadas con PGlite
-- [ ] Revisión del bloque etapas 5 (+6): `qa-estres` + `alumno-novato` cuando haya 2–3 expedientes sin revisar
 
 ## Etapa 6 · IT
 - [x] Datos `faro-e6.sql` (cuentas, auditoría con el rastro de admin_temp, stock por tienda), temario (12 niveles) y lecciones e6-01…e6-12 (2 agentes `profesor-sql`). Verificador: todas en verde tras corregir el total de stock de e6-08 (1 648)
 - [x] `npm test` completo en verde (7/7)
-- [ ] e6-10: el reto no comprueba que el plan use el índice (solo que existe)
-- [ ] e6-05: error 428C9 (valor en columna GENERATED ALWAYS) sin mensaje propio en el traductor
 
 ## Etapa 7 · Dirección
 - [x] Datos `faro-e7.sql` (vacaciones, fichajes, sesiones: la coartada de Iván y Héctor en Getafe), temario (11 niveles) y lecciones e7-01…e7-11 (2 agentes `profesor-sql`). Verificador 81/81
-- [ ] Revisión del bloque etapas 5, 6 y 7: `qa-estres` y luego `alumno-novato`
+- [x] Revisión etapas 5–7: `qa-estres` hecha (`docs/revisiones/2026-10-16-qa-etapas-5-7.md`, 🔴1 🟠3 🟡9). Arreglados todos: F1 (`COMMIT; BEGIN; <error>` dejaba cambios: se recarga si el alumno escribió COMMIT/ROLLBACK/END/ABORT), F9 (marca con valor al azar por sesión), F2 (zona horaria UTC en cada sesión), F3 (e7-11 parte 2 exige consultar las tablas), F4/F11/F12/F13 (traductor: 2BP01, 428C9, SAVEPOINT, vistas, regex, ventanas, recursión, detalle de claves en español, intervalos, subconsulta con varias columnas), F5 (e6-04/05 prueban reglas también tras COMMIT; e6-06 cuenta filas cambiadas sin depender del txid), F6 (e6-07 código inicial), F7 (e6-10 exige el plan con el índice y admin_temp), F8 (BEGIN/COMMIT en comentarios o textos no cuentan), F10 (JSON se ve como JSON). Regresiones en `tests/probar-motor.html`
+- [ ] Revisión etapas 5–7: `alumno-novato`
 
 ## Versión publicada
 - [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)

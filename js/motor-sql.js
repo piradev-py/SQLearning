@@ -129,10 +129,11 @@
   }
 
   // Objeto «db» que reciben las sesiones (ya dentro de la cola y de la transacción)
-  function crearDb() {
+  function crearDb(vistos = []) {
     return {
-      ejecutar: sql => enviar("ejecutar", { sql }),
+      ejecutar: sql => { vistos.push(sql); return enviar("ejecutar", { sql }); },
       consulta: async sql => {
+        vistos.push(sql);
         const lista = await enviar("ejecutar", { sql });
         return lista[lista.length - 1] || { columnas: [], tipos: [], filas: [], afectadas: 0 };
       }
@@ -140,25 +141,31 @@
   }
 
   // ¿Seguimos dentro de la transacción que abrió el motor? (la marca solo existe ahí)
-  async function sigueDentro() {
+  // La marca lleva un valor al azar en cada sesión: el alumno no puede fingirla tras un COMMIT.
+  // Con la transacción abortada (25P02) no se puede leer: si el alumno escribió COMMIT/ROLLBACK/END/ABORT,
+  // pudo salirse de la nuestra y abrir otra (COMMIT; BEGIN; …error…), así que se recarga por si acaso.
+  const SALIDA = /\b(COMMIT|ROLLBACK|END|ABORT)\b/i;
+  async function sigueDentro(valor, vistos) {
     try {
       const r = await enviar("consultar", { sql: `SELECT current_setting('${MARCA}', true)` });
-      return r.filas[0]?.[0] === "1";
+      return r.filas[0]?.[0] === valor;
     } catch (e) {
-      // «transacción abortada» (25P02): el alumno provocó un error, pero seguimos dentro de la nuestra
-      return e?.codigo === "25P02";
+      return e?.codigo === "25P02" && !vistos.some(sql => SALIDA.test(sinTextos(sinComentarios(sql))));
     }
   }
 
   // Abre una transacción, ejecuta fn(db) y la deshace siempre
   async function sesionInterna(fn) {
-    await enviar("ejecutar", { sql: `BEGIN; SET LOCAL ${MARCA} = '1';` });
+    const valor = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const vistos = [];
+    // Zona horaria fija: las fechas con zona salen igual (y se comparan igual) viva donde viva el alumno
+    await enviar("ejecutar", { sql: `BEGIN; SET LOCAL ${MARCA} = '${valor}'; SET LOCAL TIME ZONE 'UTC';` });
     let intacta = true;
     try {
-      return await fn(crearDb());
+      return await fn(crearDb(vistos));
     } finally {
       try {
-        intacta = await sigueDentro();
+        intacta = await sigueDentro(valor, vistos);
         await enviar("ejecutar", { sql: "ROLLBACK;" });
         // Aparte: varias órdenes en un mensaje forman un bloque, y DISCARD ALL no puede ir dentro de uno
         await enviar("ejecutar", { sql: "DISCARD ALL;" });

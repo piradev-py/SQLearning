@@ -104,7 +104,7 @@ ORDER BY usuario;`,
       tipo: "reto",
       de: "nuria",
       enunciado: "Las dos fichas con fecha de alta imposible, **crm_id 31** (`1900-01-01`) y **crm_id 122** (`31/12/2099`), eran pruebas del programa viejo. Bórralas con un solo `DELETE` que termine en `RETURNING crm_id, fecha_alta`, para que veamos lo que se ha ido.",
-      inicial: "-- Primero el SELECT, luego el DELETE\n",
+      inicial: "-- Primero ejecuta el SELECT para ver las dos fichas; después cámbialo por el DELETE\n",
       comprobaciones: [
         { texto: "Devuelve las 2 fichas borradas, con las columnas crm_id y fecha_alta", prueba: (r) => PRUEBA.columnas(r, ["crm_id", "fecha_alta"]) && (r?.filas?.length ?? 0) === 2 },
         { texto: "Las fichas 31 y 122 ya no están en el CRM", prueba: async (r, db) => {

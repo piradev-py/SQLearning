@@ -104,10 +104,10 @@ WHERE id = 42;`,
           const c = await db.consulta(`SELECT indexdef FROM pg_indexes WHERE tablename = 'auditoria' AND indexname = 'idx_auditoria_usuario';`);
           return /\(usuario\)/.test(String(c?.filas?.[0]?.[0] ?? ""));
         } },
-        { texto: "Terminas con el plan (EXPLAIN) de la búsqueda en auditoria", prueba: (r) => {
+        { texto: "Terminas con el plan (EXPLAIN) de la búsqueda de admin_temp, que usa tu índice", prueba: (r) => {
           const col = String(r?.columnas?.[0] ?? "").toLowerCase();
           const texto = (r?.filas || []).map(f => String(f?.[0] ?? "")).join("\n");
-          return col === "query plan" && /auditoria/.test(texto);
+          return col === "query plan" && /idx_auditoria_usuario/.test(texto) && /admin_temp/.test(texto);
         } }
       ],
       pistas: [

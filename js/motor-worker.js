@@ -30,8 +30,9 @@ const TIPOS = {
 
 let db = null;
 
-function limpiarFila(fila) {
-  return fila.map(v => {
+function limpiarFila(fila, tipos) {
+  return fila.map((v, i) => {
+    if (v !== null && typeof v === "object" && /^json/.test(tipos[i])) return JSON.stringify(v);   // [1,2] es JSON, no un array de PostgreSQL
     if (v instanceof Uint8Array) return "\\x" + [...v].map(b => b.toString(16).padStart(2, "0")).join("");
     if (typeof v === "bigint") return Number(v);
     if (Array.isArray(v)) return "{" + v.map(x => (x === null ? "NULL" : String(x))).join(",") + "}";
@@ -41,10 +42,11 @@ function limpiarFila(fila) {
 }
 
 function resultado(r) {
+  const tipos = (r.fields || []).map(f => TIPOS[f.dataTypeID] || "otro");
   return {
     columnas: (r.fields || []).map(f => f.name),
-    tipos: (r.fields || []).map(f => TIPOS[f.dataTypeID] || "otro"),
-    filas: (r.rows || []).map(limpiarFila),
+    tipos,
+    filas: (r.rows || []).map(f => limpiarFila(f, tipos)),
     afectadas: r.affectedRows ?? 0
   };
 }
