@@ -182,7 +182,7 @@ body { background: transparent; min-height: 100vh; }
   color: var(--texto);
   outline: none;
 }
-.tablero-intro p { margin: 0; color: var(--texto-suave); }
+.tablero-intro p { margin: 0; color: var(--texto-suave); font: 500 14px/1.6 var(--fuente-titulo); letter-spacing: 0.03em; }
 
 .expedientes { display: flex; flex-direction: column; gap: 56px; }
 .exp {

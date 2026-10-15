@@ -5,6 +5,9 @@
    Las lecciones se registran con CURSO.registrar({...}).
    ============================================================ */
 (function () {
+  // Versión de la web (la escribe herramientas/version.mjs): evita mezclar archivos viejos de la caché
+  const VERSION = "202610151043";
+
   // Diligencias aún sin título (expedientes que se escribirán más adelante)
   const pendientes = (etapa, n) => Array.from({ length: n }, (_, i) => {
     const num = String(i + 1).padStart(2, "0");
@@ -70,6 +73,9 @@
 
   window.CURSO = {
     ETAPAS,
+    VERSION,
+    /** Añade ?v=VERSION a una ruta local (lecciones, datos). */
+    conVersion: ruta => (VERSION ? ruta + (ruta.includes("?") ? "&" : "?") + "v=" + VERSION : ruta),
     /** Lo llama cada archivo de lección. */
     registrar(leccion) { lecciones[leccion.id] = leccion; },
     leccion: id => lecciones[id] || null,

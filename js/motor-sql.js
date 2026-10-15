@@ -41,7 +41,7 @@
   }
 
   function crearWorker() {
-    const w = new Worker(RUTA_WORKER, { type: "module" });
+    const w = new Worker(window.CURSO ? CURSO.conVersion(RUTA_WORKER) : RUTA_WORKER, { type: "module" });
     worker = w;
     listo = new Promise((ok, mal) => {
       pendientes.set(0, m => (m.ok ? ok() : mal(m.error)));
@@ -104,7 +104,8 @@
 
   async function cargarDatos(nombre) {
     if (!(nombre in cacheDatos)) {
-      const r = await fetch("datos/" + nombre + ".sql");
+      const ruta = "datos/" + nombre + ".sql";
+      const r = await fetch(window.CURSO ? CURSO.conVersion(ruta) : ruta);
       if (!r.ok) throw new Error("No se encuentran los datos «" + nombre + "»");
       cacheDatos[nombre] = await r.text();
     }

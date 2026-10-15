@@ -72,7 +72,7 @@
     if (!PROGRESO.disponible(id) && !PROGRESO.completado(id))
       return fallo("Esta diligencia aún está **bloqueada**. Supera las anteriores en la hoja de ruta.");
     try {
-      await cargarScript(`lecciones/${ref.etapa.carpeta}/${ref.nivel.archivo}`);
+      await cargarScript(CURSO.conVersion(`lecciones/${ref.etapa.carpeta}/${ref.nivel.archivo}`));
     } catch (e) {
       return fallo("Esta diligencia aún está **en preparación**.");
     }

@@ -6,6 +6,7 @@
   "scripts": {
     "servir": "node herramientas/servir.mjs",
     "test": "node tests/navegador/todos.mjs",
-    "datos": "node herramientas/generar-datos.mjs && node herramientas/generar-ciudad.mjs"
+    "datos": "node herramientas/generar-datos.mjs && node herramientas/generar-ciudad.mjs",
+    "version": "node herramientas/version.mjs"
   }
 }
