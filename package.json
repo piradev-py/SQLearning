@@ -1,0 +1,9 @@
+{
+  "name": "sqlearning",
+  "private": true,
+  "description": "SQLearning: de cero a Data Analyst jugando, con PostgreSQL (PGlite) en el navegador.",
+  "type": "module",
+  "scripts": {
+    "servir": "node herramientas/servir.mjs"
+  }
+}

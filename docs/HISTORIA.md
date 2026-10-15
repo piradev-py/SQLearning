@@ -1,0 +1,65 @@
+# Historia de SQLearning: «El Fantasma de Faro»
+
+> ⚠️ **Spoilers.** Este documento es la «biblia» de la historia para quien escribe lecciones y genera datos.
+> El alumno nunca lo ve. Cualquier lección, ticket o dato del Fantasma debe ser coherente con lo que hay aquí.
+
+## La empresa
+**Faro** es una cadena de tiendas de tecnología y hogar con cinco puntos de venta: **Madrid, Valencia, Sevilla,
+Bilbao y la tienda online**. Tiene almacén central en Getafe (Madrid). Vende productos de varias categorías
+(informática, telefonía, audio, hogar, gaming) a clientes particulares.
+
+El alumno entra como **becario/a de datos** en el equipo de Lucía. No tiene nombre en la historia: los personajes
+le hablan de tú («Oye, ¿puedes mirar…?»).
+
+## Prólogo opcional: la Etapa 0 «El archivo de papel»
+Antes del primer día, Lucía pone al candidato una prueba: ordenar el archivo de la **primera tienda de Faro (1998)**,
+que llevaba todo en fichas de papel y un Excel gigante. Es una historia **autónoma** (sin pistas del Fantasma),
+para que quien se la salte no pierda nada de la trama. Sus datos son pequeños y viven dentro de cada nivel
+(fichas y tablas de ejemplo), no en `datos/`.
+
+## Personajes
+| Personaje | Rol | Etapa principal | Tono |
+|---|---|---|---|
+| **Lucía Mora** | Jefa de datos, mentora | todas | Cercana, exigente, da los consejos técnicos (`consejo`) |
+| **Marcos Gil** | Atención al cliente | 2 | Agobiado, siempre con un cliente al teléfono |
+| **Elena Ruiz** | Directora de ventas | 3 | Quiere números para «ayer» |
+| **Héctor Vidal** | Jefe de logística | 4 | Simpático, muy servicial… demasiado |
+| **Nuria Campos** | Responsable de la migración de sistemas | 5 | Ordenada, odia los datos sucios |
+| **Iván Soler** | Administrador de sistemas (IT) | 6 | Brusco, técnico, el sospechoso evidente |
+| **Ana Beltrán** | Directora general | 7–8 | Pide informes para el consejo |
+| **«El Fantasma»** | Nunca aparece | — | Solo deja rastro en los datos |
+
+## El misterio (solución)
+**El culpable es Héctor Vidal (logística).** Durante meses ha creado **clientes falsos** y les ha hecho
+**reembolsos** de pedidos que nunca se enviaron, cobrando el dinero en cuentas suyas. Para tapar el hueco de
+inventario hace **ajustes de stock** y algún **cambio de precio** de madrugada. Lo hace con la cuenta de sistema
+`admin_temp`, una cuenta antigua de IT que nadie desactivó, para que las sospechas caigan sobre **Iván Soler**.
+
+Lo que lo delata en los datos (y cómo lo va descubriendo el alumno):
+
+| Etapa | Pista del Expediente | Qué se ve en los datos |
+|---|---|---|
+| 1 | **El inventario imposible** | Un producto con stock negativo (-12). Ordenando por stock aparece arriba del todo. |
+| 2 | **Clientes de madrugada** | Varios clientes dados de alta entre las 2:00 y las 5:00, todos con email `@correo-rapido.net`. Uno reclama un pedido que «nunca hizo». |
+| 3 | **Reembolsos disparados** | Los reembolsos de la tienda online triplican la media de las demás tiendas. |
+| 4 | **Pedidos fantasma** | Pedidos reembolsados que no tienen envío registrado (LEFT JOIN → NULL); los pocos envíos que hay los firma el almacén de Getafe. |
+| 5 | **Una sola dirección** | Al limpiar los datos (mayúsculas, espacios, abreviaturas «C/» = «Calle»), las direcciones de los clientes falsos son la misma, y coincide con la de un empleado. |
+| 6 | **La cuenta `admin_temp`** | La tabla de auditoría que diseña el alumno registra que todos los cambios raros los hace `admin_temp`. Iván parece culpable. |
+| 7 | **La coartada de Iván** | Con funciones ventana y fechas: `admin_temp` actúa durante las vacaciones de Iván, y siempre pocos minutos después de que Héctor ficha en el almacén. |
+| 8 | **Caso cerrado** | Analítica de anomalías (z-score) y cuantificación del fraude; el informe final para Ana Beltrán señala a Héctor. |
+
+Reglas para no romper el misterio:
+- Antes de la etapa 7 **nunca** se nombra a Héctor como sospechoso. Puede aparecer como personaje amable.
+- Iván debe parecer culpable en la etapa 6 (pista falsa) y quedar limpio en la 7.
+- Los datos del Fantasma son **pocos y discretos**: no deben llamar la atención en las lecciones normales,
+  solo cuando la consulta del caso los busca a propósito.
+- Las cifras y nombres concretos los fija `herramientas/generar-datos.mjs` (semilla fija). Si una lección cita
+  un número, debe salir de ahí.
+
+## Rangos del alumno (XP)
+Becario 🎒 → Analista junior 📊 → Analista 🔎 → Analista senior 🧠 → Lead de datos 🧭 → Head of Data 🏛️
+(umbrales en `js/progreso.js`).
+
+## Epílogo (tras el caso final)
+Ana Beltrán te ofrece el puesto de Head of Data. Lucía te recomienda los siguientes pasos de un Data Analyst
+fuera de SQL: hojas de cálculo, una herramienta de BI (Power BI, Tableau, Looker) y Python con pandas.
