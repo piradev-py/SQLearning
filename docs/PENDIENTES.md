@@ -22,7 +22,7 @@ quede pendiente y vuelve a pasar los tests.
   - [ ] F16 · editor lento con textos enormes (500 líneas: 70 ms/tecla): repintar solo lo visible
   - [ ] Dos pestañas del laboratorio se pisan el borrador
   - [ ] Sin conexión: service worker para cachear PGlite y las fuentes (antes de publicar)
-  - [ ] Comprobar en GitHub Pages que wasm/data viajan comprimidos
+  - [x] GitHub Pages sirve wasm/data con gzip (10,5→3,7 MB y 6,2→1,8 MB)
 - [ ] Revisión fin de fase 3 (interfaz)
 - [ ] Revisión etapa 1 antes de publicar (las dos)
 
@@ -52,7 +52,7 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Volver de una lección o del laboratorio lleva a la hoja de ruta (`index.html#ruta`), sin repetir el prólogo
 - [x] Audios hechos con Suno por el usuario (atribución en README y `docs/LICENCIAS.md`)
 - [ ] Revisión de sección (etapas 0 y 1): `qa-estres` (retomar la de fase 3, cortada por el límite de uso) + `alumno-novato`
-- [ ] Publicar en GitHub Pages
+- [x] **Publicado** (2026-10-15): https://piradev-py.github.io/SQLearning/ (repo público github.com/piradev-py/SQLearning, Pages desde `main`, `/`). Comprobado: PGlite viaja con gzip (≈6 MB la primera visita), laboratorio listo en ~1,8 s, lecciones y prólogo funcionan
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cuatro tiendas y una tienda online» para cuadrar con los datos
