@@ -185,7 +185,59 @@ texto y fechas, y tratar correctamente los valores vacíos (`NULL`).
 
 ---
 
-## Etapas 3–8
+## Etapa 3 · Ventas 💶 — «Resumir miles de filas en una respuesta»
+
+**Historia:** Elena Ruiz, directora de ventas, necesita números para el comité: cuánto se vende, dónde, qué y cuándo.
+Pasas de mirar filas sueltas a resumirlas. Al comparar tiendas, la tienda online tiene una tasa de reembolsos que no
+se parece a ninguna otra.
+
+**Tablas** (`datos/faro-e3.sql`, ver `docs/DATOS.md`): las de la etapa 2 + `lineas_pedido` (4 022) y la columna
+`pedidos.mes` (`'2026-08'`, «la que ya traen las exportaciones de ventas»; las funciones de fecha llegan en la etapa 5).
+Aún NO hay `JOIN` (etapa 4): se agrupa por columnas de una sola tabla (`tienda_id`, `estado`, `metodo_pago`, `mes`,
+`cliente_id`, `producto_id`).
+
+**Al terminarla, el alumno sabrá:** resumir con funciones de agregado, agrupar y filtrar grupos, entender el orden
+en que PostgreSQL evalúa una consulta, y ver un resultado como gráfico.
+
+### e3-01 · Contar filas: COUNT · 25 ◈ 🚧
+- **Conceptos nuevos:** función de agregado, `COUNT(*)`, `COUNT(columna)` (no cuenta `NULL`), contar con `WHERE`.
+- **Reto:** ¿cuántos pedidos online hay? ¿Y cuántos clientes tienen teléfono?
+
+### e3-02 · Sumar y promediar: SUM, AVG y ROUND · 30 ◈ 🚧
+- **Conceptos nuevos:** `SUM`, `AVG`, `ROUND(x, 2)`, ticket medio, alias para el resultado.
+- **Reto:** facturación y ticket medio de los pedidos entregados.
+
+### e3-03 · Los extremos: MIN y MAX · 30 ◈ 🚧
+- **Conceptos nuevos:** `MIN`, `MAX` con números, fechas y textos; varias funciones en un mismo `SELECT`.
+- **Reto:** primer y último pedido, pedido más barato y más caro.
+
+### e3-04 · Contar distintos: COUNT(DISTINCT) · 30 ◈ 🚧
+- **Conceptos nuevos:** `COUNT(DISTINCT columna)`; diferencia con `COUNT(*)`.
+- **Reto:** ¿cuántos clientes distintos han comprado online?
+
+### e3-05 · Agrupar: GROUP BY · 35 ◈ 🚧
+- **Conceptos nuevos:** `GROUP BY`, una fila por grupo, cada columna del `SELECT` agrupada o dentro de un agregado (error 42803), **primer gráfico de barras** (pestaña Gráfico).
+- **Reto:** pedidos y facturación por tienda.
+
+### e3-06 · Grupos por varias columnas · 35 ◈ 🚧
+- **Conceptos nuevos:** `GROUP BY` con varias columnas, ordenar grupos por un agregado, **gráfico de líneas** con `mes`.
+- **Reto:** facturación por mes (y por tienda y estado).
+
+### e3-07 · Filtrar grupos: HAVING · 40 ◈ 🚧
+- **Conceptos nuevos:** `HAVING`, diferencia con `WHERE` (filas antes de agrupar vs grupos después).
+- **Reto:** clientes con más de 15 pedidos; productos con más de 130 unidades vendidas.
+
+### e3-08 · El orden en que piensa SQL · 35 ◈ 🚧
+- **Conceptos nuevos:** orden lógico `FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT`; por qué un alias no vale en `WHERE` pero sí en `ORDER BY`; paso `arreglar`.
+- **Reto:** top 5 de productos por unidades (con desempate por `producto_id`, hay empates).
+
+### e3-09 · Caso: Reembolsos disparados · 60 ◈ 🚧
+- **Caso:** Elena ve que los reembolsos suben. Partes: reembolsos por tienda (`GROUP BY tienda_id` con `WHERE estado = 'reembolsado'`) → pedidos por tienda → interpretar: la online tiene 103 de 1 527 (≈ 6,7 %) frente a ~2 % en las físicas → reembolsos online por mes (crecen desde marzo de 2026).
+  → Pista del Expediente: **Reembolsos disparados**.
+
+---
+
+## Etapas 4–8
 Se detallan aquí (mismo formato) antes de escribir sus lecciones. Contenido previsto:
 
 - **3 · Ventas 💶:** `COUNT/SUM/AVG/MIN/MAX`, `COUNT(DISTINCT)`, `ROUND`, `GROUP BY`, `HAVING`, orden lógico de ejecución, primer gráfico. Caso: *Reembolsos disparados*.

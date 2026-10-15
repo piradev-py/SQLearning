@@ -362,3 +362,31 @@ function etapa2() {
 
 writeFileSync(SALIDA + "faro-e2.sql", etapa2());
 console.log("✅ datos/faro-e2.sql");
+
+// --- Etapa 3 (Ventas): lo de la etapa 2 + líneas de pedido + columna `mes` -------------
+// `mes` ('2026-08') permite agrupar por mes antes de enseñar funciones de fecha (etapa 5):
+// en la historia, es una columna que el equipo de ventas ya tenía en sus exportaciones.
+const esquemaLineas = `
+CREATE TABLE lineas_pedido (
+  pedido_id integer NOT NULL REFERENCES pedidos (id),
+  producto_id integer NOT NULL REFERENCES productos (id),
+  cantidad integer NOT NULL CHECK (cantidad > 0),
+  precio_unitario numeric(8, 2) NOT NULL,
+  PRIMARY KEY (pedido_id, producto_id)
+);
+`;
+
+function etapa3() {
+  const u = universo();
+  return [
+    etapa2().replace("datos de la etapa 2", "datos de la etapa 3"),
+    esquemaLineas,
+    insertar("lineas_pedido", ["pedido_id", "producto_id", "cantidad", "precio_unitario"], u.lineas),
+    "ALTER TABLE pedidos ADD COLUMN mes text;",
+    "UPDATE pedidos SET mes = to_char(fecha, 'YYYY-MM');",
+    "ALTER TABLE pedidos ALTER COLUMN mes SET NOT NULL;"
+  ].join("\n");
+}
+
+writeFileSync(SALIDA + "faro-e3.sql", etapa3());
+console.log("✅ datos/faro-e3.sql");

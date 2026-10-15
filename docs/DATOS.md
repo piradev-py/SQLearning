@@ -39,4 +39,15 @@ Un único universo que las etapas siguientes van mostrando por partes:
   2026-08-14 03:12, online, reembolsado, 129,00 €.
 - Reembolsos: online 6,7 % (103 de 1 527) frente a ~2 % en las tiendas físicas.
 
+### Cifras comprobadas de `faro-e3.sql` (consultadas con PGlite)
+Igual que `faro-e2.sql` (mismas filas y cifras) + `lineas_pedido` + columna `pedidos.mes` (`'YYYY-MM'`).
+- `lineas_pedido`: 4 022 líneas, 4 972 unidades. **El total de cada pedido = suma de sus líneas** (0 descuadres) y todos los pedidos tienen líneas.
+- Ticket medio 406,23 € · pedido mínimo 12,90 € · máximo 4 404,00 €.
+- Por tienda (pedidos · reembolsados · facturado redondeado): 1 Madrid 429 · 7 · 169 450 € — 2 Valencia 187 · 2 · 71 434 € — 3 Sevilla 225 · 6 · 97 499 € — 4 Bilbao 156 · 5 · 49 021 € — 5 Online 1 527 · **103** · 637 914 € — 6 Barcelona sin pedidos.
+- Por mes: de enero de 2024 (45 pedidos, 12 058 €) a septiembre de 2026 (202 pedidos, 89 152 €); crecimiento fuerte en 2026.
+- Reembolsos online por mes: hasta enero de 2026 entre 1 y 4; **febrero 0**; desde marzo de 2026 se disparan (9, 13, 13, 9, 6, **19 en agosto**, 13).
+- Top unidades vendidas (producto_id · unidades): 16 · 156; **13 y 32 empatan con 142**; 2 · 139; 8 · 138 → desempatar por `producto_id`.
+- 47 clientes con más de 15 pedidos; 12 productos con más de 130 unidades; 284 clientes distintos han comprado online.
+- Los 4 productos descatalogados (`activo = false`) tienen 387 líneas: se vendían hasta hace poco y se acaban de retirar.
+
 Las cifras exactas se consultan con el propio motor (laboratorio o `tests/`), nunca a ojo.
