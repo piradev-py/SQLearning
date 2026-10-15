@@ -98,6 +98,8 @@ HAVING COUNT(*) > 20;`,
       comprobaciones: [
         { texto: "Tiene las columnas cliente_id, pedidos y facturacion", prueba: (r) => PRUEBA.columnas(r, ["cliente_id", "pedidos", "facturacion"]) },
         { texto: "Encuentra a los 47 clientes con más de 15 pedidos", prueba: (r) => (r?.filas?.length ?? 0) === 47 },
+        // Ningún cliente tiene justo 15 pedidos, así que «>= 15» daría lo mismo por casualidad
+        { texto: "«Más de 15» es `> 15` (con `>= 15` entraría quien tenga justo 15)", prueba: () => !/>=\s*15\b/.test(PRUEBA.codigo()) },
         { texto: "Está ordenado de más a menos pedidos", prueba: (r) => PRUEBA.ordenado(r, "pedidos", "desc") },
         { texto: "Los recuentos y las sumas son los de cada cliente", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT cliente_id, COUNT(*) AS pedidos, SUM(total) AS facturacion
 FROM pedidos

@@ -508,6 +508,19 @@
     if (siguiente?.listo) { enlace.href = `leccion.html?id=${siguiente.id}`; enlace.hidden = false; }
     $("[data-final]").showModal();
   }
+  // «Ver mi resultado»: cierra el cuadro para mirar la tabla o el gráfico (el reto suele pedirlo) y deja en el paso
+  // una franja con la salida: siguiente diligencia o volver a ver el resumen
+  $("[data-final-cerrar]").addEventListener("click", () => $("[data-final]").close());
+  $("[data-final]").addEventListener("close", () => {
+    if (!terminado || $("[data-final-franja]")) return;
+    const enlace = $("[data-final-siguiente]");
+    $("[data-paso]").insertAdjacentHTML("afterbegin", `<div class="lec-final-franja" data-final-franja>
+      <strong>✔ Diligencia superada</strong>
+      <button type="button" class="boton-enlace" data-final-abrir>Ver el resumen</button>
+      ${enlace.hidden ? `<a class="boton-enlace" href="index.html#ruta">‹ Hoja de ruta</a>` : `<a class="boton-enlace boton-enlace--principal" href="${enlace.href}">Siguiente diligencia ›</a>`}
+    </div>`);
+    $("[data-final-abrir]").addEventListener("click", () => $("[data-final]").showModal());
+  });
 
   // --- Eventos generales -----------------------------------------------------
   $("[data-anterior]").addEventListener("click", () => { if (actual > 0) mostrarPaso(actual - 1); });

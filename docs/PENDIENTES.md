@@ -78,7 +78,18 @@ quede pendiente y vuelve a pasar los tests.
   - [ ] e4-06: `COALESCE(SUM(...), 0)` se rechaza sin decir por qué (el enunciado pide dejar el NULL)
   - [ ] `UPDATE` dentro de un CTE altera lo que ve la comprobación (trampa avanzada): `SET TRANSACTION READ ONLY` en retos sin `verificar`
   - [ ] `COPY … TO STDOUT` dice «Consulta ejecutada» sin más
-- [ ] Revisión de las etapas 3 y 4: `alumno-novato`
+- [x] Revisión de las etapas 3 y 4: `alumno-novato` hecha (`docs/revisiones/2026-10-15-alumno-etapas-3-4.md`, nota 8/10). Arreglados:
+  el **Almacén central ya no señala a Héctor** (nuevo empleado 23, Iker Salas, jefe de muelle que depende de él; 23 empleados en e4),
+  **altas antes del primer pedido** (las 11 que no lo cumplían pasan a la víspera; falsos: 4 mar–30 abr 2026), mensajes de error de JOIN
+  (alias, columna de otra tabla, JOIN sin ON, CROSS JOIN con ON, ORDER BY antes de INTERSECT), alias en HAVING/WHERE, WHERE tras GROUP BY,
+  columna del ORDER BY en 42803, self join sin alias, avisos de `= NULL` y `100.000`, «260 clientes»/«el pedido 2210» aceptados,
+  e4-01 acepta JOIN, e3-08 exige desempate, e3-05 no marca las sumas si solo falla el orden, e3-07 rechaza `>= 15`, erratas
+  (e4-10 «devuelto», e4-06 «lo vendido», e3-05 predicción, café repetido) y botón «Ver mi resultado» en «Diligencia superada».
+  Quedan (menores):
+  - [ ] e3-09 parte 1: sin `ORDER BY tienda_id` aprueba (el GROUP BY ya lo da en orden por casualidad)
+  - [ ] Gráfico de líneas por mes: los meses sin filas no salen y el eje los junta (habrá que enseñar `generate_series` en la etapa 7)
+  - [ ] Noche: en gráficos de 5 líneas, las series 2 y 4 (magenta y violeta) se distinguen poco sobre el fondo
+  - [ ] e3-03: la comprobación del reto muestra las cifras antes de escribir nada (revisar el patrón en otros retos)
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)

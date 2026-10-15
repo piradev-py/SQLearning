@@ -48,7 +48,7 @@ LEFT JOIN tiendas AS t ON em.tienda_id = t.id;`,
         "Da error, porque el LEFT JOIN exige poner primero la tabla con la PK"
       ],
       correcta: 1,
-      explicacion: "Con `empleados` a la izquierda, lo que se conserva son los **22 empleados**, cada uno con su tienda. Barcelona no es pareja de ninguno, así que desaparece. Mismo JOIN, otra pregunta: «todas las tiendas» no es lo mismo que «todos los empleados»."
+      explicacion: "Con `empleados` a la izquierda, lo que se conserva son los **23 empleados**, cada uno con su tienda. Barcelona no es pareja de ninguno, así que desaparece. Mismo JOIN, otra pregunta: «todas las tiendas» no es lo mismo que «todos los empleados»."
     },
     {
       tipo: "explicacion",

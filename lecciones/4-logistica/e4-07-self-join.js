@@ -33,10 +33,10 @@ WHERE em.nombre = 'Carmen Llorente';`,
       consulta: `SELECT em.nombre AS empleado, j.nombre AS jefe
 FROM empleados AS em
 JOIN empleados AS j ON em.jefe_id = j.id;`,
-      pregunta: "En Faro hay 22 empleados. ¿Cuántas filas devolverá esta consulta, sin el `WHERE`?",
-      opciones: ["22", "21", "44"],
+      pregunta: "En Faro hay 23 empleados. ¿Cuántas filas devolverá esta consulta, sin el `WHERE`?",
+      opciones: ["23", "22", "46"],
       correcta: 1,
-      explicacion: "**21**. Es un `INNER JOIN`: solo salen los empleados que tienen pareja en la otra copia. Ana Beltrán tiene `jefe_id` `NULL`, así que no encuentra jefe y desaparece. Si quieres que salga con el jefe vacío, ya sabes: `LEFT JOIN`, y salen las 22."
+      explicacion: "**22**. Es un `INNER JOIN`: solo salen los empleados que tienen pareja en la otra copia. Ana Beltrán tiene `jefe_id` `NULL`, así que no encuentra jefe y desaparece. Si quieres que salga con el jefe vacío, ya sabes: `LEFT JOIN`, y salen las 22."
     },
     {
       tipo: "arreglar",
@@ -83,7 +83,7 @@ ORDER BY subordinados DESC;`,
       inicial: "-- Escribe tu consulta aquí\n",
       comprobaciones: [
         { texto: "Tiene las columnas empleado, departamento y jefe", prueba: (r) => PRUEBA.columnas(r, ["empleado", "departamento", "jefe"]) },
-        { texto: "Salen los 22 empleados", prueba: (r) => (r?.filas?.length ?? 0) === 22 },
+        { texto: "Salen los 23 empleados", prueba: (r) => (r?.filas?.length ?? 0) === 23 },
         { texto: "Ana Beltrán aparece, con el jefe vacío (NULL)", prueba: (r) => {
           const c = (r?.columnas || []).map(x => String(x).toLowerCase());
           const ie = c.indexOf("empleado"), ij = c.indexOf("jefe");

@@ -193,7 +193,17 @@
     const fuenteOrden = paso.verificar || paso.solucion;
     const orden = paso.orden === undefined || paso.orden === "auto" ? ordenImporta(fuenteOrden) : !!paso.orden;
     const claves = orden && esperado ? clavesOrden(fuenteOrden, esperado.columnas) : null;
-    return comparar(alumno, esperado, { orden, nombres: paso.nombres !== false, claves });
+    const r = comparar(alumno, esperado, { orden, nombres: paso.nombres !== false, claves });
+    if (!r.ok) { const c = consejoTrampa(sql); if (c) r.mensaje += " " + c; }
+    return r;
+  }
+
+  // Trampas típicas que dan un resultado incorrecto sin error: se avisan junto al fallo
+  function consejoTrampa(sql) {
+    const s = MOTOR.sinComentarios(sql).replace(/'(?:[^']|'')*'/g, "''");
+    if (/(=|<>|!=)\s*null\b/i.test(s)) return "Ojo: con `NULL` no vale `=`; se pregunta con `IS NULL` (o `IS NOT NULL`).";
+    if (/(?<![\w.])\d{1,3}\.\d{3}(?![\d.])/.test(s)) return "Ojo: en SQL el punto es el **decimal**: `100.000` es cien, no cien mil. Escribe `100000`.";
+    return "";
   }
 
   /**
@@ -244,6 +254,12 @@
       let t = String(dada).replace(/\s/g, "").replace(/[€◈%#]/g, "").replace(/^(pedido|n\.?º)/i, "");
       // Formato español con punto de miles («-1.548», «12.345,67»): se quitan los puntos y la coma pasa a ser decimal
       if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, "");
+      // «260 clientes», «el pedido 2210»: si hay un solo número entre palabras, cuenta ese número
+      if (!/^-?[\d.,]+$/.test(t)) {
+        const numeros = String(dada).match(/-?\d[\d.,]*/g) || [];
+        if (numeros.length === 1) t = numeros[0].replace(/[.,]$/, "");
+        if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, "");
+      }
       const n = Number(t.replace(",", "."));
       return Number.isFinite(n) && Math.abs(n - paso.respuesta) <= (paso.tolerancia || 0) + 1e-9;
     }

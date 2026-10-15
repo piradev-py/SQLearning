@@ -48,7 +48,7 @@ GROUP BY estado;`,
       consulta: `SELECT metodo_pago, COUNT(*) AS pedidos
 FROM pedidos
 GROUP BY metodo_pago;`,
-      pregunta: "En Faro se paga con tarjeta, bizum, efectivo o transferencia, y hay 2 524 pedidos. ¿Cuántas filas devolverá esta consulta?",
+      pregunta: "En Faro hay 2 524 pedidos y unos pocos métodos de pago distintos. ¿Cuántas filas devolverá esta consulta?",
       opciones: ["4", "2 524", "1"],
       correcta: 0,
       explicacion: "Una fila por grupo: hay 4 métodos de pago distintos, así que salen 4 filas, cada una con su recuento. Sin `GROUP BY`, `COUNT(*)` daría una sola fila con 2 524."
@@ -97,7 +97,7 @@ GROUP BY metodo_pago;`,
         { texto: "Los recuentos y las sumas son los de cada tienda", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT tienda_id, COUNT(*) AS pedidos, SUM(total) AS facturacion
 FROM pedidos
 GROUP BY tienda_id
-ORDER BY facturacion DESC;`) }
+ORDER BY facturacion DESC;`, { orden: false }) }
       ],
       pistas: [
         "Agrupa por `tienda_id` y pon dos agregados en el `SELECT`: `COUNT(*)` y `SUM(total)`, cada uno con su alias. Después, `ORDER BY facturacion DESC`.",

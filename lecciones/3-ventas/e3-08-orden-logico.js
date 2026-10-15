@@ -93,6 +93,8 @@ LIMIT 10;`,
         { texto: "Tiene las columnas producto_id y unidades", prueba: (r) => PRUEBA.columnas(r, ["producto_id", "unidades"]) },
         { texto: "Devuelve 5 productos", prueba: (r) => (r?.filas?.length ?? 0) === 5 },
         { texto: "Los empatados salen por producto_id", prueba: (r) => PRUEBA.valor(r, 1, "producto_id") === 13 && PRUEBA.valor(r, 2, "producto_id") === 32 },
+        // Sin desempate, el 13 sale antes que el 32 por suerte: hay que pedirlo en el ORDER BY
+        { texto: "El ORDER BY desempata con un segundo criterio (sin él, el orden de los empatados es cuestión de suerte)", prueba: () => /\border\s+by\b[^;]*,/i.test(PRUEBA.codigo()) },
         { texto: "Son los 5 más vendidos, en el orden pedido", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT producto_id, SUM(cantidad) AS unidades
 FROM lineas_pedido
 GROUP BY producto_id

@@ -191,7 +191,7 @@ ORDER BY p.id;`
         },
         {
           tipo: "interpretar",
-          pregunta: "Los 6 envíos están `devuelto` y ninguno tiene fecha de `entrega`, aunque los devueltos normales sí la tienen. ¿Qué **almacén** los firma todos? Escribe su nombre.",
+          pregunta: "Los 6 envíos están en estado `devuelto` y ninguno tiene fecha de `entrega`, aunque los devueltos normales sí la tienen. ¿Qué **almacén** los firma todos? Escribe su nombre.",
           respuesta: ["Almacén central", "central", "Getafe", "Almacén central (Getafe)", "Almacén de Getafe", "Almacén central de Getafe", "el almacén central", "el central", "almacén central Getafe"],
           pistas: [
             "Mira la columna `almacen` de la parte anterior: es el mismo en las 6 filas.",

@@ -125,7 +125,7 @@ WHERE email LIKE '%@correo-rapido.example';`
       expediente: {
         id: "clientes-de-madrugada",
         titulo: "Clientes de madrugada",
-        texto: "**Iratxe Muñoz**, clienta de Bilbao, reclama el pedido **2210**: hecho en la tienda online el 14 de agosto de 2026 a las **03:12** y ya **reembolsado**. Ella asegura que nunca lo hizo.\nTirando del hilo aparecen **9 clientes** con email `@correo-rapido.example`, todos de **Getafe**, sin teléfono, dados de alta entre las **2:00 y las 5:00** de la madrugada, entre marzo y agosto de 2026. En atención al cliente nadie recuerda haber hablado con ninguno de ellos.\n¿Quién da de alta clientes a las tres de la mañana? ¿Y a quién se le devolvió el dinero de un pedido que nadie reconoce?"
+        texto: "**Iratxe Muñoz**, clienta de Bilbao, reclama el pedido **2210**: hecho en la tienda online el 14 de agosto de 2026 a las **03:12** y ya **reembolsado**. Ella asegura que nunca lo hizo.\nTirando del hilo aparecen **9 clientes** con email `@correo-rapido.example`, todos de **Getafe**, sin teléfono, dados de alta entre las **2:00 y las 5:00** de la madrugada, entre marzo y abril de 2026. En atención al cliente nadie recuerda haber hablado con ninguno de ellos.\n¿Quién da de alta clientes a las tres de la mañana? ¿Y a quién se le devolvió el dinero de un pedido que nadie reconoce?"
       }
     }
   ]

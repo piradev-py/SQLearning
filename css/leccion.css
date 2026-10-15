@@ -194,3 +194,8 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
   .lec-trabajo { min-height: 80vh; }
   .lec-pasos { display: none; }
 }
+
+/* Franja que queda en el paso al cerrar «Diligencia superada» (para mirar el resultado) */
+.lec-final-franja { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 12px; padding: 10px 12px;
+  border: 1px solid var(--ok); border-radius: var(--radio); background: var(--ok-fondo); color: var(--texto); }
+.lec-final-franja strong { color: var(--ok); margin-right: auto; }

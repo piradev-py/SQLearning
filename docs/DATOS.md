@@ -1,7 +1,9 @@
 # Datos de Faro (para quien escribe lecciones)
 
 > ⚠️ Spoilers. Los datos los genera `herramientas/generar-datos.mjs` con semillas fijas: **siempre salen iguales**.
-> Una vez escritas las lecciones de una etapa, sus datos **no se tocan** (las cifras de las lecciones dependen de ellos).
+> Una vez escritas las lecciones de una etapa, sus datos **no se tocan** (las cifras de las lecciones dependen de ellos),
+> salvo para corregir un fallo de una revisión (y entonces se vuelve a pasar el verificador). Cambios así: altas de clientes
+> movidas a la víspera de su primer pedido (revisión de las etapas 3–4); responsable del Almacén central en la etapa 4.
 > Cada etapa tiene su archivo `datos/faro-eN.sql`, que contiene todas las tablas vistas hasta entonces.
 
 ## Etapa 1 · `faro-e1.sql` (semilla 1998) — CONGELADO (salvo la tienda 6, añadida para cuadrar con la locución del prólogo)
@@ -23,7 +25,7 @@ Un único universo que las etapas siguientes van mostrando por partes:
 
 ### Lo que siembra el Fantasma (no debe llamar la atención en las lecciones normales)
 - **9 clientes falsos**: email `@correo-rapido.example`, ciudad `Getafe` (donde está el almacén central), alta entre las
-  02:00 y las 04:59, entre marzo y agosto de 2026, `socio = false`, sin teléfono.
+  02:00 y las 04:59, entre el 4 de marzo y el 30 de abril de 2026 (siempre antes de su primer pedido), `socio = false`, sin teléfono.
 - Cada falso tiene 2–4 pedidos **online** (tienda 5), de madrugada, caros (300–1 200 €), todos `reembolsado`.
 - **La reclamación clave**: una clienta real de Bilbao reclama un pedido que no reconoce (motivo con «no reconozco»).
   Ese pedido es online, de madrugada y `reembolsado`. Es el hilo del caso de la etapa 2 («Clientes de madrugada»).
@@ -34,7 +36,7 @@ Un único universo que las etapas siguientes van mostrando por partes:
 ### Cifras comprobadas de `faro-e2.sql` (consultadas con PGlite)
 - 300 clientes (291 reales + 9 falsos, ids 292–300), 2 524 pedidos, 40 reclamaciones. 40 clientes sin teléfono, 10 sin ciudad.
 - 10 clientes **reales** dados de alta antes de las 06:00.
-- Falsos: altas entre 02:00 y 04:59 (marzo–agosto 2026); 68 pedidos suyos, todos online, de madrugada, `reembolsado`.
+- Falsos: altas entre 02:00 y 04:59 (2026-03-04 … 2026-04-30); 68 pedidos suyos, todos online, de madrugada, `reembolsado`.
 - La reclamación clave: **Iratxe Muñoz** (Bilbao), motivo «No reconozco este pedido: yo no lo hice», pedido **2210**,
   2026-08-14 03:12, online, reembolsado, 129,00 €.
 - Reembolsos: online 6,7 % (103 de 1 527) frente a ~2 % en las tiendas físicas.
@@ -52,9 +54,9 @@ Igual que `faro-e2.sql` (mismas filas y cifras) + `lineas_pedido` + columna `ped
 
 ## Etapa 4 · `faro-e4.sql` (semilla 4004 para lo nuevo)
 Igual que `faro-e3.sql` (mismas filas y cifras) + `empleados.jefe_id` + `almacenes` + `transportistas` + `envios`.
-- `empleados.jefe_id` → `empleados.id` (self join). Ana Beltrán (1) no tiene jefe; los 6 responsables de departamento
+- `empleados.jefe_id` → `empleados.id` (self join). **Nuevo empleado 23, Iker Salas** (Logística, jefe de muelle del Almacén central, `jefe_id` = Héctor): en la etapa 4 hay **23 empleados** (22 en e1–e3). Ana Beltrán (1) no tiene jefe; los 6 responsables de departamento
   dependen de ella; las tiendas, de Elena Ruiz y sus encargados (p. ej. Carmen Llorente → Pablo Herrero → Elena Ruiz → Ana).
-- `almacenes` (5): 1 Almacén central (**Getafe**, responsable Héctor Vidal, id 5) · 2 Levante (Valencia, Óscar Medina) ·
+- `almacenes` (5): 1 Almacén central (**Getafe**, responsable **Iker Salas**, id 23, que depende de Héctor: Héctor solo aparece siguiendo el organigrama) · 2 Levante (Valencia, Óscar Medina) ·
   3 Sur (Sevilla, Beatriz Soto) · 4 Norte (Bilbao, **responsable NULL**) · 5 Zaragoza (abierto 2026-09-21, **sin envíos**).
 - `transportistas` (4): Rayo Express 482 envíos · Paquetería Norte 244 · Mensajería Sur 611 · **Logística Delta 0**.
 - `envios` (1 337): solo pedidos **online** (en tienda física no hay envío). `pedido_id` UNIQUE, `salida`, `entrega`
@@ -67,7 +69,7 @@ Igual que `faro-e3.sql` (mismas filas y cifras) + `empleados.jefe_id` + `almacen
 
 - Comprobado con PGlite para el temario: `almacenes FULL JOIN tiendas ON ciudad` 8 filas · ciudades de tiendas y almacenes:
   UNION 8, UNION ALL 11, INTERSECT Bilbao/Sevilla/Valencia, tiendas EXCEPT almacenes Barcelona/Madrid/Online · self join
-  INNER 21, LEFT 22; subordinados directos: Ana 6, Elena 6, Héctor 2, Marcos 2, Aitor/Jorge/Lucía/Pablo/Raúl 1 ·
+  INNER 22, LEFT 23; subordinados directos: Ana 6, Elena 6, Héctor 3, Marcos 2, Aitor/Jorge/Lucía/Pablo/Raúl 1 ·
   `almacenes CROSS JOIN transportistas` 20 · `pedidos JOIN lineas_pedido` 4 022 · pedido 1 = Disco SSD Volta 1 TB ×1 + Bombilla Lumen Smart ×2.
 - Envíos por almacén y transportista: central 361 Rayo + 359 Mensajería Sur · Levante 121 Rayo + 153 Paquetería Norte ·
   Sur 252 Mensajería Sur · Norte 91 Paquetería Norte (el resto de parejas, 0).

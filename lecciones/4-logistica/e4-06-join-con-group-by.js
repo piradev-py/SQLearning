@@ -8,7 +8,7 @@ CURSO.registrar({
       tipo: "historia",
       de: "hector",
       asunto: "Mi informe de los lunes",
-      texto: "¡Buenos días! Te he dejado un café en la mesa, solo y sin azúcar, que me han dicho que así te gusta.\nTe cuento: cada lunes mando a dirección **cuántos envíos ha hecho cada almacén** y cuánto nos cuestan. Ahora lo saco a mano y en el informe salen números de almacén que nadie entiende.\n¿Me lo dejas con los **nombres**? Lo que necesites de envíos, me lo pides."
+      texto: "¡Buenos días! Hoy he traído cruasanes para todo el equipo: coge uno antes de que vuelen.\nTe cuento: cada lunes mando a dirección **cuántos envíos ha hecho cada almacén** y cuánto nos cuestan. Ahora lo saco a mano y en el informe salen números de almacén que nadie entiende.\n¿Me lo dejas con los **nombres**? Lo que necesites de envíos, me lo pides."
     },
     {
       tipo: "explicacion",
@@ -82,7 +82,7 @@ WHERE p.id = 1;`,
     },
     {
       tipo: "arreglar",
-      enunciado: "Elena quiere por tienda: `tienda_id`, `pedidos` (cuántos pedidos distintos tiene), `unidades` (la suma de `cantidad` de sus líneas) y `facturacion` (lo vendido). Ordenado por `tienda_id`. Las unidades están bien, pero `pedidos` y `facturacion` salen infladas: Madrid debería tener 429 pedidos y la online, 1 527. Arréglala sin quitar el `JOIN`.",
+      enunciado: "Elena quiere por tienda: `tienda_id`, `pedidos` (cuántos pedidos distintos tiene), `unidades` (la suma de `cantidad` de sus líneas) y `facturacion` (el importe de sus líneas). Ordenado por `tienda_id`. Las unidades están bien, pero `pedidos` y `facturacion` salen infladas: Madrid debería tener 429 pedidos y la online, 1 527. Arréglala sin quitar el `JOIN`.",
       inicial: `SELECT p.tienda_id, COUNT(*) AS pedidos, SUM(lp.cantidad) AS unidades, SUM(p.total) AS facturacion
 FROM pedidos AS p
 JOIN lineas_pedido AS lp ON lp.pedido_id = p.id

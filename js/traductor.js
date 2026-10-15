@@ -9,6 +9,7 @@
   // Nombres conocidos del esquema actual (los rellena quien cargue el esquema)
   let tablas = [];
   let columnas = [];
+  let tablasDe = {};          // tabla → sus columnas (para «esa columna está en otra tabla»)
 
   function distancia(a, b) {
     a = a.toLowerCase(); b = b.toLowerCase();
@@ -30,10 +31,24 @@
   }
 
   const entre = (msg, re) => (msg.match(re) || [])[1] || null;
+  // La consulta sin comentarios ni textos entre comillas, para buscar palabras clave sin falsos positivos
+  const limpio = sql => String(sql || "").replace(/--[^\n]*/g, " ").replace(/\/\*[\s\S]*?\*\//g, " ").replace(/'(?:[^']|'')*'/g, "''");
+  // ¿Algún JOIN (que no sea CROSS ni NATURAL) se ha quedado sin su ON / USING?
+  const joinSinOn = s => (s.match(/\bjoin\b/gi) || []).length - (s.match(/\b(cross|natural)\s+join\b/gi) || []).length >
+    (s.match(/\b(on|using)\b/gi) || []).length;
 
   const CODIGOS = {
-    "42601": (e) => {
+    "42601": (e, sql) => {
       const cerca = entre(e.mensaje, /at or near "([^"]*)"/);
+      const s = limpio(sql);
+      if (cerca && /^on$/i.test(cerca) && /\bcross\s+join\b/i.test(s))
+        return "`CROSS JOIN` no lleva `ON`: junta **todas** las filas de una tabla con todas las de la otra. Si quieres emparejarlas, usa `JOIN … ON`.";
+      if (cerca && /^where$/i.test(cerca) && /\bgroup\s+by\b[\s\S]*\bwhere\b/i.test(s))
+        return "`WHERE` va **antes** de `GROUP BY` (filtra filas antes de agrupar). Para filtrar los grupos ya formados, usa `HAVING` después del `GROUP BY`.";
+      if (cerca && /^(union|intersect|except)$/i.test(cerca) && /\border\s+by\b[\s\S]*\b(union|intersect|except)\b/i.test(s))
+        return "Al apilar consultas con `UNION`, `INTERSECT` o `EXCEPT` solo puede haber **un** `ORDER BY`, al final del todo.";
+      if ((/at end of input/.test(e.mensaje) || (cerca && /^(;|where|order|group|limit|having|join|inner|left|right|full)$/i.test(cerca))) && joinSinOn(s))
+        return "A un `JOIN` le falta el `ON`: tienes que decir cómo se emparejan las filas, por ejemplo `JOIN tiendas t ON t.id = e.tienda_id`.";
       if (/at end of input/.test(e.mensaje))
         return "La consulta se corta antes de tiempo: falta algo al final (¿una columna después de la coma? ¿cerrar un paréntesis o una comilla?).";
       if (cerca && /^(FROM|WHERE|ORDER|GROUP|LIMIT|HAVING)$/i.test(cerca))
@@ -46,6 +61,14 @@
       // «missing FROM-clause entry for table "julia"»: casi siempre un texto sin comillas (julia.martinez@…)
       const sinFrom = entre(e.mensaje, /missing FROM-clause entry for table "([^"]+)"/);
       if (sinFrom) return `Has escrito \`${sinFrom}.algo\` como si \`${sinFrom}\` fuera una tabla. Si es un texto (un email, un nombre…), va entre comillas simples: \`'así'\`.`;
+      // «invalid reference to FROM-clause entry for table "envios"» + HINT con el alias: usa el nombre de la tabla tras darle un alias
+      const conAlias = entre(e.mensaje, /invalid reference to FROM-clause entry for table "([^"]+)"/);
+      if (conAlias) {
+        const alias = entre(e.pista || "", /alias "([^"]+)"/);
+        return alias
+          ? `Has llamado \`${alias}\` a la tabla \`${conAlias}\`: a partir de ahí, escribe \`${alias}.columna\`, no \`${conAlias}.columna\`.`
+          : `La tabla \`${conAlias}\` tiene un alias en el \`FROM\`: usa el alias delante de sus columnas, no el nombre de la tabla.`;
+      }
       const n = entre(e.mensaje, /relation "([^"]+)"/);
       if (!n) return "Esa tabla no existe. Mira los nombres en la pestaña Esquema.";
       const sug = parecido(n, tablas);
@@ -61,7 +84,20 @@
       const corto = n.split(".").pop();
       if (sql && sql.includes(`"${corto}"`))
         return `Has escrito \`"${corto}"\` entre comillas dobles y PostgreSQL lo toma por el nombre de una columna. Los textos van entre **comillas simples**: \`'${corto}'\`.`;
-      const sug = parecido(corto, columnas);
+      const s = limpio(sql);
+      // La columna existe, pero en otra tabla: «e.cliente_id» cuando cliente_id está en pedidos
+      if (n.includes(".") && columnas.includes(corto)) {
+        const donde = Object.keys(tablasDe).filter(t => tablasDe[t].includes(corto));
+        return `La tabla de \`${n.split(".")[0]}\` no tiene la columna \`${corto}\`: está en ${donde.map(t => `\`${t}\``).join(", ")}. ¿Tienes que pasar por esa tabla (otro \`JOIN\`) o cambiar lo que va delante del punto?`;
+      }
+      // Un alias del SELECT usado en WHERE, GROUP BY o HAVING: todavía no existe (SQL los evalúa antes que el SELECT)
+      const esAlias = new RegExp(`\\bas\\s+"?${corto.replace(/[^\w]/g, "")}"?\\b`, "i").test(s);
+      if (!n.includes(".") && esAlias) {
+        const clausula = /\bhaving\b/i.test(s) && new RegExp(`\\bhaving\\b[\\s\\S]*\\b${corto}\\b`, "i").test(s) ? "HAVING"
+          : new RegExp(`\\bwhere\\b[\\s\\S]*\\b${corto}\\b`, "i").test(s) ? "WHERE" : "GROUP BY o WHERE";
+        return `\`${corto}\` es un alias del \`SELECT\` y en el \`${clausula}\` todavía no existe (PostgreSQL hace el \`${clausula}\` antes que el \`SELECT\`). Repite ahí la expresión entera, por ejemplo \`SUM(cantidad)\`.`;
+      }
+      const sug = parecido(corto, columnas.filter(c => c !== corto));
       let txt = `No existe ninguna columna llamada \`${corto}\`.`;
       if (sug) txt += ` ¿Querías decir \`${sug}\`?`;
       if (e.pista && /quote/.test(e.pista)) txt += " Ojo: los textos van entre comillas simples `'así'`; las dobles son para nombres de columnas.";
@@ -74,9 +110,13 @@
         ? `No se puede usar ese operador con estos tipos de datos (${fn}). ¿Estás mezclando texto y números?`
         : `La función \`${fn}\` no existe o no acepta esos datos. Revisa cómo se escribe y qué le pasas entre paréntesis.`;
     },
-    "42803": (e) => {
+    "42803": (e, sql) => {
       const n = entre(e.mensaje, /column "([^"]+)"/);
-      return `La columna \`${n}\` tiene que ir en el \`GROUP BY\` o dentro de una función como \`COUNT\`, \`SUM\`… Al agrupar, cada columna debe tener un solo valor por grupo.`;
+      const s = limpio(sql);
+      // Si no está en el SELECT pero sí en el ORDER BY, el alumno no sabe de dónde sale
+      const enSelect = n && new RegExp(`\\bselect\\b[\\s\\S]*\\b${n.replace(/[^\w.]/g, "").replace(".", "\\.")}\\b[\\s\\S]*\\bfrom\\b`, "i").test(s);
+      const enOrden = n && new RegExp(`\\border\\s+by\\b[\\s\\S]*\\b${n.replace(/[^\w.]/g, "").replace(".", "\\.")}\\b`, "i").test(s);
+      return `La columna \`${n}\`${!enSelect && enOrden ? " (la usas en el `ORDER BY`)" : ""} tiene que ir en el \`GROUP BY\` o dentro de una función como \`COUNT\`, \`SUM\`… Al agrupar, cada columna debe tener un solo valor por grupo.`;
     },
     "42804": () => "Los tipos de datos no encajan: estás mezclando, por ejemplo, texto con números o fechas.",
     "22P02": (e) => `El valor ${entre(e.mensaje, /: (".*")$/) || ""} no tiene el formato que espera la columna (¿un texto donde va un número o una fecha?).`,
@@ -88,7 +128,7 @@
     "23502": (e) => `La columna \`${entre(e.mensaje, /column "([^"]+)"/)}\` no puede quedar vacía (NOT NULL).`,
     "23514": (e) => `El valor no cumple la regla \`${entre(e.mensaje, /constraint "([^"]+)"/)}\` (CHECK) de la tabla.`,
     "42P07": (e) => `Ya existe algo llamado \`${entre(e.mensaje, /"([^"]+)"/)}\`.`,
-    "42712": (e) => `Usas el mismo alias \`${entre(e.mensaje, /"([^"]+)"/)}\` dos veces.`,
+    "42712": (e) => `Usas el nombre \`${entre(e.mensaje, /"([^"]+)"/)}\` dos veces en el \`FROM\`. Si unes una tabla consigo misma, dale un alias distinto a cada copia (por ejemplo \`em\` y \`j\`).`,
     "42P10": () => "En `ORDER BY` con `DISTINCT`, solo puedes ordenar por columnas que estén en el `SELECT`.",
     "21000": () => "Una subconsulta que debía devolver un solo valor devuelve varios.",
     "25P02": () => "Un error anterior ha dejado la transacción bloqueada: haz `ROLLBACK;` y vuelve a empezar.",
@@ -110,6 +150,7 @@
     conocer(esquema) {
       tablas = esquema.map(t => t.nombre);
       columnas = [...new Set(esquema.flatMap(t => t.columnas.map(c => c.nombre)))];
+      tablasDe = Object.fromEntries(esquema.map(t => [t.nombre, t.columnas.map(c => c.nombre)]));
     },
     /** Explicación en español de un error { mensaje, codigo, posicion, detalle, pista }. */
     explicar(e, sql = "") {

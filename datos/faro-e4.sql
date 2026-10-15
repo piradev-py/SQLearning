@@ -350,7 +350,7 @@ INSERT INTO clientes (id, nombre, email, telefono, ciudad, socio, alta) VALUES
   (217, 'Iratxe Álvarez', 'iratxe.alvarez7@correo.example', '638 536 282', 'Madrid', TRUE, '2022-06-26 20:30:56'),
   (218, 'Álvaro Torres', 'alvaro.torres@empresa.example', '664 206 590', 'Bilbao', FALSE, '2024-06-08 22:51:35'),
   (219, 'Marcos García', 'marcos.garcia@correo.example', '620 222 723', 'Málaga', TRUE, '2022-11-25 13:37:02'),
-  (220, 'Sofía García', 'sofia.garcia@red.example', '646 139 538', 'Madrid', FALSE, '2026-08-11 16:38:34'),
+  (220, 'Sofía García', 'sofia.garcia@red.example', '646 139 538', 'Madrid', FALSE, '2026-08-10 16:38:34'),
   (221, 'Pablo Molina', 'pablo.molina@correo.example', NULL, 'Sevilla', FALSE, '2022-09-14 18:30:35'),
   (222, 'Valeria Delgado', 'valeria.delgado@correo.example', '694 984 675', 'Madrid', FALSE, '2026-05-26 14:57:05'),
   (223, 'Valeria Peña', 'valeria.pena@empresa.example', '640 902 132', 'Madrid', TRUE, '2023-03-08 12:26:26'),
@@ -404,7 +404,7 @@ INSERT INTO clientes (id, nombre, email, telefono, ciudad, socio, alta) VALUES
   (271, 'Diego Ramos', 'diego.ramos70@mail.example', NULL, 'Málaga', TRUE, '2022-01-11 13:12:12'),
   (272, 'Martina Molina', 'martina.molina90@mail.example', '652 180 275', 'Valencia', TRUE, '2025-01-23 15:46:06'),
   (273, 'Gorka Moreno', 'gorka.moreno@mail.example', '611 350 307', 'Madrid', FALSE, '2022-07-11 18:41:41'),
-  (274, 'Daniel Molina', 'daniel.molina@mail.example', '651 669 488', 'Sevilla', FALSE, '2025-04-12 16:46:53'),
+  (274, 'Daniel Molina', 'daniel.molina@mail.example', '651 669 488', 'Sevilla', FALSE, '2025-04-11 16:46:53'),
   (275, 'Adrián Gil', 'adrian.gil43@mail.example', '648 361 571', 'Madrid', FALSE, '2025-10-10 17:30:00'),
   (276, 'Mario Suárez', 'mario.suarez@correo.example', '610 952 355', 'Madrid', FALSE, '2025-05-05 15:00:52'),
   (277, 'Carla Moreno', 'carla.moreno@correo.example', '613 853 855', 'Valencia', TRUE, '2025-03-04 18:10:56'),
@@ -422,15 +422,15 @@ INSERT INTO clientes (id, nombre, email, telefono, ciudad, socio, alta) VALUES
   (289, 'Pilar Moreno', 'pilar.moreno@empresa.example', '684 659 966', 'Barcelona', FALSE, '2025-06-24 18:27:25'),
   (290, 'Leo Goikoetxea', 'leo.goikoetxea@mail.example', '689 375 413', 'Zaragoza', FALSE, '2025-02-22 13:50:58'),
   (291, 'Pilar Muñoz', 'pilar.munoz@empresa.example', '689 923 471', 'Sevilla', FALSE, '2022-07-10 18:00:44'),
-  (292, 'Mario Peña', 'mario.pena77@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-03-24 03:14:27'),
-  (293, 'Sara Ortiz', 'sara.ortiz15@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-07-18 04:56:23'),
-  (294, 'Diego Rubio', 'diego.rubio11@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-06-09 02:25:22'),
-  (295, 'Alba Marín', 'alba.marin80@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-04-07 04:58:24'),
-  (296, 'Raúl Sanz', 'raul.sanz80@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-05-17 04:15:09'),
-  (297, 'Noa Castro', 'noa.castro64@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-06-21 04:53:16'),
-  (298, 'Leo Ibáñez', 'leo.ibanez26@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-08-04 04:16:33'),
-  (299, 'Julia Delgado', 'julia.delgado50@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-07-30 04:38:31'),
-  (300, 'Hugo Aguirre', 'hugo.aguirre23@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-04-20 02:07:41');
+  (292, 'Mario Peña', 'mario.pena77@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-03-13 03:14:27'),
+  (293, 'Sara Ortiz', 'sara.ortiz15@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-03-30 04:56:23'),
+  (294, 'Diego Rubio', 'diego.rubio11@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-03-23 02:25:22'),
+  (295, 'Alba Marín', 'alba.marin80@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-03-04 04:58:24'),
+  (296, 'Raúl Sanz', 'raul.sanz80@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-04-30 04:15:09'),
+  (297, 'Noa Castro', 'noa.castro64@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-04-26 04:53:16'),
+  (298, 'Leo Ibáñez', 'leo.ibanez26@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-03-17 04:16:33'),
+  (299, 'Julia Delgado', 'julia.delgado50@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-04-20 04:38:31'),
+  (300, 'Hugo Aguirre', 'hugo.aguirre23@correo-rapido.example', NULL, 'Getafe', FALSE, '2026-03-06 02:07:41');
 
 INSERT INTO pedidos (id, cliente_id, tienda_id, fecha, estado, total, metodo_pago, nota) VALUES
   (1, 110, 4, '2024-01-01 19:08:51', 'entregado', 100.75, 'bizum', NULL),
@@ -7037,6 +7037,10 @@ ALTER TABLE pedidos ADD COLUMN mes text;
 UPDATE pedidos SET mes = to_char(fecha, 'YYYY-MM');
 ALTER TABLE pedidos ALTER COLUMN mes SET NOT NULL;
 ALTER TABLE empleados ADD COLUMN jefe_id integer REFERENCES empleados (id);
+INSERT INTO empleados (id, nombre, departamento, tienda_id, email) VALUES
+  (23, 'Iker Salas', 'Logística', 1, 'iker.salas@faro.example');
+
+UPDATE empleados SET jefe_id = 5 WHERE id = 23;
 UPDATE empleados SET jefe_id = 1 WHERE id = 2;
 UPDATE empleados SET jefe_id = 1 WHERE id = 3;
 UPDATE empleados SET jefe_id = 1 WHERE id = 4;
@@ -7085,7 +7089,7 @@ CREATE TABLE envios (
 );
 
 INSERT INTO almacenes (id, nombre, ciudad, responsable_id, apertura) VALUES
-  (1, 'Almacén central', 'Getafe', 5, '2017-09-01'),
+  (1, 'Almacén central', 'Getafe', 23, '2017-09-01'),
   (2, 'Almacén Levante', 'Valencia', 18, '2019-03-15'),
   (3, 'Almacén Sur', 'Sevilla', 19, '2020-05-04'),
   (4, 'Almacén Norte', 'Bilbao', NULL, '2021-10-11'),

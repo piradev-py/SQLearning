@@ -289,6 +289,19 @@ function universo() {
     if (p.clave) pedidoReclamado = id;
   }
 
+  // Nadie compra antes de darse de alta: si el primer pedido de un cliente es anterior a su alta, el alta pasa a
+  // ser la víspera de ese pedido (misma hora). Sin tirar dados: el resto del universo no cambia.
+  const primero = new Map();
+  for (const p of pedidos) if (!primero.has(p.cliente_id) || p.fecha < primero.get(p.cliente_id)) primero.set(p.cliente_id, p.fecha);
+  for (const c of todos) {
+    const p = primero.get(c.id);
+    if (p && p < c.alta) {
+      const d = new Date(p.slice(0, 10) + "T00:00:00Z");
+      d.setUTCDate(d.getUTCDate() - 1);
+      c.alta = d.toISOString().slice(0, 10) + c.alta.slice(10);
+    }
+  }
+
   // --- Reclamaciones ---
   const MOTIVOS = ["El pedido llegó con retraso", "Producto defectuoso", "Falta un artículo en el paquete", "Cobro duplicado en la tarjeta",
     "Producto distinto al pedido", "El repartidor no dejó aviso", "Quiero cambiar la dirección de entrega", "Caja dañada"];
@@ -397,7 +410,8 @@ console.log("✅ datos/faro-e3.sql");
 // Pista del Fantasma: sus pedidos reembolsados casi nunca tienen envío; los pocos que sí, salen de Getafe.
 const almacenes = [
   // [id, nombre, ciudad, responsable_id (empleados.id), apertura]
-  [1, "Almacén central", "Getafe", 5, "2017-09-01"],   // Héctor Vidal, jefe de logística
+  [1, "Almacén central", "Getafe", 23, "2017-09-01"],  // Iker Salas, jefe de muelle (depende de Héctor). Héctor NO es
+                                                        // el responsable directo: así el caso de la etapa 4 no lo señala
   [2, "Almacén Levante", "Valencia", 18, "2019-03-15"], // Óscar Medina
   [3, "Almacén Sur", "Sevilla", 19, "2020-05-04"],      // Beatriz Soto
   [4, "Almacén Norte", "Bilbao", null, "2021-10-11"],   // responsable vacante
@@ -413,7 +427,7 @@ const transportistas = [
 const JEFES = {
   "Lucía Mora": "Ana Beltrán", "Marcos Gil": "Ana Beltrán", "Elena Ruiz": "Ana Beltrán", "Héctor Vidal": "Ana Beltrán",
   "Nuria Campos": "Ana Beltrán", "Iván Soler": "Ana Beltrán", "Rubén Ortega": "Lucía Mora",
-  "Diego Castaño": "Marcos Gil", "Laura Peña": "Marcos Gil", "Óscar Medina": "Héctor Vidal", "Beatriz Soto": "Héctor Vidal",
+  "Diego Castaño": "Marcos Gil", "Laura Peña": "Marcos Gil", "Óscar Medina": "Héctor Vidal", "Beatriz Soto": "Héctor Vidal", "Iker Salas": "Héctor Vidal",
   "Tomás Rivas": "Elena Ruiz", "Claudia Reyes": "Elena Ruiz",
   "Pablo Herrero": "Elena Ruiz", "Carmen Llorente": "Pablo Herrero", "Jorge Navarro": "Elena Ruiz", "Sara Ferrer": "Jorge Navarro",
   "Raúl Domínguez": "Elena Ruiz", "Inés Romero": "Raúl Domínguez", "Aitor Etxeberria": "Elena Ruiz", "Maite Urquijo": "Aitor Etxeberria"
@@ -487,6 +501,9 @@ function etapa4() {
   return [
     etapa3().replace("datos de la etapa 3", "datos de la etapa 4"),
     "ALTER TABLE empleados ADD COLUMN jefe_id integer REFERENCES empleados (id);",
+    // Nuevo en la etapa 4: el jefe de muelle del Almacén central (las etapas 1–3 siguen con 22 empleados)
+    insertar("empleados", ["id", "nombre", "departamento", "tienda_id", "email"], [[23, "Iker Salas", "Logística", 1, email("Iker Salas")]]),
+    "UPDATE empleados SET jefe_id = 5 WHERE id = 23;",
     ...empleados.filter(([n]) => JEFES[n]).map(([n]) => `UPDATE empleados SET jefe_id = ${idDe.get(JEFES[n])} WHERE id = ${idDe.get(n)};`),
     esquemaLogistica,
     insertar("almacenes", ["id", "nombre", "ciudad", "responsable_id", "apertura"], almacenes),
