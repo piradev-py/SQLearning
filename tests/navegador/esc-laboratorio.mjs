@@ -126,7 +126,8 @@ export default async function (b) {
   comprobar("Gráfico: conteos con marcas enteras", await b.eval("[...document.querySelectorAll('.gr-eje')].every(t => !t.textContent.includes(','))"));
   await b.eval("document.querySelector('.gr-marco').focus()");
   await tecla("ArrowDown", "ArrowDown", 40);
-  comprobar("Gráfico: con el teclado se ve el valor (Informática 11)", /Informática.*11/.test(await b.eval("document.querySelector('.gr-tooltip:not([hidden])')?.textContent || ''")));
+  const tip = await b.eval("document.querySelector('.gr-tooltip:not([hidden])')?.textContent || ''");
+  comprobar("Gráfico: con el teclado se ve el valor (Informática 11)", /Informática.*11/.test(tip), tip);
   await vaciar();
   await teclear("SELECT to_char(creado, 'YYYY-MM') AS mes, COUNT(*) AS altas FROM productos GROUP BY 1;");
   await ctrlEnter();

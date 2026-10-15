@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/PostgreSQL-en_el_navegador-4fc0d2?style=for-the-badge&labelColor=0a0914&logo=postgresql&logoColor=4fc0d2" alt="PostgreSQL en el navegador">
-  <img src="https://img.shields.io/badge/diligencias-28-db5aa6?style=for-the-badge&labelColor=0a0914" alt="28 diligencias">
+  <img src="https://img.shields.io/badge/diligencias-37-db5aa6?style=for-the-badge&labelColor=0a0914" alt="37 diligencias">
   <img src="https://img.shields.io/badge/precio-gratis-c9a66b?style=for-the-badge&labelColor=0a0914" alt="Gratis">
   <img src="https://img.shields.io/badge/idioma-español-c4bfd6?style=for-the-badge&labelColor=0a0914" alt="En español">
 </p>
@@ -68,7 +68,7 @@ tablas) sin miedo, porque nada de lo que hagas estropea los datos.
 | **EXP.0** · El archivo de papel *(opcional)* | Pensar en datos antes de tocar una tecla: tipos, lógica, conjuntos, entidades, relaciones, diagramas ER, privacidad | 🟢 abierto |
 | **EXP.1** · Primer día | `SELECT`, columnas calculadas, alias, `DISTINCT`, `ORDER BY`, `LIMIT`… y un inventario imposible | 🟢 abierto |
 | **EXP.2** · Atención al cliente | `WHERE`, `AND`/`OR`/`NOT`, `IN`, `BETWEEN`, `LIKE`/`ILIKE`, `NULL`… y clientes de madrugada | 🟢 abierto |
-| **EXP.3** · `█████` | `█████████ ██ ████` | 🔒 CLASIFICADO |
+| **EXP.3** · Ventas | `COUNT`, `SUM`, `AVG`, `MIN`/`MAX`, `GROUP BY`, `HAVING`, el orden en que piensa SQL, tus primeros gráficos… y unos reembolsos disparados | 🟢 abierto |
 | **EXP.4** · `█████████` | `███ ██████ █████` | 🔒 CLASIFICADO |
 | **EXP.5** · `█████████` | `██████ █ ██████` | 🔒 CLASIFICADO |
 | **EXP.6** · `██` | `████ ██ ████████` | 🔒 CLASIFICADO |

@@ -6,7 +6,7 @@
    ============================================================ */
 (function () {
   // Versión de la web (la escribe herramientas/version.mjs): evita mezclar archivos viejos de la caché
-  const VERSION = "202610151449";
+  const VERSION = "202610151515";
 
   // Diligencias aún sin título (expedientes que se escribirán más adelante)
   const pendientes = (etapa, n) => Array.from({ length: n }, (_, i) => {
@@ -59,7 +59,20 @@
         { id: "e2-09", archivo: "e2-09-caso-clientes-de-madrugada.js", titulo: "Caso: Clientes de madrugada", listo: true, caso: true }
       ]
     },
-    { n: 3, carpeta: "3-ventas", titulo: "Ventas", departamento: "Ventas", datos: "faro-e3", niveles: pendientes(3, 9) },
+    {
+      n: 3, carpeta: "3-ventas", titulo: "Ventas", departamento: "Ventas", datos: "faro-e3",
+      niveles: [
+        { id: "e3-01", archivo: "e3-01-count.js", titulo: "Contar filas: COUNT", listo: true },
+        { id: "e3-02", archivo: "e3-02-sum-avg-round.js", titulo: "Sumar y promediar: SUM, AVG y ROUND", listo: true },
+        { id: "e3-03", archivo: "e3-03-min-max.js", titulo: "Los extremos: MIN y MAX", listo: true },
+        { id: "e3-04", archivo: "e3-04-count-distinct.js", titulo: "Contar distintos: COUNT(DISTINCT)", listo: true },
+        { id: "e3-05", archivo: "e3-05-group-by.js", titulo: "Agrupar: GROUP BY", listo: true },
+        { id: "e3-06", archivo: "e3-06-grupos-varias-columnas.js", titulo: "Grupos por varias columnas", listo: true },
+        { id: "e3-07", archivo: "e3-07-having.js", titulo: "Filtrar grupos: HAVING", listo: true },
+        { id: "e3-08", archivo: "e3-08-orden-logico.js", titulo: "El orden en que piensa SQL", listo: true },
+        { id: "e3-09", archivo: "e3-09-caso-reembolsos-disparados.js", titulo: "Caso: Reembolsos disparados", listo: true, caso: true }
+      ]
+    },
     { n: 4, carpeta: "4-logistica", titulo: "Logística", departamento: "Logística", datos: "faro-e4", niveles: pendientes(4, 10) },
     { n: 5, carpeta: "5-migracion", titulo: "Migración", departamento: "Sistemas · Migración", datos: "faro-e5", niveles: pendientes(5, 10) },
     { n: 6, carpeta: "6-it", titulo: "IT", departamento: "Sistemas", datos: "faro-e6", niveles: pendientes(6, 10) },

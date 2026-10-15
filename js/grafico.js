@@ -16,7 +16,11 @@
   const MAX_SERIES = 5, MAX_PANELES = 4, MAX_BARRAS = 40, MAX_PUNTOS = 120;
   const SVG = "http://www.w3.org/2000/svg";
 
-  const fmt = new Intl.NumberFormat("es", { maximumFractionDigits: 2 });
+  // Miles con espacio (que no se parte), como en el texto de las lecciones («1 527»), también con 4 cifras
+  const fmtEs = new Intl.NumberFormat("es", { maximumFractionDigits: 2, useGrouping: false });
+  const ESPACIO_MILES = String.fromCharCode(0xa0);
+  // Agrupado a mano: con «es», Intl no separa los números de 4 cifras
+  const fmt = { format: v => fmtEs.format(v).replace(/[0-9]+/, ent => ent.replace(/(?=(?:[0-9]{3})+$)(?!^)/g, ESPACIO_MILES)) };
   const fmtCorto = new Intl.NumberFormat("es", { notation: "compact", maximumFractionDigits: 1 });
   const numero = v => (v === null || v === undefined || v === "" ? null : Number(v));
   const etiqueta = v => (v === null || v === undefined ? "NULL" : v instanceof Date ? v.toISOString().slice(0, 10) : String(v));

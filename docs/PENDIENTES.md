@@ -61,7 +61,8 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Nombre «SQLearning» en Sixtyfour (la del prólogo) en todas las cabeceras; la lección ahora lo muestra
 - [x] Favicon en todos los tamaños + `apple-touch-icon`
 - [x] El laboratorio carga los datos de la etapa más avanzada abierta y jugable (lo indica junto al título); prueba en `esc-laboratorio.mjs`
-- [ ] Índice de la etapa 3 en `js/curso.js` y lecciones (2 agentes `profesor-sql`)
+- [x] **Etapa 3 completa** (9 niveles, 2 agentes `profesor-sql`; verificador 37/37, `npm test` verde). Comprobado con SQL: sin empate en el corte del top 5 de e3-08, los ejemplos con HAVING devuelven filas, altas de Getafe desde marzo de 2026; corregido «cuatro tiendas físicas» (son cinco) y «entre 1 y 4 reembolsos» (hay meses con 0). Gráfico: miles con espacio («1 527»)
+- [ ] Revisión de la etapa 3: `qa-estres` + `alumno-novato` (antes de dar la etapa por cerrada)
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)
