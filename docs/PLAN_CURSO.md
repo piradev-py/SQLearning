@@ -22,7 +22,7 @@ Estado: ✅ escrito · 🚧 pendiente
 | 4 · Logística 📦 | 10 | ✅ |
 | 5 · Migración 🧹 | 11 | ✅ |
 | 6 · IT 🛠️ | 12 | ✅ |
-| 7 · Dirección 🧭 | 11 | 🚧 |
+| 7 · Dirección 🧭 | 11 | ✅ |
 | 8 · Analítica 📈 | 12 | 🚧 |
 | **Total** | **93** | |
 
@@ -795,7 +795,7 @@ jerarquías con CTE recursivas, contar con condiciones usando `FILTER`, rellenar
 funciones ventana: rankings (`ROW_NUMBER`, `RANK`, `DENSE_RANK`), `PARTITION BY`, `LAG`/`LEAD`, acumulados y medias
 móviles (`ROWS BETWEEN`) y `NTILE`.
 
-### e7-01 · Una consulta dentro de otra: subconsultas · 35 ◈ 🚧
+### e7-01 · Una consulta dentro de otra: subconsultas · 35 ◈ ✅
 - **Conceptos nuevos:** subconsulta **escalar** (devuelve un valor) en `WHERE` y en `SELECT`: productos más caros que la
   media (`WHERE precio > (SELECT AVG(precio) FROM productos)`), cada pedido junto al ticket medio; subconsulta con `IN`
   (clientes que han reclamado: `WHERE id IN (SELECT cliente_id FROM reclamaciones)`); se ejecuta «de dentro afuera»;
@@ -805,7 +805,7 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 - **Reto:** pedidos de la tienda online por encima del ticket medio **de la tienda online** (subconsulta con el mismo
   filtro): `id`, `total`, de mayor a menor con desempate por `id`, `LIMIT 10`.
 
-### e7-02 · Tablas que salen de una consulta: subconsultas en FROM · 35 ◈ 🚧
+### e7-02 · Tablas que salen de una consulta: subconsultas en FROM · 35 ◈ ✅
 - **Conceptos nuevos:** una subconsulta en `FROM` es una tabla temporal con alias obligatorio (`FROM (SELECT …) AS t`);
   agregar en dos pasos: «media de pedidos por cliente» (primero contar por cliente, luego `AVG` de esos recuentos);
   subconsulta correlacionada en `SELECT` (para cada empleado, cuántos días fichó: `(SELECT COUNT(*) FROM fichajes f
@@ -814,14 +814,14 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 - **Reto:** por tienda, el gasto medio por cliente (primero `SUM(total)` por tienda y cliente, después `AVG` por tienda):
   `tienda_id`, `gasto_medio` redondeado a 2, ordenado por `tienda_id`.
 
-### e7-03 · ¿Existe o no?: EXISTS y NOT EXISTS · 40 ◈ 🚧
+### e7-03 · ¿Existe o no?: EXISTS y NOT EXISTS · 40 ◈ ✅
 - **Conceptos nuevos:** `EXISTS (subconsulta correlacionada)` responde sí/no por cada fila; `NOT EXISTS` para «los que
   no tienen»: clientes sin pedidos (6, como el `LEFT JOIN … IS NULL` de e4-04), empleados sin vacaciones en agosto;
   `SELECT 1` dentro de `EXISTS` (da igual lo que se seleccione); `NOT EXISTS` no sufre la trampa del `NULL` de `NOT IN`.
 - **Predicción:** misma pregunta con `NOT IN` sobre una columna con `NULL` → 0 filas; con `NOT EXISTS` → las correctas.
 - **Reto:** empleados que **no** tienen ningún fichaje en el Almacén central (`NOT EXISTS`): `id`, `nombre`, por `id`.
 
-### e7-04 · Paso a paso: CTE con WITH · 40 ◈ 🚧
+### e7-04 · Paso a paso: CTE con WITH · 40 ◈ ✅
 - **Conceptos nuevos:** `WITH nombre AS (SELECT …) SELECT … FROM nombre;` varios pasos encadenados
   (`WITH a AS (…), b AS (… FROM a …)`); leer una consulta larga de arriba abajo como una receta; CTE frente a subconsulta
   en `FROM` (lo mismo, más legible) y frente a vista (la CTE solo vive en esa consulta). Historia: el informe mensual de
@@ -829,7 +829,7 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 - **Reto:** con dos CTE: facturación por tienda en 2026 y la media de las tiendas; devolver las tiendas por encima de
   esa media: `tienda_id`, `facturacion`, por `tienda_id`.
 
-### e7-05 · Jerarquías: CTE recursiva · 45 ◈ 🚧
+### e7-05 · Jerarquías: CTE recursiva · 45 ◈ ✅
 - **Conceptos nuevos:** `WITH RECURSIVE`: una parte inicial (Ana, la que no tiene jefe) `UNION ALL` una parte que se
   llama a sí misma (los que dependen de los ya encontrados); el `nivel` que va sumando 1; cuándo para (cuando no
   encuentra a nadie más). El organigrama completo de Faro: niveles **1 · 6 · 12 · 4** (23 empleados). Ruta de cada
@@ -838,7 +838,7 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 - **Reto:** todos los que dependen (directa o indirectamente) de **Elena Ruiz** (id 4), sin incluirla: `id`, `nombre`,
   `nivel` (1 = sus directos), por `nivel` e `id`.
 
-### e7-06 · Contar con condiciones y rellenar huecos: FILTER y generate_series · 40 ◈ 🚧
+### e7-06 · Contar con condiciones y rellenar huecos: FILTER y generate_series · 40 ◈ ✅
 - **Conceptos nuevos:** `COUNT(*) FILTER (WHERE …)` y `SUM(…) FILTER (WHERE …)` (varias cuentas en una fila: pedidos,
   reembolsados y cancelados por tienda; antes se hacía con `CASE` de e5-06); `generate_series(inicio, fin, paso)`
   para fabricar una lista de números o fechas (un calendario); `LEFT JOIN` del calendario con los datos para que los
@@ -846,7 +846,7 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
   (el gráfico ya no junta los meses vacíos, `grafico: true`).
 - **Reto (`grafico: true`):** reembolsos online por mes con todos los meses: `mes` (date), `reembolsos`, por `mes` → 33 filas.
 
-### e7-07 · Rankings: funciones ventana · 45 ◈ 🚧
+### e7-07 · Rankings: funciones ventana · 45 ◈ ✅
 - **Conceptos nuevos:** `funcion() OVER (…)`: calcula sobre un grupo de filas **sin juntarlas** (a diferencia de
   `GROUP BY`); `SUM(total) OVER ()` (el total al lado de cada fila, porcentaje del total); `PARTITION BY` (el grupo);
   `ORDER BY` dentro de `OVER`; `ROW_NUMBER`, `RANK`, `DENSE_RANK` y en qué se diferencian con empates; el «top N por
@@ -855,7 +855,7 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 - **Reto:** los 3 productos con más unidades vendidas de cada categoría (`ROW_NUMBER` con desempate por `producto_id`):
   `categoria`, `producto`, `unidades`, `puesto`, por `categoria` y `puesto`.
 
-### e7-08 · Antes y después: LAG y LEAD · 45 ◈ 🚧
+### e7-08 · Antes y después: LAG y LEAD · 45 ◈ ✅
 - **Conceptos nuevos:** `LAG(col) OVER (ORDER BY …)` (el valor de la fila anterior) y `LEAD` (la siguiente); con
   `PARTITION BY`; diferencia con el mes anterior (variación y porcentaje), el `NULL` de la primera fila; tiempo entre
   dos sucesos (días entre pedidos de un cliente, `fecha - LAG(fecha)`). Historia: Ana quiere «cómo vamos frente al mes
@@ -863,21 +863,21 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 - **Reto:** facturación mensual de 2026 con la del mes anterior y la diferencia: `mes`, `facturacion`, `anterior`,
   `diferencia`, por `mes` (enero con `anterior` NULL).
 
-### e7-09 · Acumulados y medias móviles · 45 ◈ 🚧
+### e7-09 · Acumulados y medias móviles · 45 ◈ ✅
 - **Conceptos nuevos:** acumulado con `SUM(…) OVER (ORDER BY mes)`; el marco de la ventana `ROWS BETWEEN 2 PRECEDING AND
   CURRENT ROW` para una **media móvil** de 3 meses (suaviza los picos); acumulado por grupo (`PARTITION BY tienda_id`);
   `RANGE` frente a `ROWS` (con empates en el `ORDER BY`, `RANGE` suma todos los empatados) en un quiz.
 - **Reto (`grafico: true`):** pedidos por mes de 2025–2026 con su media móvil de 3 meses: `mes`, `pedidos`, `media_3m`
   (redondeada a 1).
 
-### e7-10 · Repartir en grupos: NTILE y percentiles · 40 ◈ 🚧
+### e7-10 · Repartir en grupos: NTILE y percentiles · 40 ◈ ✅
 - **Conceptos nuevos:** `NTILE(4) OVER (ORDER BY …)` (cuartiles de clientes por gasto); `PERCENT_RANK`/`CUME_DIST`
   (en qué percentil está cada uno) y los agregados `percentile_cont(0.5) WITHIN GROUP (ORDER BY …)` (la mediana, frente
   a la media que estiran los atípicos, como el `999999.00` de e5-10).
 - **Reto:** clientes por cuartil de gasto total (solo pedidos no cancelados): `cuartil`, `clientes`, `gasto_min`,
   `gasto_max`, por `cuartil`.
 
-### e7-11 · Caso: La coartada de Iván · 80 ◈ 🚧
+### e7-11 · Caso: La coartada de Iván · 80 ◈ ✅
 - **Caso:** Ana Beltrán quiere una respuesta antes del consejo: ¿suspende a Iván? Lucía: «Una cuenta no tiene cara.
   Veamos dónde estaba cada persona cuando actuó `admin_temp`». Partes:
   1. Acciones de admin_temp durante las vacaciones de Iván (`EXISTS` con `vacaciones` del empleado 7, o `JOIN` por rango

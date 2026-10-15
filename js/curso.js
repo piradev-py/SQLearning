@@ -119,7 +119,21 @@
         { id: "e6-12", archivo: "e6-12-caso-la-cuenta-admin-temp.js", titulo: "Caso: La cuenta admin_temp", listo: true, caso: true }
       ]
     },
-    { n: 7, carpeta: "7-direccion", titulo: "Dirección", departamento: "Dirección general", datos: "faro-e7", niveles: pendientes(7, 11) },
+    { n: 7, carpeta: "7-direccion", titulo: "Dirección", departamento: "Dirección general", datos: "faro-e7",
+      niveles: [
+        { id: "e7-01", archivo: "e7-01-subconsultas.js", titulo: "Una consulta dentro de otra: subconsultas", listo: true },
+        { id: "e7-02", archivo: "e7-02-subconsultas-en-from.js", titulo: "Tablas que salen de una consulta: subconsultas en FROM", listo: true },
+        { id: "e7-03", archivo: "e7-03-exists-y-not-exists.js", titulo: "¿Existe o no?: EXISTS y NOT EXISTS", listo: true },
+        { id: "e7-04", archivo: "e7-04-cte-con-with.js", titulo: "Paso a paso: CTE con WITH", listo: true },
+        { id: "e7-05", archivo: "e7-05-cte-recursiva.js", titulo: "Jerarquías: CTE recursiva", listo: true },
+        { id: "e7-06", archivo: "e7-06-filter-y-generate-series.js", titulo: "Contar con condiciones y rellenar huecos: FILTER y generate_series", listo: true },
+        { id: "e7-07", archivo: "e7-07-rankings-funciones-ventana.js", titulo: "Rankings: funciones ventana", listo: true },
+        { id: "e7-08", archivo: "e7-08-lag-y-lead.js", titulo: "Antes y después: LAG y LEAD", listo: true },
+        { id: "e7-09", archivo: "e7-09-acumulados-y-medias-moviles.js", titulo: "Acumulados y medias móviles", listo: true },
+        { id: "e7-10", archivo: "e7-10-ntile-y-percentiles.js", titulo: "Repartir en grupos: NTILE y percentiles", listo: true },
+        { id: "e7-11", archivo: "e7-11-caso-la-coartada-de-ivan.js", titulo: "Caso: La coartada de Iván", listo: true, caso: true }
+      ]
+    },
     { n: 8, carpeta: "8-analitica", titulo: "Analítica", departamento: "Datos · El desenlace", datos: "faro-e8", niveles: pendientes(8, 12) }
   ];
   // El último nivel de cada etapa es su caso
