@@ -89,6 +89,14 @@ export default async function (b) {
   await avanzarPrologo();
   comprobar("Con progreso corrupto arranca como nuevo", await b.eval("document.querySelector('[data-sello-texto]').textContent === 'CASO ABIERTO'"));
 
+  // 6a. Volver de una lección (index.html#ruta) va directo a la hoja de ruta, sin prólogo
+  await b.ir("index.html#ruta");
+  await b.esperar(300);
+  comprobar("index.html#ruta: hoja de ruta sin prólogo", await b.eval("document.querySelector('[data-prologo]').hidden && !document.querySelector('[data-tablero]').hidden"));
+  await b.ir("leccion.html?id=e1-01");
+  comprobar("Los enlaces de la lección vuelven a #ruta", await b.eval("[...document.querySelectorAll('a[href^=\"index.html\"]')].every(a => a.getAttribute('href') === 'index.html#ruta')"));
+  await b.ir("about:blank");
+
   // 6b. Movimiento reducido: todo el texto a la vez y el botón a los 3 s
   await b.reducido();
   await b.ir("index.html");

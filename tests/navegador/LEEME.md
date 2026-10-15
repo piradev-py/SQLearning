@@ -15,6 +15,7 @@ npm test        # todas, una detrás de otra, con resumen
 | `esc-papel.mjs` | Batería de `tests/probar-papel.html`: clasificar (también Venn), seleccionar filas/celdas/columnas, ordenar, diagrama | ~5 s |
 | `esc-verificar.mjs` | `tests/verificar-lecciones.html`: cada nivel listo cumple el formato, sus soluciones aprueban, los iniciales suspenden, los ejemplos funcionan | crece con el curso |
 | `esc-leccion.mjs` | e1-01 y e0-01 como alumno: bloqueos, errores típicos, pistas, reto, pantalla final, bloques y créditos, repetir para mejorar, hoja de ruta | ~60 s |
+| `esc-musica.mjs` | Música: arranque con el primer clic, crossfade, bucle 2→3→4→1, seguir al cambiar de página, volumen, stop, locución del prólogo | ~45 s |
 | `esc-laboratorio.mjs` | Laboratorio como usuario: teclea, autocompleta, Ctrl+Enter, error con línea, esquema, borrador, tema día, tamaños; fotos en `salida/` | ~30 s |
 
 ## API del escenario

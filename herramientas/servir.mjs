@@ -38,8 +38,21 @@ createServer(async (req, res) => {
     const etag = `"${info.size.toString(36)}-${Math.floor(info.mtimeMs).toString(36)}"`;
     const cabeceras = { "Content-Type": tipo, "Cache-Control": "no-cache", "ETag": etag, "Last-Modified": info.mtime.toUTCString() };
     if (req.headers["if-none-match"] === etag) { res.writeHead(304, cabeceras).end(); return; }
-    res.writeHead(200, cabeceras);
-    res.end(await readFile(archivo));
+    const contenido = await readFile(archivo);
+    cabeceras["Accept-Ranges"] = "bytes";
+    // Peticiones parciales (Range): sin ellas el navegador no puede saltar dentro de un audio
+    const rango = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+    if (rango) {
+      let inicio = rango[1] === "" ? contenido.length - Number(rango[2]) : Number(rango[1]);
+      let fin = rango[1] !== "" && rango[2] !== "" ? Number(rango[2]) : contenido.length - 1;
+      fin = Math.min(fin, contenido.length - 1);
+      if (inicio > fin || inicio < 0) { res.writeHead(416, { "Content-Range": `bytes */${contenido.length}` }).end(); return; }
+      res.writeHead(206, { ...cabeceras, "Content-Range": `bytes ${inicio}-${fin}/${contenido.length}`, "Content-Length": fin - inicio + 1 });
+      res.end(contenido.subarray(inicio, fin + 1));
+      return;
+    }
+    res.writeHead(200, { ...cabeceras, "Content-Length": contenido.length });
+    res.end(contenido);
   } catch {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("404 · No encontrado");
   }

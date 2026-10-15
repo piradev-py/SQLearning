@@ -88,7 +88,15 @@
   <script src="js/prologo.js"></script>
   <script src="js/tablero.js"></script>
   <script>
-    PROLOGO.iniciar(() => TABLERO.mostrar());
+    // Al volver de una lección o del laboratorio (index.html#ruta) se va directo a la hoja de ruta;
+    // al entrar en la web, siempre el prólogo.
+    const irARuta = () => {
+      window.MUSICA?.callar();
+      document.querySelector("[data-prologo]").hidden = true;
+      TABLERO.mostrar();
+    };
+    if (location.hash === "#ruta") irARuta(); else PROLOGO.iniciar(() => TABLERO.mostrar());
+    addEventListener("hashchange", () => { if (location.hash === "#ruta") irARuta(); });
   </script>
 </body>
 </html>

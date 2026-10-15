@@ -49,7 +49,7 @@
   }
 
   function fallo(texto) {
-    $("[data-cargando]").innerHTML = `<p>${md(texto)}</p><p><a class="boton-enlace" href="index.html">‹ Volver a la hoja de ruta</a></p>`;
+    $("[data-cargando]").innerHTML = `<p>${md(texto)}</p><p><a class="boton-enlace" href="index.html#ruta">‹ Volver a la hoja de ruta</a></p>`;
   }
 
   async function iniciar() {
