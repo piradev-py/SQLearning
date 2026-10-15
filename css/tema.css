@@ -177,7 +177,9 @@ kbd {
   color: var(--cian);
   text-decoration: none;
   /* Sixtyfour, la del prólogo y el icono (cada página la carga de Google Fonts) */
-  font: 400 17px/1 "Sixtyfour", var(--fuente-titulo);
+  font: 400 19px/1 "Sixtyfour", var(--fuente-titulo);
+  /* A tamaño pequeño el grosor normal se apelmaza en cuadros: líneas de barrido más finas (eje SCAN) */
+  font-variation-settings: "SCAN" -25;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: nowrap;
