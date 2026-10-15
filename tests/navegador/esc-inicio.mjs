@@ -37,7 +37,7 @@ export default async function (b) {
   await b.eval("document.querySelector('[data-continuar]').click()");
   await b.esperar(500);
   comprobar("«Continuar» lleva a la hoja de ruta", await b.eval("document.querySelector('[data-prologo]').hidden && !document.querySelector('[data-tablero]').hidden"));
-  comprobar("9 expedientes y 90 diligencias", await b.eval("document.querySelectorAll('.exp').length === 9 && document.querySelectorAll('.nodo').length === 90"));
+  comprobar("9 expedientes y una diligencia por nivel del índice", await b.eval("document.querySelectorAll('.exp').length === 9 && document.querySelectorAll('.nodo').length === CURSO.ETAPAS.reduce((s, e) => s + e.niveles.length, 0)"));
   comprobar("EXP.0 y EXP.1 abiertos; EXP.2–8 clasificados", await b.eval("document.querySelectorAll('.exp--abierto').length === 2 && document.querySelectorAll('.exp--clasificado').length === 7"));
   comprobar("Los clasificados no muestran títulos", await b.eval("![...document.querySelectorAll('.exp--clasificado h2')].some(h => /[a-z]/i.test(h.firstElementChild.textContent))"));
   comprobar("Primera diligencia de EXP.1 disponible, la segunda bloqueada", await b.eval("document.querySelector('[data-nodo=e1-01]').classList.contains('nodo--disponible') && document.querySelector('[data-nodo=e1-02]').classList.contains('nodo--bloqueado')"));
