@@ -45,15 +45,15 @@
     {
       n: 2, carpeta: "2-atencion-cliente", titulo: "Atención al cliente", departamento: "Atención al cliente", datos: "faro-e2",
       niveles: [
-        { id: "e2-01", archivo: "e2-01-where.js", titulo: "Filtrar filas: WHERE", listo: false },
-        { id: "e2-02", archivo: "e2-02-comparar.js", titulo: "Comparar: mayor, menor, distinto", listo: false },
-        { id: "e2-03", archivo: "e2-03-and-or-not.js", titulo: "Combinar condiciones: AND, OR, NOT", listo: false },
-        { id: "e2-04", archivo: "e2-04-parentesis.js", titulo: "Paréntesis y prioridad", listo: false },
-        { id: "e2-05", archivo: "e2-05-in.js", titulo: "Listas: IN y NOT IN", listo: false },
-        { id: "e2-06", archivo: "e2-06-between-fechas.js", titulo: "Rangos y fechas: BETWEEN", listo: false },
-        { id: "e2-07", archivo: "e2-07-like-ilike.js", titulo: "Buscar texto: LIKE e ILIKE", listo: false },
-        { id: "e2-08", archivo: "e2-08-null.js", titulo: "El vacío: NULL", listo: false },
-        { id: "e2-09", archivo: "e2-09-caso-clientes-de-madrugada.js", titulo: "Caso: Clientes de madrugada", listo: false, caso: true }
+        { id: "e2-01", archivo: "e2-01-where.js", titulo: "Filtrar filas: WHERE", listo: true },
+        { id: "e2-02", archivo: "e2-02-comparar.js", titulo: "Comparar: mayor, menor, distinto", listo: true },
+        { id: "e2-03", archivo: "e2-03-and-or-not.js", titulo: "Combinar condiciones: AND, OR, NOT", listo: true },
+        { id: "e2-04", archivo: "e2-04-parentesis.js", titulo: "Paréntesis y prioridad", listo: true },
+        { id: "e2-05", archivo: "e2-05-in.js", titulo: "Listas: IN y NOT IN", listo: true },
+        { id: "e2-06", archivo: "e2-06-between-fechas.js", titulo: "Rangos y fechas: BETWEEN", listo: true },
+        { id: "e2-07", archivo: "e2-07-like-ilike.js", titulo: "Buscar texto: LIKE e ILIKE", listo: true },
+        { id: "e2-08", archivo: "e2-08-null.js", titulo: "El vacío: NULL", listo: true },
+        { id: "e2-09", archivo: "e2-09-caso-clientes-de-madrugada.js", titulo: "Caso: Clientes de madrugada", listo: true, caso: true }
       ]
     },
     { n: 3, carpeta: "3-ventas", titulo: "Ventas", departamento: "Ventas", datos: "faro-e3", niveles: pendientes(3, 9) },

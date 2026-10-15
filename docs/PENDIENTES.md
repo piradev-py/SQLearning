@@ -51,7 +51,8 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Música de fondo: playlist de 4 pistas en bucle con **crossfade** de 6 s, play/stop y volumen en todas las páginas, sigue donde iba al cambiar de página; locución solo en el prólogo, baja la música (`js/musica.js`, prueba `esc-musica.mjs`)
 - [x] Volver de una lección o del laboratorio lleva a la hoja de ruta (`index.html#ruta`), sin repetir el prólogo
 - [x] Audios hechos con Suno por el usuario (atribución en README y `docs/LICENCIAS.md`)
-- [ ] Revisión de sección (etapas 0 y 1): `qa-estres` (retomar la de fase 3, cortada por el límite de uso) + `alumno-novato`
+- [x] **Etapa 2 completa** (9 niveles, verificador 28/28, `npm test` verde)
+- [ ] Revisión de sección (etapas 0, 1 y 2, juntas para ahorrar uso): `qa-estres` (retomar la de fase 3, cortada por el límite de uso) + `alumno-novato`
 - [x] **Publicado** (2026-10-15): https://piradev-py.github.io/SQLearning/ (repo público github.com/piradev-py/SQLearning, Pages desde `main`, `/`). Comprobado: PGlite viaja con gzip (≈6 MB la primera visita), laboratorio listo en ~1,8 s, lecciones y prólogo funcionan
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)

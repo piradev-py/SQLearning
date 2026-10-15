@@ -36,7 +36,7 @@ Un único universo que las etapas siguientes van mostrando por partes:
 - 10 clientes **reales** dados de alta antes de las 06:00.
 - Falsos: altas entre 02:00 y 04:59 (marzo–agosto 2026); 68 pedidos suyos, todos online, de madrugada, `reembolsado`.
 - La reclamación clave: **Iratxe Muñoz** (Bilbao), motivo «No reconozco este pedido: yo no lo hice», pedido **2210**,
-  2026-08-14 03:12, online, reembolsado, 749,00 €.
+  2026-08-14 03:12, online, reembolsado, 129,00 €.
 - Reembolsos: online 6,7 % (103 de 1 527) frente a ~2 % en las tiendas físicas.
 
 Las cifras exactas se consultan con el propio motor (laboratorio o `tests/`), nunca a ojo.

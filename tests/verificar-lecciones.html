@@ -131,7 +131,10 @@
       const r = await MOTOR.ejecutar(p.solucion);
       if (!r.ok) { problemas.push(`${donde}: la solución da error`); return; }
       const primera = r.ultimo?.filas?.[0]?.[0];
-      if (!REVISOR.respuestaCorrecta(primera, p)) problemas.push(`${donde}: la solución devuelve «${primera}» y la respuesta es «${p.respuesta}»`);
+      // Vale si coincide, o si una respuesta de texto aparece dentro de lo que devuelve (p. ej. la hora dentro de un timestamp)
+      const dentro = typeof p.respuesta !== "number" && [].concat(p.respuesta)
+        .some(x => REVISOR.normalizarTexto(primera).includes(REVISOR.normalizarTexto(x)));
+      if (!REVISOR.respuestaCorrecta(primera, p) && !dentro) problemas.push(`${donde}: la solución devuelve «${primera}» y la respuesta es «${p.respuesta}»`);
     }
 
     function verificarPapel(p, donde, problemas) {

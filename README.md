@@ -13,7 +13,9 @@ de datos, te ha elegido para descubrir la verdad. Tu única herramienta es SQL.
   lógica, conjuntos, entidades, relaciones, diagramas entidad-relación, el ciclo del análisis y privacidad.
 - **Expediente 1 · Primer día**: tus primeras consultas con `SELECT`, columnas calculadas, alias, `DISTINCT`,
   `ORDER BY`, `LIMIT` … y un inventario que no cuadra.
-- **Expedientes 2–8** *(en preparación)*: filtrar, resumir, cruzar tablas, limpiar datos, diseñar bases de datos,
+- **Expediente 2 · Atención al cliente**: filtrar con `WHERE`, `AND`/`OR`/`NOT`, `IN`, `BETWEEN`, `LIKE`/`ILIKE`,
+  fechas y `NULL` … y unos clientes que se dan de alta de madrugada.
+- **Expedientes 3–8** *(en preparación)*: resumir, cruzar tablas, limpiar datos, diseñar bases de datos,
   consultas avanzadas y analítica de negocio hasta desenmascarar al Fantasma.
 
 ## Cómo se juega
