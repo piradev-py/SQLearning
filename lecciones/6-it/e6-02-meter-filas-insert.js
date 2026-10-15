@@ -28,6 +28,7 @@ RETURNING *;`,
       },
       {
         tipo: "ejercicio",
+        varias: true,
         enunciado: "Da de alta a la responsable de la tienda: `id` 24, `nombre` **Núria Puig**, `departamento` **Tienda**, `tienda_id` 6, `email` **nuria.puig@faro.example** y `jefe_id` 4 (Elena Ruiz, de Ventas). Indica las seis columnas en ese orden.",
         solucion: `INSERT INTO empleados (id, nombre, departamento, tienda_id, email, jefe_id)
 VALUES (24, 'Núria Puig', 'Tienda', 6, 'nuria.puig@faro.example', 4);`,

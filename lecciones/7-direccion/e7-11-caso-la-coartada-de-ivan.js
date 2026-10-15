@@ -1,6 +1,6 @@
 CURSO.registrar({
   id: "e7-11",
-  titulo: "Caso: La coartada de Iván",
+  titulo: "Caso: ¿Dónde estaba cada uno?",
   xp: 80,
   objetivo: "Sabrás reconstruir dónde estaba cada persona cruzando momentos con periodos (vacaciones, fichajes, sesiones), combinando EXISTS, JOIN por rangos, CTE y LAG sobre una línea de tiempo.",
   pasos: [

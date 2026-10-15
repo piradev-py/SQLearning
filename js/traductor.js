@@ -84,7 +84,11 @@
       const n = entre(e.mensaje, /relation "([^"]+)"/);
       if (!n) return "Esa tabla no existe. Mira los nombres en la pestaña Esquema.";
       const sug = parecido(n, tablas);
-      return `No existe ninguna tabla llamada \`${n}\`.` + (sug ? ` ¿Querías decir \`${sug}\`?` : " Mira los nombres en la pestaña Esquema.");
+      if (sug) return `No existe ninguna tabla llamada \`${n}\`. ¿Querías decir \`${sug}\`?`;
+      return `No existe ninguna tabla llamada \`${n}\`. Mira los nombres en la pestaña Esquema.` +
+        (tablas.includes("auditoria")   // desde la etapa 6 (crear tablas)
+          ? " Si la creaste en una ejecución anterior, ya no existe: cada ejecución se deshace al terminar, así que créala y úsala en la misma."
+          : "");
     },
     "42703": (e, sql) => {
       const n = entre(e.mensaje, /column "([^"]*)" does not exist/) ?? entre(e.mensaje, /column ([\w.]+) does not exist/);
@@ -105,9 +109,11 @@
       // Un alias del SELECT usado en WHERE, GROUP BY o HAVING: todavía no existe (SQL los evalúa antes que el SELECT)
       const esAlias = new RegExp(`\\bas\\s+"?${corto.replace(/[^\w]/g, "")}"?\\b`, "i").test(s);
       if (!n.includes(".") && esAlias) {
-        const clausula = /\bhaving\b/i.test(s) && new RegExp(`\\bhaving\\b[\\s\\S]*\\b${corto}\\b`, "i").test(s) ? "HAVING"
-          : new RegExp(`\\bwhere\\b[\\s\\S]*\\b${corto}\\b`, "i").test(s) ? "WHERE" : "GROUP BY o WHERE";
-        return `\`${corto}\` es un alias del \`SELECT\` y en el \`${clausula}\` todavía no existe (PostgreSQL hace el \`${clausula}\` antes que el \`SELECT\`). Repite ahí la expresión entera, por ejemplo \`SUM(cantidad)\`.`;
+        const en = palabra => new RegExp(`\\b${palabra}\\b[\\s\\S]*\\b${corto}\\b`, "i").test(s);
+        const clausula = en("having") ? "HAVING" : en("where") ? "WHERE" : en("group\\s+by") ? "GROUP BY" : null;
+        if (!clausula)
+          return `\`${corto}\` es un alias que se crea en este mismo \`SELECT\`: ahí todavía no se puede usar. Repite la expresión entera (lo que va delante de \`AS ${corto}\`) o calcúlala antes en una CTE (\`WITH\`).`;
+        return `\`${corto}\` es un alias del \`SELECT\` y en el \`${clausula}\` todavía no existe (PostgreSQL hace el \`${clausula}\` antes que el \`SELECT\`). Repite ahí la expresión entera, la que va delante de \`AS ${corto}\`.`;
       }
       const sug = parecido(corto, columnas.filter(c => c !== corto));
       let txt = `No existe ninguna columna llamada \`${corto}\`.`;
@@ -118,6 +124,10 @@
     "42702": (e) => `El nombre \`${entre(e.mensaje, /"([^"]+)"/)}\` está en varias tablas: escribe delante de qué tabla es (\`tabla.columna\`).`,
     "42883": (e) => {
       const fn = entre(e.mensaje, /function ([\w.]+)\(/) || entre(e.mensaje, /operator does not exist: (.+)$/);
+      if (/function (pg_catalog\.)?extract\(/i.test(e.mensaje))
+        return "`EXTRACT` necesita una fecha de verdad y le estás pasando texto. Conviértelo antes: `EXTRACT(YEAR FROM to_date(columna, 'DD/MM/YYYY'))` o `columna::date`.";
+      if (/function round\(double precision, integer\)/i.test(e.mensaje))
+        return "`ROUND(valor, decimales)` solo funciona con el tipo `numeric`, y ese valor es `double precision`. Conviértelo: `ROUND(valor::numeric, 2)`.";
       return /operator/.test(e.mensaje)
         ? `No se puede usar ese operador con estos tipos de datos (${fn}). ¿Estás mezclando texto y números?`
         : `La función \`${fn}\` no existe o no acepta esos datos. Revisa cómo se escribe y qué le pasas entre paréntesis.`;

@@ -63,7 +63,7 @@ FROM crm_clientes;`,
       tipo: "reto",
       de: "nuria",
       grafico: true,
-      enunciado: "Ahora sí: **clientes del CRM por ciudad normalizada**. Columnas `ciudad` (`INITCAP(TRIM(ciudad))`) y `clientes` (cuántas filas hay en cada una), de más a menos clientes. Deja en el resultado la fila de la cadena vacía y la de `NULL`: quiero ver cuántas tengo que completar.",
+      enunciado: "Ahora sí: **clientes del CRM por ciudad normalizada**. Columnas `ciudad` (`INITCAP(TRIM(ciudad))`) y `clientes` (cuántas filas hay en cada una), de más a menos clientes. Deja en el resultado la fila de la cadena vacía y la de `NULL`: quiero ver cuántas tengo que completar. **Ojo:** el alias se llama igual que la columna, así que en el `GROUP BY` repite la expresión entera (si escribes `GROUP BY ciudad`, PostgreSQL agrupa por la columna original, sin limpiar).",
       inicial: "-- Escribe tu consulta aquí\n",
       comprobaciones: [
         { texto: "Tiene las columnas ciudad y clientes", prueba: (r) => PRUEBA.columnas(r, ["ciudad", "clientes"]) },

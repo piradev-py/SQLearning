@@ -131,7 +131,7 @@
         { id: "e7-08", archivo: "e7-08-lag-y-lead.js", titulo: "Antes y después: LAG y LEAD", listo: true },
         { id: "e7-09", archivo: "e7-09-acumulados-y-medias-moviles.js", titulo: "Acumulados y medias móviles", listo: true },
         { id: "e7-10", archivo: "e7-10-ntile-y-percentiles.js", titulo: "Repartir en grupos: NTILE y percentiles", listo: true },
-        { id: "e7-11", archivo: "e7-11-caso-la-coartada-de-ivan.js", titulo: "Caso: La coartada de Iván", listo: true, caso: true }
+        { id: "e7-11", archivo: "e7-11-caso-la-coartada-de-ivan.js", titulo: "Caso: ¿Dónde estaba cada uno?", listo: true, caso: true }
       ]
     },
     { n: 8, carpeta: "8-analitica", titulo: "Analítica", departamento: "Datos · El desenlace", datos: "faro-e8", niveles: pendientes(8, 12) }

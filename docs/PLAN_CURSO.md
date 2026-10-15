@@ -877,7 +877,7 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 - **Reto:** clientes por cuartil de gasto total (solo pedidos no cancelados): `cuartil`, `clientes`, `gasto_min`,
   `gasto_max`, por `cuartil`.
 
-### e7-11 · Caso: La coartada de Iván · 80 ◈ ✅
+### e7-11 · Caso: ¿Dónde estaba cada uno? · 80 ◈ ✅ (pista del Expediente: «La coartada de Iván»)
 - **Caso:** Ana Beltrán quiere una respuesta antes del consejo: ¿suspende a Iván? Lucía: «Una cuenta no tiene cara.
   Veamos dónde estaba cada persona cuando actuó `admin_temp`». Partes:
   1. Acciones de admin_temp durante las vacaciones de Iván (`EXISTS` con `vacaciones` del empleado 7, o `JOIN` por rango

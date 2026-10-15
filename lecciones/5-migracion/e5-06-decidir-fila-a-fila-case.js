@@ -40,7 +40,7 @@ ORDER BY socio;`
     {
       tipo: "explicacion",
       titulo: "Tramos y GROUP BY por un CASE",
-      texto: "El uso más útil de `CASE` es repartir en **tramos**. Aquí, los pedidos por importe: menos de 100 €, menos de 500 € y el resto. Como gana el primer `WHEN` que se cumple, un pedido de 50 € se queda en `'pequeño'` y ya no llega a mirar el segundo.\nDespués puedes **agrupar por el resultado**. PostgreSQL te deja escribir el alias en el `GROUP BY` (`GROUP BY tramo`) en vez de repetir el `CASE` entero.\nEl `ORDER BY MIN(total)` ordena los tramos de menor a mayor importe, no por orden alfabético.",
+      texto: "El uso más útil de `CASE` es repartir en **tramos**. Aquí, los pedidos por importe: menos de 100 €, menos de 500 € y el resto. Como gana el primer `WHEN` que se cumple, un pedido de 50 € se queda en `'pequeño'` y ya no llega a mirar el segundo.\nDespués puedes **agrupar por el resultado**. PostgreSQL te deja escribir el alias en el `GROUP BY` (`GROUP BY tramo`) en vez de repetir el `CASE` entero. **Ojo:** si el alias se llama igual que una columna de la tabla (`AS ciudad`, `AS email`), el `GROUP BY ciudad` usa la **columna original**, no tu expresión: en ese caso repite la expresión en el `GROUP BY` (o ponle otro alias).\nEl `ORDER BY MIN(total)` ordena los tramos de menor a mayor importe, no por orden alfabético.",
       ejemplo: `SELECT
   CASE
     WHEN total < 100 THEN 'pequeño'

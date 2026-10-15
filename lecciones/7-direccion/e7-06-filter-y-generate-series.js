@@ -22,7 +22,7 @@ FROM pedidos
 GROUP BY tienda_id
 ORDER BY tienda_id;`,
       consejo: "Cuando un informe tiene columnas como «total», «de ellos, X» y «de ellos, Y», piensa en `FILTER`: una sola pasada por la tabla y todas las cuentas alineadas por fila.",
-      otrosMotores: "`FILTER` es estándar, pero solo lo tienen PostgreSQL y SQLite. En MySQL, SQL Server o BigQuery se escribe `SUM(CASE WHEN condición THEN 1 ELSE 0 END)` o `COUNTIF(condición)` (BigQuery)."
+      otrosMotores: "`FILTER` es estándar, pero solo lo tienen PostgreSQL y SQLite. En MySQL, SQL Server o BigQuery se escribe con `CASE`, como en la limpieza: `COUNT(CASE WHEN condición THEN 1 END)` o `COUNTIF(condición)` (BigQuery)."
     },
     {
       tipo: "ejercicio",

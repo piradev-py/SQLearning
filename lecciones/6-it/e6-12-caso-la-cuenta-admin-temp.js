@@ -94,6 +94,7 @@ ORDER BY cambios DESC;`
           comprobaciones: [
             { texto: "Tiene las columnas momento, producto, columna, valor_antes y valor_despues", prueba: (r) => PRUEBA.columnas(r, ["momento", "producto", "columna", "valor_antes", "valor_despues"]) },
             { texto: "Salen sus 7 cambios en productos", prueba: (r) => (r?.filas?.length ?? 0) === 7 },
+            { texto: "Filtras por la tabla: registro_id solo es un producto cuando tabla = 'productos'", prueba: () => /\btabla\b/i.test(MOTOR.sinComentarios(PRUEBA.codigo())) },
             { texto: "Cada cambio con el nombre del producto, por orden de momento", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT a.momento, p.nombre AS producto, a.columna, a.valor_antes, a.valor_despues
 FROM auditoria AS a
 JOIN productos AS p ON p.id = a.registro_id
@@ -176,7 +177,7 @@ WHERE id = 498 AND momento = TIMESTAMP '2026-10-01 09:00:00' AND usuario = 'luci
               const total = await db.consulta(`SELECT COUNT(*) FROM auditoria;`);
               return Number(c?.filas?.[0]?.[0] ?? -1) === 1 && Number(total?.filas?.[0]?.[0] ?? -1) === 498;
             } },
-            { texto: "Lo haces dentro de una transacción (BEGIN … COMMIT)", prueba: () => /\bBEGIN\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) && /\bCOMMIT\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) }
+            { texto: "Lo haces dentro de una transacción (BEGIN … COMMIT)", prueba: () => /\b(BEGIN|START\s+TRANSACTION)\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) && /\bCOMMIT\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) }
           ],
           pistas: [
             "Entre `BEGIN;` y `COMMIT;` van dos órdenes: `UPDATE cuentas SET activa = false WHERE usuario = 'admin_temp';` y un `INSERT INTO auditoria (id, momento, usuario, tabla, operacion, registro_id, columna, valor_antes, valor_despues) VALUES (…);` con los nueve valores en ese orden.",

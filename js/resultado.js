@@ -36,7 +36,7 @@
     if (!r || !r.columnas.length) {
       return aviso(div, r && r.afectadas
         ? `✔️ La consulta ha cambiado ${plural(r.afectadas, "fila", "filas")}. (Es práctica: al terminar se deshace sola.)`
-        : "✔️ Consulta ejecutada. No devuelve ninguna tabla.");
+        : "✔️ Consulta ejecutada. No devuelve ninguna tabla. (Si has creado o cambiado algo, es práctica: al terminar se deshace solo.)");
     }
     const visibles = r.filas.slice(0, MAX_FILAS);
     div.innerHTML = `

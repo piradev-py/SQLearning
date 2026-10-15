@@ -21,7 +21,7 @@ ORDER BY crm_id;`
     },
     {
       tipo: "ejercicio",
-      enunciado: "Busca a todas las personas repetidas: agrupa el CRM por `email` (la clave `lower(trim(email))`, con ese alias) y muestra `email` y `filas` (cuántas filas tiene), solo las que tienen **más de una**. Ordena por `email`.",
+      enunciado: "Busca a todas las personas repetidas: agrupa el CRM por `email` (la clave `lower(trim(email))`, con ese alias) y muestra `email` y `filas` (cuántas filas tiene), solo las que tienen **más de una**. Ordena por `email`. **Ojo:** el alias se llama igual que la columna, así que en el `GROUP BY` repite la expresión entera (si escribes `GROUP BY email`, PostgreSQL agrupa por la columna original, sin limpiar).",
       solucion: `SELECT lower(trim(email)) AS email,
   COUNT(*) AS filas
 FROM crm_clientes

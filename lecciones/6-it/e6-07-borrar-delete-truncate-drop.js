@@ -102,6 +102,7 @@ ORDER BY usuario;`,
     },
     {
       tipo: "reto",
+      varias: true,
       de: "nuria",
       enunciado: "Las dos fichas con fecha de alta imposible, **crm_id 31** (`1900-01-01`) y **crm_id 122** (`31/12/2099`), eran pruebas del programa viejo. Bórralas con un solo `DELETE` que termine en `RETURNING crm_id, fecha_alta`, para que veamos lo que se ha ido.",
       inicial: "-- Primero ejecuta el SELECT para ver las dos fichas; después cámbialo por el DELETE\n",

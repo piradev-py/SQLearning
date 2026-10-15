@@ -49,6 +49,7 @@ WHERE tienda_id = 1;`,
       },
       {
         tipo: "ejercicio",
+        varias: true,
         enunciado: "Guarda los emails limpios: cambia `email` a `lower(trim(email))` **solo en las filas donde cambie algo** (`email <> lower(trim(email))`).",
         solucion: `UPDATE crm_clientes
 SET email = lower(trim(email))

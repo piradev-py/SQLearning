@@ -121,7 +121,7 @@ COMMIT;`,
           const c = await db.consulta(`SELECT COUNT(*), SUM(unidades) FROM stock_tiendas;`);
           return Number(c?.filas?.[0]?.[0] ?? -1) === 145 && Number(c?.filas?.[0]?.[1] ?? -1) === 1648;
         } },
-        { texto: "Lo haces dentro de una transacción (BEGIN … COMMIT)", prueba: () => /\bBEGIN\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) && /\bCOMMIT\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) }
+        { texto: "Lo haces dentro de una transacción (BEGIN … COMMIT)", prueba: () => /\b(BEGIN|START\s+TRANSACTION)\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) && /\bCOMMIT\b/i.test(MOTOR.sinTextos(PRUEBA.codigo())) }
       ],
       pistas: [
         "Copia la estructura del ejercicio anterior: `UPDATE stock_tiendas SET unidades = unidades - 5 WHERE tienda_id = 1 AND producto_id = 1;` y un `INSERT … VALUES (6, 1, 5);`, entre `BEGIN;` y `COMMIT;`. El `SELECT` va después del `COMMIT`.",
