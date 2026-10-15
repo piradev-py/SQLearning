@@ -36,15 +36,17 @@ export default async function (b) {
   await b.ir("about:blank");                       // cargar el inicio de cero (no solo cambiar la #)
   await b.ir("index.html#ruta");
   await b.esperar(800);
+  await b.eval("document.querySelector('[data-desplegar-todo]').click()");   // en el README, todo desplegado
+  await b.esperar(400);
   await b.eval("scrollTo(0, 520)");
   await b.esperar(500);
   await foto("hoja-de-ruta");
-  // Un expediente clasificado desplegado (se ve el sello y las diligencias tapadas)
-  await b.eval("document.querySelector('[data-exp=\"3\"] .exp-cabecera').click(); document.querySelector('[data-exp=\"3\"]').scrollIntoView({ block: 'center' })");
-  await b.esperar(600);
+  await b.eval("scrollTo(0, 1500)");
+  await b.esperar(500);
   await foto("expedientes-clasificados");
 
   // Lección: error explicado en el reto de e2-04 (aún no superada) y pantalla final
+  await b.eval("localStorage.removeItem('sqlearning-tablero-plegados')");   // no dejar el desplegado guardado
   await b.ir("leccion.html?id=e2-04");
   await b.hasta("document.querySelector('[data-cargando]').hidden", 60000);
   await b.eval("LECCION.ir(LECCION.estado().total - 1)");
