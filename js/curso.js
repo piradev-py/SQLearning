@@ -16,7 +16,7 @@
       n: 0, carpeta: "0-archivo-de-papel", titulo: "El archivo de papel", departamento: "Formación previa",
       opcional: true, datos: null,
       niveles: [
-        { id: "e0-01", archivo: "e0-01-que-es-un-dato.js", titulo: "¿Qué es un dato?", listo: false },
+        { id: "e0-01", archivo: "e0-01-que-es-un-dato.js", titulo: "¿Qué es un dato?", listo: true },
         { id: "e0-02", archivo: "e0-02-del-excel-a-las-tablas.js", titulo: "Del Excel gigante a las tablas", listo: false },
         { id: "e0-03", archivo: "e0-03-logica-y-o-no.js", titulo: "Verdadero o falso: lógica Y/O/NO", listo: false },
         { id: "e0-04", archivo: "e0-04-conjuntos.js", titulo: "Conjuntos: unir, cruzar y restar", listo: false },
@@ -31,7 +31,7 @@
     {
       n: 1, carpeta: "1-primer-dia", titulo: "Primer día", departamento: "Datos · Onboarding", datos: "faro-e1",
       niveles: [
-        { id: "e1-01", archivo: "e1-01-que-es-una-base-de-datos.js", titulo: "¿Qué es una base de datos?", listo: false },
+        { id: "e1-01", archivo: "e1-01-que-es-una-base-de-datos.js", titulo: "¿Qué es una base de datos?", listo: true },
         { id: "e1-02", archivo: "e1-02-elegir-columnas.js", titulo: "Elegir columnas", listo: false },
         { id: "e1-03", archivo: "e1-03-leer-el-esquema.js", titulo: "Leer el esquema y los tipos", listo: false },
         { id: "e1-04", archivo: "e1-04-columnas-calculadas.js", titulo: "Columnas calculadas", listo: false },

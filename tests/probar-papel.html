@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Pruebas de los pasos sobre el papel · SQLearning</title>
+  <base href="../">
+  <style>body { font-family: system-ui, sans-serif; margin: 24px; } .ok { color: #1a7f37; } .mal { color: #c62828; font-weight: bold; }</style>
+</head>
+<body>
+  <h1>Pasos sobre el papel</h1>
+  <p data-resumen>Comprobando…</p>
+  <ol data-lista></ol>
+  <div data-mesa style="width:900px"></div>
+  <script src="js/papel.js"></script>
+  <script>
+    const lista = document.querySelector("[data-lista]");
+    const mesa = document.querySelector("[data-mesa]");
+    const res = [];
+    function prueba(nombre, fn) {
+      let ok, extra = "";
+      try { const r = fn(); ok = r === true; if (!ok) extra = JSON.stringify(r); } catch (e) { ok = false; extra = "EXCEPCIÓN " + e.message; }
+      res.push(ok);
+      lista.insertAdjacentHTML("beforeend", `<li class="${ok ? "ok" : "mal"}">${ok ? "✅" : "❌"} ${nombre}${extra ? " — " + extra : ""}</li>`);
+    }
+    const clic = sel => mesa.querySelector(sel).click();
+
+    // --- clasificar en modo Venn ---
+    const venn = { tipo: "clasificar", venn: true, enunciado: "Venn", grupos: ["Audio", "Gaming"], elementos: [
+      { texto: "Ana", grupo: ["Audio"] }, { texto: "Luis", grupo: ["Audio", "Gaming"] }, { texto: "Eva", grupo: [] }, { texto: "Pau", grupo: ["Gaming"] }] };
+    let m = PAPEL.montar(mesa, venn);
+    prueba("Venn: 4 regiones (solo A, A y B, solo B, ninguno)", () => mesa.querySelectorAll("section[data-zona]").length === 4);
+    prueba("Venn: sin colocar no aprueba", () => !m.revisar().ok);
+    m.mostrarSolucion();
+    prueba("Venn: la solución aprueba", () => m.revisar().ok || m.revisar());
+    prueba("Venn: «Luis» queda en la intersección", () => mesa.querySelector('section[data-zona="Audio|Gaming"]').textContent.includes("Luis"));
+
+    // --- seleccionar filas, celdas y columnas ---
+    const tabla = { columnas: ["cliente", "ciudad", "gasto"], filas: [["Rosa", "Madrid", 80], ["Juan", "Bilbao", 150], ["Ana", "Madrid", 120]] };
+    m = PAPEL.montar(mesa, { tipo: "seleccionar", enunciado: "f", tabla, modo: "filas", correctas: [0, 2] });
+    clic('[data-marca="0"]'); clic('[data-marca="1"]');
+    prueba("Seleccionar filas: 1 de más y 1 de menos", () => /1 marcada que no toca y te falta 1/.test(m.revisar().mensaje) || m.revisar());
+    clic('[data-marca="1"]'); clic('[data-marca="2"]');
+    prueba("Seleccionar filas: correcto", () => m.revisar().ok);
+    m = PAPEL.montar(mesa, { tipo: "seleccionar", enunciado: "c", tabla, modo: "celdas", correctas: [[1, 2]] });
+    clic('[data-marca="1,2"]');
+    prueba("Seleccionar celdas: correcto", () => m.revisar().ok);
+    m = PAPEL.montar(mesa, { tipo: "seleccionar", enunciado: "k", tabla, modo: "columnas", correctas: [0] });
+    prueba("Seleccionar columnas: vacío no aprueba", () => !m.revisar().ok);
+    m.mostrarSolucion();
+    prueba("Seleccionar columnas: solución", () => m.revisar().ok);
+
+    // --- ordenar ---
+    const pasos = ["Pregunta", "Datos", "Limpieza", "Análisis", "Comunicar"];
+    m = PAPEL.montar(mesa, { tipo: "ordenar", enunciado: "Ordena el ciclo", elementos: pasos });
+    prueba("Ordenar: empieza desordenado", () => !m.revisar().ok);
+    // Ordenar con los botones (burbuja usando ▲)
+    for (let vuelta = 0; vuelta < 10; vuelta++) {
+      const textos = [...mesa.querySelectorAll(".papel-texto")].map(t => t.textContent);
+      const k = textos.findIndex((t, i) => i > 0 && pasos.indexOf(t) < pasos.indexOf(textos[i - 1]));
+      if (k < 0) break;
+      clic(`[data-subir="${k}"]`);
+      vuelta--; if (vuelta < -50) break;
+    }
+    prueba("Ordenar: con los botones ▲ queda bien", () => m.revisar().ok || m.revisar());
+
+    // --- diagrama ---
+    const diag = { tipo: "diagrama", enunciado: "d", entidades: [
+      { id: "cliente", nombre: "Cliente" }, { id: "pedido", nombre: "Pedido" }, { id: "producto", nombre: "Producto" }],
+      relaciones: [{ de: "cliente", a: "pedido", tipo: "1:N" }, { de: "pedido", a: "producto", tipo: "N:M" }] };
+    m = PAPEL.montar(mesa, diag);
+    const unir = (de, tipo, a) => { mesa.querySelector("[data-de]").value = de; mesa.querySelector("[data-tipo]").value = tipo; mesa.querySelector("[data-a]").value = a; mesa.querySelector("[data-unir]").requestSubmit(); };
+    prueba("Diagrama: vacío → faltan 2", () => /faltan 2 relaciones/i.test(m.revisar().mensaje) || m.revisar());
+    unir("pedido", "1:N", "cliente");                 // al revés: es N:1 visto desde cliente → tipo mal
+    unir("pedido", "N:M", "producto");
+    prueba("Diagrama: 1:N dibujado al revés → tipo equivocado", () => /tipo equivocado/.test(m.revisar().mensaje) || m.revisar());
+    unir("cliente", "1:N", "pedido");                 // sustituye la de esa pareja
+    prueba("Diagrama: correcto (y la pareja no se duplica)", () => m.revisar().ok && mesa.querySelectorAll(".papel-relaciones li").length === 2 || m.revisar());
+    unir("cliente", "1:1", "producto");
+    prueba("Diagrama: una relación de más → sobra", () => /sobra 1 relación/i.test(m.revisar().mensaje) || m.revisar());
+
+    const bien = res.filter(Boolean).length;
+    document.querySelector("[data-resumen]").textContent = `${bien === res.length ? "✅" : "❌"} ${bien}/${res.length} pruebas superadas`;
+  </script>
+</body>
+</html>

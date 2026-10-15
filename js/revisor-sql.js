@@ -218,7 +218,11 @@
           filas.push({ texto: c.texto, ok });
         }
         filas.push(filaEscrita);
-        return { ok: filas.every(f => f.ok), filas };
+        const ok = filas.every(f => f.ok);
+        // Extra de eficiencia (opcional): solo si el reto ya está superado
+        let bonus = false;
+        if (ok && paso.bonus) { try { bonus = !!(await paso.bonus.prueba(r, db, sql)); } catch (e) { bonus = false; } }
+        return { ok, filas, bonus };
       });
     } catch (e) {
       const error = MOTOR.errorAlumno(e, sql);
@@ -228,5 +232,20 @@
     }
   }
 
-  window.REVISOR = { bienEscrita, ordenImporta, clavesOrden, comparar, revisarEjercicio, revisarReto, resultadoDe, sentencias };
+  // Respuestas escritas (pasos `interpretar`): sin mayúsculas, tildes, signos ni espacios de más (la ñ sí cuenta)
+  function normalizarTexto(s) {
+    return String(s ?? "").toLowerCase().replace(/ñ/g, "\u0001").normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/\u0001/g, "ñ").replace(/[¡!¿?.,;:«»"'…()\-]/g, " ").replace(/\s+/g, " ").trim();
+  }
+  /** ¿La respuesta escrita coincide con paso.respuesta (texto, lista de textos válidos o número con tolerancia)? */
+  function respuestaCorrecta(dada, paso) {
+    if (typeof paso.respuesta === "number") {
+      const n = Number(String(dada).replace(/\s/g, "").replace(",", "."));
+      return Number.isFinite(n) && Math.abs(n - paso.respuesta) <= (paso.tolerancia || 0) + 1e-9;
+    }
+    return [].concat(paso.respuesta).map(normalizarTexto).includes(normalizarTexto(dada));
+  }
+
+  window.REVISOR = { bienEscrita, ordenImporta, clavesOrden, comparar, revisarEjercicio, revisarReto, resultadoDe, sentencias,
+    normalizarTexto, respuestaCorrecta };
 })();

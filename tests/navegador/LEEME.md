@@ -5,12 +5,16 @@ DevTools Protocol (puerto 9334), y ejecuta un escenario. **Nunca dos escenarios 
 
 ```
 node tests/navegador/cdp.mjs esc-motor.mjs
+npm test        # todas, una detrás de otra, con resumen
 ```
 
 | Escenario | Qué hace | Tiempo |
 |---|---|---|
 | `esc-motor.mjs` | Batería de `tests/probar-motor.html`: motor, aislamiento, tiempo límite, errores traducidos, revisor, PRUEBA | ~10 s |
 | `esc-inicio.mjs` | Prólogo obligatorio (normal y reducido), hoja de ruta, expedientes clasificados, hilos, progreso con avance, diálogos, modo prueba, progreso corrupto, tamaños | ~40 s |
+| `esc-papel.mjs` | Batería de `tests/probar-papel.html`: clasificar (también Venn), seleccionar filas/celdas/columnas, ordenar, diagrama | ~5 s |
+| `esc-verificar.mjs` | `tests/verificar-lecciones.html`: cada nivel listo cumple el formato, sus soluciones aprueban, los iniciales suspenden, los ejemplos funcionan | crece con el curso |
+| `esc-leccion.mjs` | e1-01 y e0-01 como alumno: bloqueos, errores típicos, pistas, reto, pantalla final, bloques y créditos, repetir para mejorar, hoja de ruta | ~60 s |
 | `esc-laboratorio.mjs` | Laboratorio como usuario: teclea, autocompleta, Ctrl+Enter, error con línea, esquema, borrador, tema día, tamaños; fotos en `salida/` | ~30 s |
 
 ## API del escenario

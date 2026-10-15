@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diligencia · SQLearning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/tema.css">
+  <link rel="stylesheet" href="css/fondo.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/leccion.css">
+</head>
+<body>
+  <div class="escena escena--tenue" aria-hidden="true">
+    <div class="escena-cielo"></div>
+    <img class="escena-ciudad" src="recursos/ciudad-neon.svg" alt="">
+    <div class="escena-suelo"></div>
+  </div>
+
+  <header class="lec-cabecera">
+    <a class="lec-volver" href="index.html">‹ Hoja de ruta</a>
+    <div class="lec-titulo">
+      <span class="lec-codigo" data-codigo></span>
+      <h1 data-titulo>Cargando…</h1>
+    </div>
+    <ol class="lec-pasos" data-pasos aria-label="Pasos de la diligencia"></ol>
+    <button type="button" class="boton-tema" data-tema aria-label="Cambiar tema">🌙 Noche</button>
+  </header>
+
+  <main class="lec" data-lec>
+    <!-- Columna del paso: ticket, explicación, enunciado, pistas, comprobaciones -->
+    <section class="lec-panel lec-paso" aria-label="Paso actual">
+      <div class="lec-paso-contenido" data-paso tabindex="-1"></div>
+      <div class="lec-nav">
+        <button type="button" data-anterior>‹ Anterior</button>
+        <button type="button" class="boton-principal" data-siguiente>Siguiente ›</button>
+      </div>
+    </section>
+
+    <!-- Espacio de trabajo: editor + resultado (o mesa para los pasos sin SQL) -->
+    <section class="lec-panel lec-trabajo" aria-label="Espacio de trabajo" data-trabajo>
+      <div class="lec-sql" data-zona-sql>
+        <div class="lec-barra">
+          <button type="button" data-ejecutar>▶ Ejecutar <kbd>Ctrl</kbd>+<kbd>Enter</kbd></button>
+          <button type="button" class="boton-principal" data-revisar hidden>✔ Revisar</button>
+          <span class="lec-barra-espacio"></span>
+          <button type="button" data-reiniciar-editor hidden title="Volver al código del principio">↺ Reiniciar</button>
+        </div>
+        <div class="lec-editor" data-editor></div>
+        <div class="lec-pestanas" role="tablist">
+          <button type="button" role="tab" id="pest-resultado" aria-controls="vista-resultado" aria-selected="true" data-pestana="resultado">Resultado</button>
+          <button type="button" role="tab" id="pest-esquema" aria-controls="vista-esquema" aria-selected="false" data-pestana="esquema" tabindex="-1">Esquema</button>
+          <span class="lec-estado" data-estado aria-live="polite"></span>
+        </div>
+        <div class="lec-vista" id="vista-resultado" role="tabpanel" aria-labelledby="pest-resultado" data-vista="resultado"></div>
+        <div class="lec-vista" id="vista-esquema" role="tabpanel" aria-labelledby="pest-esquema" data-vista="esquema" hidden></div>
+      </div>
+      <div class="lec-mesa" data-zona-mesa hidden></div>
+    </section>
+
+    <div class="lec-cargando" data-cargando role="status">
+      <span class="marca-faro grande" aria-hidden="true"></span>
+      <p data-cargando-texto>Abriendo la diligencia…</p>
+    </div>
+  </main>
+
+  <!-- Diligencia superada -->
+  <dialog class="lec-final" data-final aria-labelledby="final-titulo">
+    <p class="lec-final-sello">DILIGENCIA SUPERADA</p>
+    <h2 id="final-titulo" data-final-titulo></h2>
+    <div data-final-cuerpo></div>
+    <div class="lec-final-botones">
+      <a class="boton-enlace" href="index.html">‹ Hoja de ruta</a>
+      <a class="boton-enlace boton-enlace--principal" data-final-siguiente hidden>Siguiente diligencia ›</a>
+    </div>
+  </dialog>
+
+  <script src="js/tema.js"></script>
+  <script src="js/curso.js"></script>
+  <script src="js/progreso.js"></script>
+  <script src="js/motor-sql.js"></script>
+  <script src="js/traductor.js"></script>
+  <script src="js/revisor-sql.js"></script>
+  <script src="js/pruebas.js"></script>
+  <script src="js/editor-sql.js"></script>
+  <script src="js/resultado.js"></script>
+  <script src="js/papel.js"></script>
+  <script src="js/leccion.js"></script>
+</body>
+</html>

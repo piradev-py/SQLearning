@@ -40,12 +40,20 @@ quede pendiente y vuelve a pasar los tests.
 ## Fase 3 · Interfaz
 - [x] Inicio: **prólogo obligatorio** (`js/prologo.js`, «Anteriormente en el caso…») → **hoja de ruta** como tablero holográfico (`js/tablero.js`, expedientes CLASIFICADOS, hilos de neón)
 - [x] Progreso con **créditos ◈, bloques verificados, credenciales, autorización L1–L6**, turnos, expediente de pistas, modo prueba, reinicio (`js/progreso.js`); índice `js/curso.js`; prueba `esc-inicio.mjs`
-- [ ] Página de lección (`leccion.html`): pasos historia/explicación/ejercicio/predicción/arreglar/quiz/interpretar/reto/caso + recompensas al terminar
-- [ ] Pasos «sobre el papel»: `clasificar`, `seleccionar`, `ordenar`, `diagrama`
+- [x] Página de lección (`leccion.html` + `js/leccion.js`): todos los tipos de paso, pistas/solución, bloques y créditos, credenciales, pista del expediente, pantalla «Diligencia superada»; prueba `esc-leccion.mjs`
+- [x] Pasos «sobre el papel» (`js/papel.js`): `clasificar` (también Venn), `seleccionar`, `ordenar`, `diagrama`, con clics y teclado; prueba `esc-papel.mjs`
+- [x] Verificador de lecciones (`tests/verificar-lecciones.html`, `esc-verificar.mjs`) y `npm test` (todas las baterías)
+- [x] Niveles de referencia: `e1-01` (SQL) y `e0-01` (sobre el papel)
+- [ ] Revisión fin de fase 3 (`qa-estres` + `alumno-novato` con e0-01 y e1-01)
 
 ## Fase 4 · Primer hito jugable
 - [ ] Etapa 1 completa + tests → publicar en GitHub Pages
 - [ ] Etapa 0 completa
+
+## Al final: detalles visuales (decisión del usuario: primero lo técnico)
+- [ ] Prólogo con movimiento reducido: ¿frase a frase con fundido (sin movimiento) en vez de todo de golpe? (el Windows del usuario lo tiene activado)
+- [ ] Figuras del ambiente historia (lluvia, carteles, siluetas de personajes, el Fantasma) — ver `docs/ESTILO.md`
+- [ ] Pulido visual de la página de lección, pasos «sobre el papel» y pantalla de diligencia superada
 
 ## Decisiones abiertas
 - (ninguna por ahora)

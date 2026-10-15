@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Verificador de lecciones · SQLearning</title>
+  <base href="../">
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; background: #fff; color: #222; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    td, th { border: 1px solid #ccc; padding: 4px 8px; vertical-align: top; text-align: left; }
+    .ok { color: #1a7f37; } .mal { color: #c62828; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Verificador de lecciones</h1>
+  <p data-resumen>Comprobando…</p>
+  <table><thead><tr><th>Nivel</th><th>Resultado</th><th>Problemas</th></tr></thead><tbody data-filas></tbody></table>
+  <div data-mesa hidden></div>
+
+  <script src="js/curso.js"></script>
+  <script src="js/motor-sql.js"></script>
+  <script src="js/traductor.js"></script>
+  <script src="js/revisor-sql.js"></script>
+  <script src="js/pruebas.js"></script>
+  <script src="js/papel.js"></script>
+  <script>
+    // Comprueba que cada nivel marcado como listo cumple docs/FORMATO_LECCION.md y funciona de verdad.
+    const PERSONAJES = ["lucia", "marcos", "elena", "hector", "nuria", "ivan", "ana"];
+    const TIPOS = new Set(["historia", "explicacion", "ejercicio", "arreglar", "prediccion", "quiz", "interpretar", "reto", "caso",
+      "clasificar", "seleccionar", "ordenar", "diagrama"]);
+    const PROHIBIDAS = /\b(XP|estrellas?|insignias?)\b/i;
+    const sinComentarios = s => MOTOR.sinComentarios(s || "").trim();
+    const terminaEnPuntoYComa = s => sinComentarios(s).endsWith(";");
+
+    function cargar(src) {
+      return new Promise((ok, mal) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => mal(new Error("no existe " + src)); document.head.append(s); });
+    }
+    // Todos los textos del nivel (para buscar palabras prohibidas)
+    function textos(o, out = []) {
+      if (typeof o === "string") out.push(o);
+      else if (Array.isArray(o)) o.forEach(x => textos(x, out));
+      else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) if (typeof v !== "function") textos(v, out);
+      return out;
+    }
+
+    async function verificarReto(p, donde, problemas) {
+      if (!Array.isArray(p.comprobaciones) || p.comprobaciones.length < 1) problemas.push(`${donde}: sin comprobaciones`);
+      if (!p.solucion) { problemas.push(`${donde}: sin solución`); return; }
+      if (!terminaEnPuntoYComa(p.solucion)) problemas.push(`${donde}: la solución no termina en ;`);
+      const bien = await REVISOR.revisarReto(p, p.solucion);
+      if (!bien.ok) problemas.push(`${donde}: la SOLUCIÓN no pasa: ${bien.filas.filter(f => !f.ok).map(f => f.texto).join(" | ")} ${bien.mensaje || ""}`);
+      const mal = await REVISOR.revisarReto(p, p.inicial || "");
+      if (mal.ok) problemas.push(`${donde}: el código INICIAL ya aprueba`);
+      if (!p.pistas?.length) problemas.push(`${donde}: sin pistas`);
+    }
+
+    async function verificarNivel(etapa, nivel) {
+      const problemas = [];
+      try { await cargar(`lecciones/${etapa.carpeta}/${nivel.archivo}`); } catch (e) { return ["el archivo no existe"]; }
+      const lec = CURSO.leccion(nivel.id);
+      if (!lec) return ["no llama a CURSO.registrar con su id"];
+      if (lec.titulo !== nivel.titulo) problemas.push(`título distinto del índice («${lec.titulo}» ≠ «${nivel.titulo}»)`);
+      if (!Number.isFinite(lec.xp) || lec.xp < 10 || lec.xp > 100) problemas.push("xp (créditos base) fuera de 10–100");
+      if (!Array.isArray(lec.pasos) || !lec.pasos.length) return problemas.concat("sin pasos");
+      for (const t of textos(lec)) if (PROHIBIDAS.test(t)) problemas.push(`texto con palabra prohibida: «${t.slice(0, 60)}…»`);
+
+      const esFinal = p => p.tipo === "reto" || p.tipo === "caso" || p.reto === true;
+      const finales = lec.pasos.filter(esFinal).length;
+      if (finales !== 1 || !esFinal(lec.pasos.at(-1))) problemas.push("debe haber un solo reto/caso y ser el último paso");
+      if (nivel.caso && lec.pasos.at(-1).tipo !== "caso" && etapa.datos) problemas.push("el último nivel de la etapa debe terminar en un paso `caso`");
+
+      const datos = lec.datos !== undefined ? lec.datos : etapa.datos;
+      if (datos) await MOTOR.preparar(datos);
+
+      for (const [i, p] of lec.pasos.entries()) {
+        const donde = `paso ${i + 1} (${p.tipo})`;
+        if (!TIPOS.has(p.tipo)) { problemas.push(`${donde}: tipo desconocido`); continue; }
+        if (p.de && !PERSONAJES.includes(p.de)) problemas.push(`${donde}: personaje desconocido «${p.de}»`);
+        const sqlDe = s => datos ? s : null;
+        switch (p.tipo) {
+          case "historia":
+            if (!p.texto) problemas.push(`${donde}: sin texto`);
+            break;
+          case "explicacion":
+            if (!p.texto) problemas.push(`${donde}: sin texto`);
+            if (p.ejemplo && sqlDe(p.ejemplo)) {
+              if (!terminaEnPuntoYComa(p.ejemplo)) problemas.push(`${donde}: el ejemplo no termina en ;`);
+              const r = await MOTOR.ejecutar(p.ejemplo);
+              if (!r.ok) problemas.push(`${donde}: el ejemplo da error: ${r.error.mensaje}`);
+            }
+            break;
+          case "ejercicio": case "arreglar": {
+            if (!p.enunciado || !p.solucion) { problemas.push(`${donde}: falta enunciado o solución`); break; }
+            if (!terminaEnPuntoYComa(p.solucion)) problemas.push(`${donde}: la solución no termina en ;`);
+            const bien = await REVISOR.revisarEjercicio(p, p.solucion);
+            if (!bien.ok) problemas.push(`${donde}: la SOLUCIÓN no aprueba: ${bien.mensaje}`);
+            const mal = await REVISOR.revisarEjercicio(p, p.inicial || "");
+            if (mal.ok) problemas.push(`${donde}: el código INICIAL ya aprueba`);
+            if (p.tipo === "arreglar" && !sinComentarios(p.inicial)) problemas.push(`${donde}: «arreglar» necesita una consulta rota en inicial`);
+            if (!p.pistas?.length) problemas.push(`${donde}: sin pistas`);
+            break;
+          }
+          case "prediccion": {
+            const r = await MOTOR.ejecutar(p.consulta || "");
+            if (!r.ok) problemas.push(`${donde}: la consulta da error`);
+            if (!(p.correcta >= 0 && p.correcta < (p.opciones || []).length)) problemas.push(`${donde}: «correcta» no es una opción`);
+            break;
+          }
+          case "quiz":
+            if (!(p.correcta >= 0 && p.correcta < (p.opciones || []).length)) problemas.push(`${donde}: «correcta» no es una opción`);
+            break;
+          case "interpretar": await verificarInterpretar(p, donde, problemas); break;
+          case "reto": await verificarReto(p, donde, problemas); break;
+          case "caso":
+            if (!p.expediente?.id || !p.expediente?.titulo || !p.expediente?.texto) problemas.push(`${donde}: falta expediente {id, titulo, texto}`);
+            for (const [k, parte] of (p.partes || []).entries()) {
+              if (parte.tipo === "interpretar") await verificarInterpretar(parte, `${donde} parte ${k + 1}`, problemas);
+              else await verificarReto(parte, `${donde} parte ${k + 1}`, problemas);
+            }
+            if (!p.partes?.length) problemas.push(`${donde}: sin partes`);
+            break;
+          default: verificarPapel(p, donde, problemas);
+        }
+      }
+      return problemas;
+    }
+
+    async function verificarInterpretar(p, donde, problemas) {
+      if (p.respuesta === undefined) { problemas.push(`${donde}: sin respuesta`); return; }
+      if (!p.solucion) { problemas.push(`${donde}: sin solución`); return; }
+      const r = await MOTOR.ejecutar(p.solucion);
+      if (!r.ok) { problemas.push(`${donde}: la solución da error`); return; }
+      const primera = r.ultimo?.filas?.[0]?.[0];
+      if (!REVISOR.respuestaCorrecta(primera, p)) problemas.push(`${donde}: la solución devuelve «${primera}» y la respuesta es «${p.respuesta}»`);
+    }
+
+    function verificarPapel(p, donde, problemas) {
+      try {
+        if (p.tipo === "clasificar") {
+          const malos = p.elementos.filter(e => [].concat(e.grupo).some(g => g !== "" && !p.grupos.includes(g)));
+          if (malos.length) problemas.push(`${donde}: elementos con grupo inexistente: ${malos.map(e => e.texto).join(", ")}`);
+          if (p.venn && p.grupos.length !== 2) problemas.push(`${donde}: el modo Venn necesita exactamente 2 grupos`);
+        }
+        if (p.tipo === "ordenar" && (p.elementos.length < 3 || new Set(p.elementos).size !== p.elementos.length)) problemas.push(`${donde}: necesita 3+ elementos distintos`);
+        if (p.tipo === "diagrama") {
+          const ids = new Set(p.entidades.map(e => e.id));
+          for (const r of p.relaciones) if (!ids.has(r.de) || !ids.has(r.a) || !["1:1", "1:N", "N:M"].includes(r.tipo)) problemas.push(`${donde}: relación inválida ${JSON.stringify(r)}`);
+        }
+        const mesa = document.querySelector("[data-mesa]");
+        const m = PAPEL.montar(mesa, p);
+        if (m.revisar().ok) problemas.push(`${donde}: ya está resuelto al empezar`);
+        m.mostrarSolucion();
+        if (!m.revisar().ok) problemas.push(`${donde}: la solución no aprueba`);
+        if (!p.pistas?.length && p.reto) problemas.push(`${donde}: reto sin pistas`);
+      } catch (e) { problemas.push(`${donde}: error al montarlo: ${e.message}`); }
+    }
+
+    (async () => {
+      const filas = document.querySelector("[data-filas]");
+      let total = 0, bien = 0;
+      for (const etapa of CURSO.ETAPAS) for (const nivel of etapa.niveles) {
+        if (!nivel.listo) continue;
+        total++;
+        const problemas = await verificarNivel(etapa, nivel);
+        if (!problemas.length) bien++;
+        filas.insertAdjacentHTML("beforeend", `<tr><td>${nivel.id}</td><td class="${problemas.length ? "mal" : "ok"}">${problemas.length ? "❌" : "✅"}</td>
+          <td>${problemas.map(p => p.replace(/</g, "&lt;")).join("<br>")}</td></tr>`);
+      }
+      document.querySelector("[data-resumen]").textContent = `${bien === total ? "✅" : "❌"} ${bien}/${total} niveles correctos`;
+    })();
+  </script>
+</body>
+</html>
