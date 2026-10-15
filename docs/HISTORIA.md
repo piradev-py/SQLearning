@@ -74,7 +74,7 @@ Lo que lo delata en los datos (y cómo lo va descubriendo el alumno):
 | 2 | **Clientes de madrugada** | Varios clientes dados de alta entre las 2:00 y las 5:00, todos con email `@correo-rapido.example`. Uno reclama un pedido que «nunca hizo». |
 | 3 | **Reembolsos disparados** | Los reembolsos de la tienda online triplican la media de las demás tiendas. |
 | 4 | **Pedidos fantasma** | Pedidos reembolsados que no tienen envío registrado (LEFT JOIN → NULL); los pocos envíos que hay los firma el almacén de Getafe. |
-| 5 | **Una sola dirección** | Al limpiar los datos (mayúsculas, espacios, abreviaturas «C/» = «Calle»), las direcciones de los clientes falsos son la misma, y coincide con la de un empleado. |
+| 5 | **Una sola dirección** | Al limpiar los datos (mayúsculas, espacios, abreviaturas «C/» = «Calle»), las direcciones de los clientes falsos son la misma, y coincide con la de **Iván Soler** (`fichas_empleados`). Es una **pista falsa** puesta por Héctor, igual que la cuenta `admin_temp`: refuerza que Iván parezca culpable en la etapa 6. |
 | 6 | **La cuenta `admin_temp`** | La tabla de auditoría que diseña el alumno registra que todos los cambios raros los hace `admin_temp`. Iván parece culpable. |
 | 7 | **La coartada de Iván** | Con funciones ventana y fechas: `admin_temp` actúa durante las vacaciones de Iván, y siempre pocos minutos después de que Héctor ficha en el almacén. |
 | 8 | **Caso cerrado** | Analítica de anomalías (z-score) y cuantificación del fraude; el informe final para Ana Beltrán señala a Héctor. |

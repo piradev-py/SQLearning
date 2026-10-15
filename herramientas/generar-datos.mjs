@@ -514,3 +514,163 @@ function etapa4() {
 
 writeFileSync(SALIDA + "faro-e4.sql", etapa4());
 console.log("✅ datos/faro-e4.sql");
+
+// --- Etapa 5 (Migración): lo de la etapa 4 + el CRM antiguo (todo en texto, sucio) y las fichas de empleados ----
+// Semilla propia (5005). Nuria migra el CRM viejo al sistema nuevo: los datos llegan como los escribía la gente.
+// Pista del Fantasma (pista FALSA, la pone Héctor): las direcciones de los 9 clientes falsos, escritas de formas
+// distintas, son una sola al normalizarlas… y es la de Iván Soler (fichas_empleados).
+const DIRECCION_IVAN = { cp: "28901", ciudad: "Getafe" };
+const FORMAS_IVAN = [
+  "Calle Olmo 7, 3ºB", "C/ Olmo, 7 3ºB", "c/olmo 7 - 3º B", "CALLE OLMO 7 3B", "  calle  Olmo 7, 3º-B ",
+  "C/ OLMO 7, 3ºB", "Calle olmo, 7, 3 B", "c/ Olmo 7 3ºb", "calle Olmo 7 (3ºB)"
+];
+const CALLES = ["Mayor", "Alcalá", "Gran Vía", "Serrano", "Princesa", "Colón", "Sol", "Luna", "Pez", "Arenal", "Atocha", "Toledo",
+  "Velázquez", "Goya", "Ríos Rosas", "Bravo Murillo", "Libertad", "Prado", "Paz", "Real", "Nueva", "Ancha", "Ribera", "Sierpes",
+  "Feria", "Betis", "Ercilla", "Autonomía", "Licenciado Poza", "Ruzafa", "Xàtiva", "Paseo Gracia", "Diagonal", "Alfonso I",
+  "Larios", "Santiago", "Miguel Íscar", "Coso", "Independencia", "Pilar"];
+const CP_DE = { Madrid: "280", Valencia: "460", Sevilla: "410", Bilbao: "480", Barcelona: "080", Zaragoza: "500", "Málaga": "290", Valladolid: "470", Getafe: "289", "Alcorcón": "289" };
+const sinAcentos = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+function etapa5Tablas() {
+  const u = universo();
+  const r = azar(5005);
+  const ent = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const elegir = lista => lista[Math.floor(r() * lista.length)];
+  const prob = p => r() < p;
+  const dos = n => String(n).padStart(2, "0");
+  // Una misma dirección «limpia», escrita como la escribiría alguien con prisa
+  const ensuciarDireccion = (calle, numero, piso) => {
+    const base = prob(0.5) ? `Calle ${calle}` : `C/ ${calle}`;
+    let t = `${base}${prob(0.5) ? "," : ""} ${numero}${piso ? (prob(0.5) ? ", " : " ") + piso : ""}`;
+    if (prob(0.2)) t = t.toUpperCase(); else if (prob(0.2)) t = t.toLowerCase();
+    if (prob(0.15)) t = "  " + t.replace(/ /g, "  ") + " ";
+    return t;
+  };
+  const ensuciarTexto = t => {
+    if (prob(0.2)) t = t.toUpperCase(); else if (prob(0.15)) t = t.toLowerCase();
+    if (prob(0.15)) t = " " + t + "  ";
+    return t;
+  };
+  const telefono = t => {
+    if (t === null) return elegir([null, "", "N/D", null]);
+    const d = t.replace(/\s/g, "");
+    return elegir([t, d, "+34" + d, "+34 " + t, d.slice(0, 3) + "-" + d.slice(3, 6) + "-" + d.slice(6)]);
+  };
+  const fechaTexto = ts => {
+    const [a, m, d] = ts.slice(0, 10).split("-");
+    return prob(0.6) ? `${a}-${m}-${d}` : `${d}/${m}/${a}`;
+  };
+  const importeTexto = n => {
+    const fijo = n.toFixed(2);
+    if (prob(0.5)) return fijo;                                                              // 1234.50
+    const [e, dec] = fijo.split(".");
+    return e.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + dec + (prob(0.3) ? " €" : "");    // 1.234,50 €
+  };
+  const socioTexto = s => s ? elegir(["S", "si", "Sí", "1", "true"]) : elegir(["N", "no", "0", "false", ""]);
+  const cp = ciudad => {
+    const c = (CP_DE[ciudad] || "280") + dos(ent(1, 49));
+    return c.startsWith("0") && prob(0.7) ? c.slice(1) : c;                                  // el Excel se comió el cero inicial
+  };
+  const gasto = new Map();
+  for (const p of u.pedidos) if (p.estado !== "cancelado") gasto.set(p.cliente_id, (gasto.get(p.cliente_id) || 0) + p.total);
+
+  const filas = [];
+  const usadas = new Set();
+  const direccionNueva = () => {
+    let c, n, key;
+    do { c = elegir(CALLES); n = ent(1, 140); key = c + n; } while (usadas.has(key));
+    usadas.add(key);
+    return { calle: c, numero: n, piso: prob(0.6) ? `${ent(1, 8)}º${elegir(["A", "B", "C", "D"])}` : "" };
+  };
+  // Parejas reales que viven juntas (misma dirección): para que «direcciones repetidas» no sea solo el Fantasma
+  const parejas = new Map();
+  const reales = u.clientes.filter(c => !c.falso);
+  for (let k = 0; k < 6; k++) {
+    const a = reales[ent(0, reales.length - 1)], b = reales[ent(0, reales.length - 1)];
+    if (a !== b && !parejas.has(a.id) && !parejas.has(b.id)) { const d = direccionNueva(); parejas.set(a.id, d); parejas.set(b.id, d); }
+  }
+  let falsoK = 0;
+  for (const c of u.clientes) {
+    const ciudad = c.ciudad;
+    let direccion, codigo;
+    if (c.falso) { direccion = FORMAS_IVAN[falsoK++]; codigo = DIRECCION_IVAN.cp; }
+    else {
+      const d = parejas.get(c.id) || direccionNueva();
+      direccion = ensuciarDireccion(d.calle, d.numero, d.piso); codigo = ciudad ? cp(ciudad) : null;
+    }
+    const fila = {
+      nombre: ensuciarTexto(c.nombre), email: prob(0.25) ? ensuciarTexto(c.email) : c.email, telefono: telefono(c.telefono),
+      direccion, cp: codigo, ciudad: ciudad === null ? elegir([null, ""]) : ensuciarTexto(ciudad),
+      fecha_alta: fechaTexto(c.alta), gasto_total: importeTexto(Math.round((gasto.get(c.id) || 0) * 100) / 100), socio: socioTexto(c.socio)
+    };
+    filas.push(fila);
+    // Duplicados: la misma persona dada de alta dos veces en el CRM viejo (otra forma de escribir sus datos)
+    if (!c.falso && prob(0.07)) filas.push({ ...fila, nombre: ensuciarTexto(c.nombre.toUpperCase()), email: ensuciarTexto(c.email.toUpperCase()),
+      telefono: telefono(c.telefono), gasto_total: importeTexto(0), socio: socioTexto(c.socio) });
+  }
+  // Clientes del CRM viejo que nunca pasaron al sistema nuevo (no están en `clientes`)
+  const VIEJOS = ["Pedro Lafuente", "Rosa Montero", "Ángel Cabrera", "Felisa Ortiz", "Jesús Lorenzo", "Mercedes Prieto",
+    "Ramón Vidal", "Teresa Calvo", "Luis Pascual", "Amparo Gallego", "Emilio Herrera", "Consuelo Rey"];
+  for (const n of VIEJOS) {
+    const ciudad = elegir(["Madrid", "Valencia", "Sevilla", "Bilbao"]);
+    const d = direccionNueva();
+    filas.push({ nombre: ensuciarTexto(n), email: sinAcentos(n.toLowerCase()).replace(" ", ".") + "@antiguo.example",
+      telefono: telefono(`6${ent(10, 99)} ${ent(100, 999)} ${ent(100, 999)}`), direccion: ensuciarDireccion(d.calle, d.numero, d.piso),
+      cp: cp(ciudad), ciudad: ensuciarTexto(ciudad), fecha_alta: fechaTexto(`20${ent(15, 19)}-${dos(ent(1, 12))}-${dos(ent(1, 28))}`),
+      gasto_total: importeTexto(ent(50, 3000) + ent(0, 99) / 100), socio: socioTexto(prob(0.3)) });
+  }
+  // Valores atípicos (erratas de toda la vida): fechas imposibles y un gasto con tres ceros de más
+  filas[ent(10, 60)].fecha_alta = "1900-01-01";
+  filas[ent(70, 120)].fecha_alta = "31/12/2099";
+  filas[ent(130, 200)].gasto_total = "999999.00";
+  // Orden de exportación: barajado (el CRM no ordenaba por nada)
+  for (let i = filas.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [filas[i], filas[j]] = [filas[j], filas[i]]; }
+
+  // Fichas de empleados (RR. HH.)
+  const fichas = empleados.concat([["Iker Salas", "Logística", 1]]).map(([nombre, , tienda], i) => {
+    const id = i + 1;
+    if (nombre === "Iván Soler") return [id, "Calle Olmo, 7, 3ºB", DIRECCION_IVAN.cp, DIRECCION_IVAN.ciudad, "1986-11-23", "611 204 587"];
+    const ciudad = tienda === 2 ? "Valencia" : tienda === 3 ? "Sevilla" : tienda === 4 ? "Bilbao" : elegir(["Madrid", "Madrid", "Madrid", "Getafe", "Alcorcón"]);
+    const d = direccionNueva();
+    return [id, `Calle ${d.calle}, ${d.numero}${d.piso ? ", " + d.piso : ""}`, (CP_DE[ciudad] || "289") + dos(ent(1, 49)), ciudad,
+      `19${ent(62, 99)}-${dos(ent(1, 12))}-${dos(ent(1, 28))}`, `6${ent(10, 99)} ${ent(100, 999)} ${ent(100, 999)}`];
+  });
+  return { crm: filas.map((f, i) => [i + 1, f.nombre, f.email, f.telefono, f.direccion, f.cp, f.ciudad, f.fecha_alta, f.gasto_total, f.socio]), fichas };
+}
+
+const esquemaMigracion = `
+CREATE TABLE crm_clientes (
+  crm_id integer PRIMARY KEY,
+  nombre text,
+  email text,
+  telefono text,
+  direccion text,
+  cp text,
+  ciudad text,
+  fecha_alta text,
+  gasto_total text,
+  socio text
+);
+
+CREATE TABLE fichas_empleados (
+  empleado_id integer PRIMARY KEY REFERENCES empleados (id),
+  direccion text NOT NULL,
+  cp text NOT NULL,
+  ciudad text NOT NULL,
+  nacimiento date NOT NULL,
+  telefono text NOT NULL
+);
+`;
+
+function etapa5() {
+  const t = etapa5Tablas();
+  return [
+    etapa4().replace("datos de la etapa 4", "datos de la etapa 5"),
+    esquemaMigracion,
+    insertar("crm_clientes", ["crm_id", "nombre", "email", "telefono", "direccion", "cp", "ciudad", "fecha_alta", "gasto_total", "socio"], t.crm),
+    insertar("fichas_empleados", ["empleado_id", "direccion", "cp", "ciudad", "nacimiento", "telefono"], t.fichas)
+  ].join("\n");
+}
+
+writeFileSync(SALIDA + "faro-e5.sql", etapa5());
+console.log("✅ datos/faro-e5.sql");
