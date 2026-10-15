@@ -82,4 +82,30 @@ Igual que `faro-e3.sql` (mismas filas y cifras) + `empleados.jefe_id` + `almacen
   (los devueltos normales sí tienen fecha de entrega). Los reembolsos normales (34) tienen envío de su almacén.
 - No se nombra a Héctor como sospechoso (regla de HISTORIA): el almacén central «lo firma», sin más.
 
+## Etapa 5 · `faro-e5.sql` (semilla 5005 para lo nuevo)
+Igual que `faro-e4.sql` + `crm_clientes` (el CRM antiguo, **todo en texto y sucio**) + `fichas_empleados` (RR. HH.).
+- `crm_clientes` (**332** filas): `crm_id`, `nombre`, `email`, `telefono`, `direccion`, `cp`, `ciudad`, `fecha_alta`, `gasto_total`, `socio`
+  (todas `text`). Son los 300 clientes + **20 duplicados** (la misma persona dos veces, con otro formato y gasto 0) + **12 clientes
+  viejos** (`@antiguo.example`) que nunca pasaron a `clientes`. Orden barajado.
+  - `nombre`/`email`/`ciudad` con mayúsculas y espacios de más: **44** emails distintos de `lower(trim(email))`; 42 ciudades distintas
+    tal cual, **10** con `initcap(trim(ciudad))` (incluida la cadena vacía); ciudad `NULL` 7 y `''` 4.
+  - `email` normalizado (`lower(trim(email))`): **312** personas distintas; une con `clientes.email` (los 12 viejos no casan).
+  - `telefono`: `+34…` 125 · seguido 59 · con guiones 55 · con espacios 51 · `NULL` 20 · `N/D` 12 · `''` 10. Con
+    `right(regexp_replace(telefono, '[^0-9]', '', 'g'), 9)` quedan 290 de 9 cifras.
+  - `cp`: **19** con 4 cifras (Barcelona: el Excel se comió el 0 de `08…`). `fecha_alta`: 199 `AAAA-MM-DD` y 133 `DD/MM/AAAA`;
+    atípicos **`1900-01-01`** y **`31/12/2099`**. `gasto_total`: `1234.50` o `1.234,50` (a veces con ` €`); suma 1 948 954,01 con el
+    atípico **`999999.00`**; sin él, media 2 866,93 y máximo 11 286,40. `socio`: `S/N`, `si/Sí/no`, `1/0`, `true/false`, `''`.
+- `direccion` escrita a mano: «Calle X 12, 3ºB», «C/ X, 12»… Normalización del caso:
+  `regexp_replace(replace(lower(direccion), 'c/', 'calle '), '[^a-z0-9]', '', 'g')` (las tildes desaparecen, da igual).
+  Con `lower(trim(...))` solo, las de los falsos siguen siendo 9 distintas.
+- `fichas_empleados` (23): dirección, cp, ciudad, `nacimiento` (date) y teléfono de cada empleado.
+
+### Lo que siembra el Fantasma en la etapa 5 (caso «Una sola dirección») — pista FALSA contra Iván
+- Las direcciones de los **9 clientes falsos** están escritas de 9 formas distintas («Calle Olmo 7, 3ºB», «C/ Olmo, 7 3ºB»,
+  «c/olmo 7 - 3º B», «CALLE OLMO 7 3B»…); normalizadas son **una sola**: `calleolmo73b`, CP 28901, Getafe.
+- Agrupando por dirección normalizada y contando personas distintas (`COUNT(DISTINCT lower(trim(email)))`): Olmo **9**; el resto, como
+  mucho 2 (6 parejas reales que viven juntas). Contando filas sin quitar duplicados salen además muchos 2 (los duplicados).
+- En `fichas_empleados`, esa dirección es la de **Iván Soler** (empleado 7): «Calle Olmo, 7, 3ºB», 28901 Getafe.
+- Decisión del usuario: es una **pista falsa** puesta por Héctor (ver HISTORIA). Iván debe parecer culpable en las etapas 5–6.
+
 Las cifras exactas se consultan con el propio motor (laboratorio o `tests/`), nunca a ojo.
