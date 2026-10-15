@@ -237,11 +237,153 @@ en que PostgreSQL evalúa una consulta, y ver un resultado como gráfico.
 
 ---
 
-## Etapas 4–8
+## Etapa 4 · Logística 📦 — «Unir lo que está separado»
+
+**Historia:** Héctor Vidal, jefe de logística, es el compañero más simpático de la oficina: trae café, contesta al
+momento y se ofrece a «pasarte lo que haga falta». Su problema: el sistema de envíos solo guarda números
+(`almacen_id`, `transportista_id`, `pedido_id`) y nadie sabe leerlo sin cruzar tres pestañas. Aprendes a unir tablas.
+Al final, Elena pide explicar los reembolsos online de la etapa anterior y, al cruzar pedidos con envíos, aparecen
+pedidos reembolsados que **nunca salieron de ningún almacén**.
+
+**Tablas** (`datos/faro-e4.sql`, ver `docs/DATOS.md`): las de la etapa 3 + `empleados.jefe_id` (→ `empleados.id`),
+`almacenes` (5: id, nombre, ciudad, responsable_id → `empleados`, apertura), `transportistas` (4: id, nombre, web) y
+`envios` (1 337: id, pedido_id UNIQUE → `pedidos`, almacen_id, transportista_id, salida, entrega, estado, coste).
+Solo hay envío para pedidos **online** (en tienda física el cliente se lo lleva). Aún NO hay funciones de fecha
+(etapa 5): nada de restar `entrega - salida`; para meses, `pedidos.mes`. Tampoco `COALESCE` ni `CASE` (etapa 5) ni
+subconsultas/`EXISTS` (etapa 7): los `NULL` de un `LEFT JOIN` se muestran tal cual.
+
+**Al terminarla, el alumno sabrá:** qué son las claves primarias y foráneas, unir tablas con `INNER`, `LEFT`, `RIGHT`
+y `FULL JOIN`, encontrar filas huérfanas, encadenar varias tablas, resumir después de unir sin duplicar cifras, unir
+una tabla consigo misma, generar todas las combinaciones con `CROSS JOIN` y operar con conjuntos de resultados
+(`UNION`, `INTERSECT`, `EXCEPT`).
+
+### e4-01 · Claves que conectan tablas: PK y FK · 25 ◈ 🚧
+- **Conceptos nuevos:** clave primaria (PK: única y nunca `NULL`; recordando e1-03 y e0-06), PK compuesta
+  (`lineas_pedido`: `pedido_id` + `producto_id`), clave foránea (FK: la columna que «apunta» a la PK de otra tabla;
+  `envios.almacen_id → almacenes.id`, `pedidos.cliente_id → clientes.id`…), relación 1:N y 1:1 (`envios.pedido_id`
+  es UNIQUE: un pedido tiene como mucho un envío), leer las FK en la pestaña Esquema, integridad referencial (la base
+  de datos no deja apuntar a un id que no existe). Buscar «a mano» con dos consultas, que es justo lo que el `JOIN` ahorrará.
+- **Trampas:** confundir el `id` de una tabla con el de otra (`envios.id` no es el número de pedido); una FK puede
+  ser `NULL` (`almacenes.responsable_id`).
+- **Quiz:** ¿qué columna de `envios` apunta a `transportistas`? ¿Por qué `pedido_id` es UNIQUE en `envios` y no en `lineas_pedido`?
+- **Reto:** ¿quién es el responsable del Almacén Levante? Dos consultas: `almacenes` (id 2 → `responsable_id` 18)
+  y luego `empleados WHERE id = 18` → **Óscar Medina**. Se comprueba la última consulta (nombre del responsable).
+
+### e4-02 · Unir dos tablas: INNER JOIN · 35 ◈ 🚧
+- **Conceptos nuevos:** `FROM a JOIN b ON a.fk = b.pk`, `INNER` (es el `JOIN` por defecto: solo filas con pareja),
+  `tabla.columna`, alias de tabla (`FROM envios AS e`, o sin `AS`; ya visto de pasada en e1-05), columnas con el mismo
+  nombre en las dos tablas renombradas con `AS` (`a.nombre AS almacen`, `t.nombre AS transportista`).
+  Ejemplo: envíos con el nombre de su transportista (1 337 filas).
+- **Trampas:** columna ambigua → **error 42702** (`column reference "id" is ambiguous`; paso `arreglar`); unir por
+  las columnas equivocadas (`e.id = t.id`) **no da error** pero devuelve basura; olvidar el `ON` (error de sintaxis).
+  🌍 La sintaxis antigua `FROM a, b WHERE a.x = b.y` aún se ve en otros motores y en código viejo.
+- **Predicción:** almacenes con el nombre de su responsable (`JOIN empleados ON a.responsable_id = em.id`): ¿cuántas
+  filas? **3**, no 5 (Norte y Zaragoza no tienen responsable: el `INNER JOIN` los descarta sin avisar). Engancha con el nivel siguiente.
+- **Reto:** reclamaciones con el nombre del cliente: columnas `reclamacion_id`, `cliente`, `motivo`, ordenadas por
+  `reclamacion_id` → 40 filas (ambas tablas tienen `id` y obliga a calificar columnas).
+
+### e4-03 · Que no se pierda nadie: LEFT, RIGHT y FULL JOIN · 40 ◈ 🚧
+- **Conceptos nuevos:** `LEFT JOIN` (todas las filas de la izquierda; si no hay pareja, columnas de la derecha a
+  `NULL`), `RIGHT JOIN` como espejo (en la práctica se reescribe como `LEFT` cambiando el orden), `FULL JOIN`
+  (todas las filas de ambos lados). Se puede unir por columnas que no son FK (`a.ciudad = t.ciudad`).
+  Ejemplos: almacenes `LEFT JOIN` responsables → 5 filas, Norte y Zaragoza con `NULL`; `envios RIGHT JOIN
+  transportistas` → aparece Logística Delta con `NULL`; `almacenes FULL JOIN tiendas ON a.ciudad = t.ciudad` → **8 filas**:
+  Valencia, Sevilla y Bilbao emparejadas; Getafe y Zaragoza sin tienda; Madrid, Online y Barcelona sin almacén.
+- **Trampas:** en `LEFT`/`RIGHT` el orden de las tablas importa (en `INNER` no); el `NULL` del resultado puede
+  significar «sin pareja» o «el dato ya era `NULL`». 🌍 MySQL no tiene `FULL JOIN` (se simula con `LEFT … UNION … RIGHT`); SQLite solo desde la 3.39.
+- **Diagrama Venn** (en `explicacion`, como texto/tabla): INNER = intersección, LEFT = círculo izquierdo entero (enlaza con e0-04).
+- **Reto:** todos los almacenes con su responsable: columnas `almacen`, `ciudad`, `responsable`, ordenadas por id de
+  almacén → 5 filas, 2 con `responsable` `NULL`. `interpretar`: ¿qué almacenes no tienen responsable? (Norte y Zaragoza).
+
+### e4-04 · Huérfanos: LEFT JOIN … IS NULL · 40 ◈ 🚧
+- **Conceptos nuevos:** «huérfano» = fila sin pareja en la otra tabla; patrón *anti-join*: `LEFT JOIN … WHERE
+  derecha.id IS NULL` (filtrar por la clave de la tabla derecha). Ejemplo: transportistas sin envíos → Logística Delta.
+  Ejercicio: clientes que nunca han comprado → **6**. Un resultado vacío también es respuesta: no hay productos sin vender.
+- **Trampas (las dos clave del caso):**
+  - **Condición en `ON` frente a `WHERE`:** `almacenes LEFT JOIN envios … WHERE e.estado = 'devuelto'` hace desaparecer
+    Zaragoza (el `WHERE` convierte el `LEFT` en `INNER`); con `… ON e.almacen_id = a.id AND e.estado = 'devuelto'` se queda
+    con `NULL`. Paso `prediccion` + `arreglar`.
+  - Comprobar `IS NULL` en una columna que puede ser `NULL` de verdad (`e.entrega IS NULL` mezcla «sin envío» con «envío
+    sin entregar», p. ej. los 65 `en reparto`): siempre la clave.
+  - Recordar la trampa de `NOT IN` con `NULL` (e2-08); `NOT EXISTS` llega en la etapa 7.
+- **Reto:** dos comprobaciones: tiendas sin ningún pedido (columnas `id`, `ciudad` → Barcelona) y almacenes sin
+  ningún envío (`id`, `nombre` → Almacén Zaragoza). Se piden en dos consultas separadas (paso `ejercicio` + `reto`).
+
+### e4-05 · Tres tablas o más · 40 ◈ 🚧
+- **Conceptos nuevos:** encadenar `JOIN` (cada uno con su `ON`), tabla «puente» cuando el dato está a dos saltos
+  (`envios → pedidos → clientes`: el cliente no está en `envios`), tabla intermedia N:M (`pedidos → lineas_pedido →
+  productos`), elegir bien la tabla de partida. Ejemplo: envíos con nombre de almacén y de transportista.
+  Ejercicio: productos del pedido 1 (2 líneas) con nombre, cantidad y precio unitario.
+- **Trampas:** un `INNER JOIN` después de un `LEFT JOIN` puede volver a descartar las filas con `NULL`; alias poco
+  claros (`a`, `b`, `c`) que hacen ilegible la consulta (consejo de Lucía: alias con sentido, `e`, `p`, `c`, `al`, `t`).
+- **Reto:** envíos `devuelto`: columnas `envio_id`, `pedido_id`, `cliente`, `almacen`, `transportista`, ordenadas por
+  `envio_id` → 40 filas (5 tablas: `envios`, `pedidos`, `clientes`, `almacenes`, `transportistas`).
+
+### e4-06 · Unir y resumir: JOIN con GROUP BY · 45 ◈ 🚧
+- **Conceptos nuevos:** agrupar por columnas de la tabla unida (`GROUP BY al.id, al.nombre`), `COUNT(e.id)` frente
+  a `COUNT(*)` tras un `LEFT JOIN` (el `*` cuenta la fila con `NULL` como 1), gráfico de barras con nombres en vez de ids.
+  Ejemplo: envíos por almacén → central 720 · Levante 274 · Sur 252 · Norte 91 (`INNER`, 4 filas) y con `LEFT` +
+  `COUNT(e.id)`, Zaragoza 0 (5 filas). Coste total de envíos 9 245,80 €, medio 6,92 €.
+- **Trampas:** **filas duplicadas al unir 1:N**: `pedidos JOIN lineas_pedido` da 4 022 filas, no 2 524; `COUNT(*)` y
+  `SUM(p.total)` salen inflados → `COUNT(DISTINCT p.id)` o sumar en el lado «muchos» (`cantidad * precio_unitario`).
+  Paso `prediccion` («¿cuántas filas?») + `arreglar`. Agrupar solo por `nombre` cuando dos filas podrían llamarse igual.
+- **Reto (`grafico: true`):** envíos por transportista: columnas `transportista`, `envios`, `coste_total`, de más a
+  menos envíos → 4 filas: Mensajería Sur 611 · Rayo Express 482 · Paquetería Norte 244 · Logística Delta 0
+  (`coste_total` `NULL`). Comprobaciones: 4 filas, Delta con 0, suma de `envios` = 1 337.
+
+### e4-07 · Una tabla consigo misma: self join · 45 ◈ 🚧
+- **Conceptos nuevos:** unir `empleados` con `empleados` usando dos alias (`em` = empleado, `j` = jefe),
+  `ON em.jefe_id = j.id`; `INNER` → 21 filas (Ana Beltrán no tiene jefe), `LEFT` → 22; dos saltos («jefe del jefe»:
+  Carmen Llorente → Pablo Herrero → Elena Ruiz); self join + `GROUP BY` para contar subordinados directos
+  (Ana 6, Elena 6, Héctor 2, Marcos 2, Lucía, Pablo, Jorge, Raúl y Aitor 1). La jerarquía completa (CTE recursiva) llega en la etapa 7.
+- **Trampas:** sin alias, **error 42712** (`table name "empleados" specified more than once`); invertir el `ON`
+  (`em.id = j.jefe_id`) devuelve subordinados en vez de jefes; olvidar renombrar las dos columnas `nombre`.
+- **Reto:** directorio con jefe: columnas `empleado`, `departamento`, `jefe`, ordenado por id del empleado → 22 filas,
+  Ana Beltrán con `jefe` `NULL`.
+
+### e4-08 · Todas las combinaciones: CROSS JOIN · 35 ◈ 🚧
+- **Conceptos nuevos:** producto cartesiano, `CROSS JOIN` sin `ON` (cada fila con cada fila: 5 almacenes × 4
+  transportistas = 20 filas), uso real: crear la «plantilla» de combinaciones y rellenarla con `LEFT JOIN` + `GROUP BY`
+  para que salgan también los ceros; `ON` con dos condiciones (`e.almacen_id = al.id AND e.transportista_id = t.id`).
+- **Trampas:** el cartesiano accidental (un `ON` mal escrito o `FROM a, b` sin `WHERE`): `pedidos × lineas_pedido`
+  serían más de 10 millones de filas; siempre comprobar el número de filas esperado. 🌍 `FROM a, b` = `CROSS JOIN` en todos los motores.
+- **Reto:** matriz de tarifas para Héctor: columnas `almacen`, `transportista`, `envios` (número de envíos de esa
+  pareja, 0 si ninguno), ordenada por almacén y transportista → 20 filas. Comprobaciones: 20 filas, suma de
+  `envios` = 1 337, las 4 filas de Zaragoza y las 5 de Logística Delta a 0 (cifras por pareja: se consultan con el verificador).
+
+### e4-09 · Apilar resultados: UNION, INTERSECT y EXCEPT · 45 ◈ 🚧
+- **Conceptos nuevos:** operadores de conjuntos (enlazan con el Venn de e0-04): `UNION` (sin repetidos), `UNION ALL`
+  (con repetidos, más rápido), `INTERSECT`, `EXCEPT` (el orden importa); reglas: mismo número de columnas, tipos
+  compatibles, los nombres los pone la primera consulta, un único `ORDER BY` al final. JOIN añade **columnas**; UNION añade **filas**.
+  Ciudades de almacenes y de tiendas: `UNION` → 8 · `UNION ALL` → 11 · `INTERSECT` → Bilbao, Sevilla, Valencia ·
+  tiendas `EXCEPT` almacenes → Barcelona, Madrid, Online.
+- **Trampas:** distinto número de columnas → error 42601 (`each UNION query must have the same number of columns`);
+  tipos incompatibles → 42804; `UNION` cuando se quería contar todo (`UNION ALL`); `ORDER BY` en mitad. 🌍 En Oracle
+  `EXCEPT` se llama `MINUS`; MySQL solo tiene `INTERSECT`/`EXCEPT` desde la 8.0.31.
+- **Reto:** ciudades donde hay almacén pero no tienda (`EXCEPT`), columna `ciudad`, ordenada → **Getafe, Zaragoza**;
+  y un `quiz`: ¿qué devuelve si se invierte el orden de las dos consultas?
+
+### e4-10 · Caso: Pedidos fantasma · 70 ◈ 🚧
+- **Caso:** Elena quiere explicar los reembolsos online de la etapa 3 y Héctor, encantado, te ofrece «todo lo de
+  envíos». Partes:
+  1. Pedidos online (`tienda_id = 5`) sin envío: `pedidos LEFT JOIN envios … WHERE e.id IS NULL` → **190**.
+  2. Por estado (`GROUP BY p.estado`) → cancelado 127 · reembolsado **63**. `interpretar`: ¿cuáles son normales?
+     (los cancelados: nunca salen del almacén).
+  3. Los 63 reembolsados sin envío con su cliente (`JOIN clientes`): **10 clientes** distintos, **31 380,20 €**, del
+     2026-03-05 al 2026-09-25, todos de madrugada; 62 son de clientes `@correo-rapido.example` y el otro es el **2210**
+     (el que reclamó Iratxe Muñoz en la etapa 2). `interpretar`: ¿qué pedido conocido aparece?
+  4. Los pedidos de los clientes `@correo-rapido.example` que **sí** tienen envío (`JOIN envios JOIN almacenes`) →
+     **6**, todos del **Almacén central (Getafe)**, `devuelto` y sin `entrega` (los devueltos normales sí la tienen).
+     `interpretar`: ¿qué almacén los firma?
+  → Pista del Expediente: **Pedidos fantasma**.
+- **Regla del misterio:** no se pide el responsable del almacén ni se nombra a Héctor como sospechoso; él solo
+  aparece como el compañero servicial que te pasó los datos.
+
+---
+
+## Etapas 5–8
 Se detallan aquí (mismo formato) antes de escribir sus lecciones. Contenido previsto:
 
-- **3 · Ventas 💶:** `COUNT/SUM/AVG/MIN/MAX`, `COUNT(DISTINCT)`, `ROUND`, `GROUP BY`, `HAVING`, orden lógico de ejecución, primer gráfico. Caso: *Reembolsos disparados*.
-- **4 · Logística 📦:** PK/FK, `INNER/LEFT/RIGHT/FULL JOIN`, huérfanos, varias tablas, self join, `CROSS JOIN`, `UNION/INTERSECT/EXCEPT`. Caso: *Pedidos fantasma*.
 - **5 · Migración 🧹:** `CAST`, funciones de texto y regex básico, fechas (`EXTRACT`, `date_trunc`, intervalos, `to_char`), `CASE`, `COALESCE/NULLIF`, duplicados, atípicos. Caso: *Una sola dirección*.
 - **6 · IT 🛠️:** `CREATE TABLE`, constraints, `INSERT/UPDATE/DELETE`, transacciones, normalización, índices y `EXPLAIN`, vistas. Caso: *La cuenta admin_temp*.
 - **7 · Dirección 🧭:** subconsultas, `EXISTS`, CTE, CTE recursiva, funciones ventana, `LAG/LEAD`, acumulados, medias móviles, `NTILE`, `FILTER`, `generate_series`. Caso: *La coartada de Iván*.

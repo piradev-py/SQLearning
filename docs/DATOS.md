@@ -65,6 +65,14 @@ Igual que `faro-e3.sql` (mismas filas y cifras) + `empleados.jefe_id` + `almacen
 - Online sin envío: 127 cancelados (normal) y **63 reembolsados** (la pista).
 - Conjuntos: ciudades de almacenes que no tienen tienda (`EXCEPT`) → Getafe y Zaragoza.
 
+- Comprobado con PGlite para el temario: `almacenes FULL JOIN tiendas ON ciudad` 8 filas · ciudades de tiendas y almacenes:
+  UNION 8, UNION ALL 11, INTERSECT Bilbao/Sevilla/Valencia, tiendas EXCEPT almacenes Barcelona/Madrid/Online · self join
+  INNER 21, LEFT 22; subordinados directos: Ana 6, Elena 6, Héctor 2, Marcos 2, Aitor/Jorge/Lucía/Pablo/Raúl 1 ·
+  `almacenes CROSS JOIN transportistas` 20 · `pedidos JOIN lineas_pedido` 4 022 · pedido 1 = Disco SSD Volta 1 TB ×1 + Bombilla Lumen Smart ×2.
+- Envíos por almacén y transportista: central 361 Rayo + 359 Mensajería Sur · Levante 121 Rayo + 153 Paquetería Norte ·
+  Sur 252 Mensajería Sur · Norte 91 Paquetería Norte (el resto de parejas, 0).
+- Trampa ON/WHERE: `LEFT JOIN envios … WHERE e.estado = devuelto` deja 4 almacenes (Zaragoza desaparece): central 25, Levante 10, Sur 3, Norte 2.
+
 ### Lo que siembra el Fantasma en la etapa 4 (caso «Pedidos fantasma»)
 - Los **63 pedidos online reembolsados sin envío**: 62 de los clientes `@correo-rapido.example` + el **2210** (el que reclama
   Iratxe Muñoz). 10 clientes distintos, **31 380,20 €**, entre 2026-03-05 y 2026-09-25, todos de madrugada.
