@@ -10,6 +10,7 @@
      si toca sonar, arranca con el primer clic o tecla.
    - Control: cualquier elemento [data-musica] recibe play/stop + volumen.
    - MUSICA.voz(src): locución (solo el prólogo); baja la música mientras suena.
+   - MUSICA.silenciarVoz(sí/no): la persona puede callar la locución para siempre.
    ============================================================ */
 (function () {
   const CLAVE = "sqlearning-audio";
@@ -17,7 +18,7 @@
   const FUNDIDO = 6;                     // segundos de crossfade entre pistas
   const ATENUADO = 0.25;                 // la música baja a este porcentaje mientras habla la voz
 
-  const porDefecto = { sonando: true, volumen: 0.35, pista: 0, tiempo: 0 };
+  const porDefecto = { sonando: true, volumen: 0.35, pista: 0, tiempo: 0, vozSilenciada: false };
   const leer = () => {
     try { return Object.assign({}, porDefecto, JSON.parse(localStorage.getItem(CLAVE) || "{}")); }
     catch (e) { return { ...porDefecto }; }
@@ -156,9 +157,16 @@
       MUSICA.callar();
       voz = new Audio(src);
       ["play", "pause", "ended"].forEach(t => voz.addEventListener(t, aplicarVolumen));
-      aplicarVolumen();
-      voz.play().catch(() => { if (voz) voz.dataset.esperando = "1"; });
+      voz.play().catch(() => { if (voz) voz.dataset.esperando = "1"; aplicarVolumen(); });
+      aplicarVolumen();                  // ya cuenta como sonando: la música baja en el mismo instante
       return voz;
+    },
+    /** ¿La persona ha silenciado la voz del prólogo? (se recuerda entre visitas) */
+    vozSilenciada: () => !!estado.vozSilenciada,
+    silenciarVoz(si) {
+      estado.vozSilenciada = !!si;
+      guardar();
+      if (si) MUSICA.callar();
     },
     /** Para la locución (p. ej. al pulsar «Continuar»). */
     callar() {

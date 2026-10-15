@@ -78,6 +78,41 @@ body { background: transparent; min-height: 100vh; }
 }
 .prologo-ayuda { position: absolute; bottom: 18px; margin: 0; font-size: 12px; color: var(--texto-suave); letter-spacing: 0.1em; }
 
+/* --- Prueba de fuentes en el prólogo (pedida por el usuario) ------
+   VT323 (terminal retro, estática: un solo grosor) para el texto; Sixtyfour para el nombre.
+   Para deshacerla, borrar este bloque. */
+.prologo-marca {
+  font-family: "Sixtyfour", var(--fuente-titulo);
+  font-weight: 400;
+  font-size: clamp(22px, 2.8vw, 36px);
+  letter-spacing: 0.02em;
+}
+.prologo-marca strong { font-weight: 400; }
+.prologo-frase, .prologo-antes, .prologo-ayuda {
+  font-family: "VT323", var(--fuente-codigo);
+  font-size: clamp(19px, 1.75vw, 23px);
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+.prologo-texto { gap: 10px; }
+/* Si no cabe (pantallas bajas), se desplaza en vez de recortarse */
+.prologo { overflow-y: auto; justify-content: safe center; gap: 16px; }
+.prologo-antes-titulo { font-family: "VT323", var(--fuente-codigo); font-size: 24px; letter-spacing: 0.08em; }
+.prologo-ayuda { font-size: 18px; }
+.prologo-sello { font-family: "VT323", var(--fuente-codigo); font-size: clamp(34px, 3.6vw, 44px); letter-spacing: 0.12em; }
+.prologo-sello small { font-family: "VT323", var(--fuente-codigo); font-size: 18px; }
+
+/* Entrada al prólogo y sonido */
+.prologo-entrar {
+  font: 700 16px var(--fuente-titulo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 30px;
+  animation: aparecer 0.8s ease-out both;
+}
+.prologo-sonido { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; gap: 10px; }
+.prologo-voz { white-space: nowrap; }
+
 /* --- Cabecera del tablero --------------------------------------- */
 .tablero-cabecera {
   position: sticky;

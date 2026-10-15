@@ -51,15 +51,16 @@
     const sello = raiz.querySelector("[data-sello]");
     const boton = raiz.querySelector("[data-continuar]");
     const ayuda = raiz.querySelector("[data-ayuda]");
+    const entrar = raiz.querySelector("[data-entrar]");
     const lista = piezas();
-    let i = 0, reloj = null, terminado = false;
+    let i = 0, reloj = null, terminado = false, empezado = false;
 
     caja.innerHTML = "";
     sello.hidden = true;
     boton.hidden = true;
+    ayuda.hidden = true;
+    entrar.hidden = false;
     raiz.hidden = false;
-    // Locución del prólogo (solo aquí); si el navegador la bloquea, empieza con el primer clic
-    window.MUSICA?.voz("recursos/spech_intropage.mp3");
 
     function terminar() {
       if (terminado) return;
@@ -93,20 +94,34 @@
       reloj = setTimeout(siguiente, espera(p));
     }
 
-    if (reducido()) {
-      lista.forEach(mostrar);
-      i = lista.length;
-      reloj = setTimeout(terminar, 3000);
-    } else {
-      siguiente();
+    // «Abrir el caso»: los navegadores no dejan sonar nada sin un clic, así que el prólogo
+    // (texto, locución y música) arranca con él, todo sincronizado.
+    function empezar() {
+      if (empezado) return;
+      empezado = true;
+      entrar.hidden = true;
+      ayuda.hidden = reducido();
+      if (window.MUSICA && !MUSICA.vozSilenciada()) MUSICA.voz(VOZ);
+      if (reducido()) {
+        lista.forEach(mostrar);
+        i = lista.length;
+        reloj = setTimeout(terminar, 3000);
+      } else {
+        siguiente();
+      }
+      raiz.focus();
     }
 
-    // Clic o Enter/Espacio adelantan la frase siguiente (se ven todas igualmente)
-    raiz.onclick = ev => { if (ev.target.closest("[data-musica]")) return; if (!ev.target.closest("[data-continuar]") && !terminado && !reducido()) siguiente(); };
+    // Antes de empezar, cualquier clic o Enter/Espacio abre el caso; después, adelantan la frase siguiente
+    const avanzar = () => { if (!empezado) empezar(); else if (!terminado && !reducido()) siguiente(); };
+    raiz.onclick = ev => {
+      if (ev.target.closest("[data-musica], [data-voz], [data-continuar]")) return;
+      avanzar();
+    };
     raiz.onkeydown = ev => {
-      if ((ev.key === "Enter" || ev.key === " ") && !ev.target.closest("[data-continuar]") && !terminado && !reducido()) {
+      if ((ev.key === "Enter" || ev.key === " ") && !ev.target.closest("[data-continuar], [data-voz], [data-musica]")) {
         ev.preventDefault();
-        siguiente();
+        avanzar();
       }
     };
     boton.onclick = () => {
@@ -114,8 +129,30 @@
       raiz.hidden = true;
       alTerminar?.();
     };
-    raiz.focus();
+    pintarVoz();
+    entrar.focus();
   }
+
+  // --- Botón para silenciar la locución (se recuerda) ---------------------
+  const VOZ = "recursos/spech_intropage.mp3";
+  function pintarVoz() {
+    const b = document.querySelector("[data-voz]");
+    if (!b || !window.MUSICA) return;
+    const callada = MUSICA.vozSilenciada();
+    b.textContent = callada ? "🔇 Voz" : "🔊 Voz";
+    b.setAttribute("aria-pressed", String(!callada));
+    b.setAttribute("aria-label", callada ? "Activar la voz del prólogo" : "Silenciar la voz del prólogo");
+    b.title = callada ? "La voz del prólogo está silenciada" : "Silenciar la voz del prólogo (se recuerda)";
+  }
+  document.addEventListener("click", ev => {
+    if (!ev.target.closest("[data-voz]") || !window.MUSICA) return;
+    const callar = !MUSICA.vozSilenciada();
+    MUSICA.silenciarVoz(callar);
+    // Si se reactiva con el prólogo en marcha, vuelve a sonar desde el principio
+    const prologoActivo = !document.querySelector("[data-prologo]")?.hidden && document.querySelector("[data-entrar]")?.hidden;
+    if (!callar && prologoActivo) MUSICA.voz(VOZ);
+    pintarVoz();
+  });
 
   window.PROLOGO = { iniciar };
 })();

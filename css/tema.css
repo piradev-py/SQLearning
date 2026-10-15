@@ -200,7 +200,6 @@ kbd {
 .musica-boton { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }
 .musica-nota { color: var(--texto-suave); }
 .musica-volumen { width: 84px; accent-color: var(--acento); }
-.prologo-musica { position: absolute; top: 16px; right: 16px; }
 
 /* Panel de cristal oscuro con borde neón */
 .panel-neon {

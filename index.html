@@ -7,7 +7,7 @@
   <meta name="description" content="Aprende SQL de cero a Data Analyst resolviendo un misterio en una ciudad de neón.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&family=Sixtyfour&family=VT323&display=swap">
   <link rel="stylesheet" href="css/tema.css">
   <link rel="stylesheet" href="css/fondo.css">
   <link rel="stylesheet" href="css/inicio.css">
@@ -21,8 +21,12 @@
 
   <!-- 1. Prólogo: siempre al entrar -->
   <section class="prologo" data-prologo tabindex="-1" aria-labelledby="prologo-titulo">
-    <div class="prologo-musica" data-musica></div>
+    <div class="prologo-sonido">
+      <button type="button" class="prologo-voz" data-voz>🔊 Voz</button>
+      <div data-musica></div>
+    </div>
     <h1 class="prologo-marca" id="prologo-titulo">SQL<strong>earning</strong></h1>
+    <button type="button" class="boton-principal prologo-entrar" data-entrar>▶ Abrir el caso</button>
     <div class="prologo-texto" data-lineas aria-live="polite"></div>
     <p class="prologo-sello" data-sello hidden>
       <span data-sello-texto>CASO ABIERTO</span>

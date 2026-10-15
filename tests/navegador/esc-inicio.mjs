@@ -22,7 +22,9 @@ export default async function (b) {
 
   // 1. Prólogo
   comprobar("El prólogo aparece al entrar", await b.eval("!document.querySelector('[data-prologo]').hidden && document.querySelector('[data-tablero]').hidden"));
-  comprobar("Empieza por la primera frase y aún no hay botón", await b.eval("document.querySelectorAll('.prologo-frase').length === 1 && document.querySelector('[data-continuar]').hidden"));
+  comprobar("Pantalla de entrada: «Abrir el caso» y aún ninguna frase", await b.eval("!document.querySelector('[data-entrar]').hidden && document.querySelectorAll('.prologo-frase').length === 0"));
+  await b.eval("document.querySelector('[data-entrar]').click()");
+  comprobar("Al abrir el caso empieza por la primera frase y aún no hay botón", await b.eval("document.querySelector('[data-entrar]').hidden && document.querySelectorAll('.prologo-frase').length === 1 && document.querySelector('[data-continuar]').hidden"));
   await b.esperar(800);
   await b.foto("inicio-prologo-1");
   await avanzarPrologo();
@@ -100,6 +102,7 @@ export default async function (b) {
   // 6b. Movimiento reducido: todo el texto a la vez y el botón a los 3 s
   await b.reducido();
   await b.ir("index.html");
+  await b.eval("document.querySelector('[data-entrar]').click()");
   comprobar("Reducido: las 7 frases a la vez, sin botón aún", await b.eval("document.querySelectorAll('.prologo-frase').length === 7 && document.querySelector('[data-continuar]').hidden"));
   await b.esperar(3300);
   comprobar("Reducido: el botón llega a los 3 s", await b.eval("!document.querySelector('[data-continuar]').hidden"));

@@ -75,5 +75,20 @@ export default async function (b) {
   await b.esperar(300);
   comprobar("Al continuar, la voz se calla y la música vuelve", !(await est()).voz && Math.abs((await b.eval("MUSICA._platos().actual.volume")) - 0.7) < 0.01);
 
+  // Silenciar la voz del prólogo: se recuerda en la siguiente visita
+  await b.ir("index.html");
+  comprobar("Antes de «Abrir el caso» no suena la voz", !(await est()).voz);
+  await clicReal();
+  await b.hasta("MUSICA.estado().voz", 8000);
+  await b.eval("document.querySelector('[data-voz]').click()");
+  comprobar("🔇 Voz la calla al momento", !(await est()).voz && /🔇/.test(await b.eval("document.querySelector('[data-voz]').textContent")));
+  await b.ir("index.html");
+  await clicReal();
+  await b.esperar(1500);
+  comprobar("Con la voz silenciada, la siguiente visita no la reproduce", !(await est()).voz && (await b.eval("MUSICA.vozSilenciada()")));
+  await b.eval("document.querySelector('[data-voz]').click()");
+  await b.hasta("MUSICA.estado().voz", 5000);
+  comprobar("🔊 Voz la reactiva durante el prólogo", (await est()).voz);
+
   b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Música: todo correcto");
 }
