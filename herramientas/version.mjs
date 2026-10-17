@@ -1,6 +1,6 @@
 // Marca de versión para que los navegadores no mezclen archivos viejos (caché) con nuevos.
 // Añade/actualiza «?v=AAAAMMDDhhmm» en los <script src> y <link href> locales de las páginas,
-// y la constante VERSION de js/curso.js (la usan la carga de lecciones y del motor).
+// y la constante VERSION de js/curso.js (la usan la carga de lecciones y del motor) y de sw.js (caché sin conexión).
 // Uso: node herramientas/version.mjs   (antes de publicar; `npm run publicar` lo hace solo)
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -18,6 +18,9 @@ for (const pagina of ["index.html", "leccion.html", "laboratorio.html", "caso-ce
   );
   writeFileSync(ruta, html);
 }
-const curso = RAIZ + "js/curso.js";
-writeFileSync(curso, readFileSync(curso, "utf8").replace(/const VERSION = "\d*";/, `const VERSION = "${v}";`));
+// curso.js (carga de lecciones y del motor) y sw.js (cada versión tiene su caché sin conexión)
+for (const archivo of ["js/curso.js", "sw.js"]) {
+  const ruta = RAIZ + archivo;
+  writeFileSync(ruta, readFileSync(ruta, "utf8").replace(/const VERSION = "\d*";/, `const VERSION = "${v}";`));
+}
 console.log("✅ versión " + v);

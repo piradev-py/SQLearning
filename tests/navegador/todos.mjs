@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const DIR = dirname(fileURLToPath(import.meta.url));
-const BATERIAS = ["esc-motor.mjs", "esc-papel.mjs", "esc-verificar.mjs", "esc-laboratorio.mjs", "esc-inicio.mjs", "esc-leccion.mjs", "esc-musica.mjs"];
+const BATERIAS = ["esc-motor.mjs", "esc-papel.mjs", "esc-verificar.mjs", "esc-laboratorio.mjs", "esc-inicio.mjs", "esc-leccion.mjs", "esc-musica.mjs", "esc-sin-conexion.mjs"];
 let malas = 0;
 for (const b of BATERIAS) {
   const t0 = Date.now();

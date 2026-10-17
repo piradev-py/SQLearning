@@ -21,7 +21,7 @@ quede pendiente y vuelve a pasar los tests.
   Quedan pendientes (menores):
   - [x] F16 · editor lento con textos enormes (500 líneas: 58 → 21 ms/tecla): con más de 300 líneas solo se pinta lo visible
   - [x] Dos pestañas del laboratorio se pisan el borrador: cada pestaña guarda el suyo en `sessionStorage`; `localStorage` para la próxima
-  - [ ] Sin conexión: service worker para cachear PGlite y las fuentes (antes de publicar)
+  - [x] Sin conexión: `sw.js` guarda páginas, lecciones, datos, PGlite y fuentes; versión ligada a `npm run version`; batería `esc-sin-conexion.mjs` (apaga el servidor)
   - [x] GitHub Pages sirve wasm/data con gzip (10,5→3,7 MB y 6,2→1,8 MB)
 - [x] ~~Revisión fin de fase 3 (interfaz)~~ → sustituida por las revisiones de las etapas 0–7 y la revisión final (decisión del usuario)
 - [x] ~~Revisión etapa 1 antes de publicar (las dos)~~ → sustituida por la revisión final

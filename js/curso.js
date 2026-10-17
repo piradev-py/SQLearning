@@ -156,6 +156,15 @@
 
   const lecciones = {};
 
+  // Sin conexión (sw.js, en la raíz): en la web publicada; en local estorbaría a las pruebas, salvo que se pida
+  // con localStorage «sqlearning-sw» = "1". En el propio service worker (importScripts) no hay document.
+  if (typeof document !== "undefined" && "serviceWorker" in navigator) {
+    let pedido = false;
+    try { pedido = localStorage.getItem("sqlearning-sw") === "1"; } catch (e) { /* sin almacenamiento */ }
+    if (pedido || !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname))
+      navigator.serviceWorker.register(new URL("../sw.js", document.currentScript.src)).catch(() => {});
+  }
+
   window.CURSO = {
     ETAPAS,
     VERSION,
