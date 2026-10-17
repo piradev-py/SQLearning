@@ -298,6 +298,21 @@ body { background: transparent; min-height: 100vh; }
   border-radius: 4px;
   pointer-events: none;
 }
+/* Al resolver el caso final: acceso al expediente final, con el aire del sello */
+.exp-final {
+  display: inline-block;
+  margin: 14px 0 4px;
+  padding: 6px 16px;
+  font: 900 13px var(--fuente-titulo);
+  letter-spacing: 0.14em;
+  color: var(--acento);
+  text-decoration: none;
+  border: 2px solid var(--acento);
+  border-radius: 4px;
+  text-shadow: var(--texto-neon-magenta);
+  box-shadow: var(--neon-magenta);
+}
+.exp-final:hover, .exp-final:focus-visible { background: var(--acento-fondo); }
 
 /* --- Diálogos: expediente, credenciales, ajustes ----------------- */
 .dialogo {

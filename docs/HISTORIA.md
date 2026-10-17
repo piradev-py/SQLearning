@@ -105,5 +105,10 @@ Reglas para no romper el misterio:
   bloqueados aparecen **CLASIFICADOS** (títulos tachados), para no destripar el temario ni la trama.
 
 ## Epílogo (tras el caso final)
+Se ve en `caso-cerrado.html` (el **expediente final**): ficha de Héctor con un retrato en pixel art generado por código
+(`herramientas/generar-hector.mjs`: el Héctor de la historia, no un fugitivo; la imagen de `recursos/` solo fue referencia de estilo),
+las tres pruebas (el dinero, el terminal, las noches), el sello CASO CERRADO, el desenlace y el epílogo. Se abre al resolver
+el caso e8-12 (botón «Abrir el expediente final» y enlace en EXP.8); antes sale CLASIFICADO. El sello del prólogo cambia
+al resolver el caso, aunque se haya jugado con todo desbloqueado.
 Ana Beltrán te ofrece el puesto de Head of Data. Lucía te recomienda los siguientes pasos de un Data Analyst
 fuera de SQL: hojas de cálculo, una herramienta de BI (Power BI, Tableau, Looker) y Python con pandas.

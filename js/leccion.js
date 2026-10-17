@@ -506,6 +506,10 @@
     const siguiente = ref.etapa.niveles[ref.indice + 1];
     const enlace = $("[data-final-siguiente]");
     if (siguiente?.listo) { enlace.href = `leccion.html?id=${siguiente.id}`; enlace.hidden = false; }
+    else if (!siguiente && ref.etapa === CURSO.ETAPAS[CURSO.ETAPAS.length - 1]) {
+      // El caso final del curso: su salida es el expediente final (sello, desenlace y epílogo)
+      enlace.href = "caso-cerrado.html"; enlace.textContent = "Abrir el expediente final ›"; enlace.hidden = false;
+    }
     $("[data-final]").showModal();
   }
   // «Ver mi resultado»: cierra el cuadro para mirar la tabla o el gráfico (el reto suele pedirlo) y deja en el paso
@@ -517,7 +521,7 @@
     $("[data-paso]").insertAdjacentHTML("afterbegin", `<div class="lec-final-franja" data-final-franja>
       <strong>✔ Diligencia superada</strong>
       <button type="button" class="boton-enlace" data-final-abrir>Ver el resumen</button>
-      ${enlace.hidden ? `<a class="boton-enlace" href="index.html#ruta">‹ Hoja de ruta</a>` : `<a class="boton-enlace boton-enlace--principal" href="${enlace.href}">Siguiente diligencia ›</a>`}
+      ${enlace.hidden ? `<a class="boton-enlace" href="index.html#ruta">‹ Hoja de ruta</a>` : `<a class="boton-enlace boton-enlace--principal" href="${enlace.href}">${esc(enlace.textContent)}</a>`}
     </div>`);
     $("[data-final-abrir]").addEventListener("click", () => $("[data-final]").showModal());
   });

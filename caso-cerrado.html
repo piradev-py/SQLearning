@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Caso cerrado · SQLearning</title>
+  <link rel="icon" href="recursos/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="recursos/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&family=Sixtyfour:BLED,SCAN@0..100,-53..100&display=swap">
+  <link rel="stylesheet" href="css/tema.css">
+  <link rel="stylesheet" href="css/fondo.css">
+  <link rel="stylesheet" href="css/caso-cerrado.css">
+</head>
+<body>
+  <div class="escena escena--tenue" aria-hidden="true">
+    <div class="escena-cielo"></div>
+    <img class="escena-ciudad" src="recursos/ciudad-neon.svg" alt="">
+    <div class="escena-suelo"></div>
+  </div>
+
+  <header class="cc-cabecera">
+    <a class="marca" href="index.html#ruta" aria-label="SQLearning, volver a la hoja de ruta">
+      <span class="marca-faro" aria-hidden="true"></span><span>SQL<strong>earning</strong></span>
+    </a>
+    <a class="cc-volver" href="index.html#ruta">‹ Hoja de ruta</a>
+    <div data-musica></div>
+    <button type="button" class="boton-tema" data-tema aria-label="Cambiar tema">🌙 Noche</button>
+  </header>
+
+  <!-- Hasta resolver el caso final, el expediente sigue clasificado (sin destripar nada) -->
+  <main class="cc-clasificado" data-clasificado hidden>
+    <p class="cc-sello cc-sello--gris">CLASIFICADO</p>
+    <p>Este expediente se abre al resolver el último caso del curso.</p>
+    <a class="cc-boton" href="index.html#ruta">‹ Volver a la hoja de ruta</a>
+  </main>
+
+  <main class="cc" data-expediente hidden>
+    <h1 class="cc-titulo">Expediente final · <span>El Fantasma de Faro</span></h1>
+
+    <div class="cc-rejilla">
+      <section class="cc-panel cc-ficha" aria-labelledby="cc-ficha-titulo">
+        <img class="cc-retrato" src="recursos/hector-pixel.svg" width="600" height="672"
+          alt="Retrato en pixel art de Héctor Vidal ante la regla de alturas: media sonrisa, sienes canosas, chaleco de alta visibilidad y la tarjeta de Faro">
+        <div class="cc-ficha-datos">
+          <h2 id="cc-ficha-titulo">Héctor Vidal</h2>
+          <dl>
+            <dt>Cargo</dt><dd>Jefe de logística</dd>
+            <dt>Centro</dt><dd>Almacén central (Getafe)</dd>
+            <dt>Alias</dt><dd>«El Fantasma» · cuenta <code>admin_temp</code></dd>
+            <dt>Estado</dt><dd>Suspendido de empleo · expediente en manos de los abogados</dd>
+          </dl>
+          <p class="cc-sello" aria-label="Caso cerrado">CASO CERRADO<small>El Fantasma de Faro</small></p>
+        </div>
+      </section>
+
+      <section class="cc-panel cc-dinero" aria-labelledby="cc-dinero-titulo">
+        <h2 id="cc-dinero-titulo"><span class="cc-num">01</span> El dinero</h2>
+        <p class="cc-cuenta"><code>ES76 **** **** **** **** 4417</code></p>
+        <p><strong>69 abonos</strong> de 10 clientes · <strong>36 470,20 €</strong></p>
+        <p class="cc-igual">= cuenta de nómina de <strong>Héctor Vidal</strong></p>
+      </section>
+
+      <section class="cc-panel cc-terminal" aria-labelledby="cc-terminal-titulo">
+        <h2 id="cc-terminal-titulo"><span class="cc-num">02</span> El terminal</h2>
+        <p class="cc-cuenta"><code>ALM-GET-03</code></p>
+        <p>Muelle del Almacén central. Todas las sesiones de <code>admin_temp</code> salen de aquí: <strong>75</strong>, del 4 de marzo al 27 de septiembre de 2026.</p>
+        <p class="cc-suave">Iván dejó la cuenta configurada en 2019 y nunca la borró. Héctor la encontró.</p>
+      </section>
+
+      <section class="cc-panel cc-noches" aria-labelledby="cc-noches-titulo">
+        <h2 id="cc-noches-titulo"><span class="cc-num">03</span> Las noches</h2>
+        <p><code>admin_temp</code> actuó <strong>75 noches</strong>, y en todas Héctor había fichado de madrugada en el Almacén central.
+          Noches de uno sin el otro: <strong>0</strong>.</p>
+        <div class="cc-calendario" data-calendario></div>
+      </section>
+
+      <section class="cc-panel cc-datos" aria-labelledby="cc-datos-titulo">
+        <h2 id="cc-datos-titulo">ID: FARO-FANTASMA</h2>
+        <dl>
+          <dt>Reembolsos falsos</dt><dd>69</dd>
+          <dt>Clientes</dt><dd>9 falsos + Iratxe Muñoz, suplantada</dd>
+          <dt>Importe</dt><dd>36 470,20 €</dd>
+          <dt>Primer pedido</dt><dd>5 mar 2026</dd>
+          <dt>Último pedido</dt><dd>25 sep 2026</dd>
+          <dt>Meses con z &gt; 3</dt><dd>5</dd>
+        </dl>
+      </section>
+    </div>
+
+    <section class="cc-panel cc-desenlace" aria-labelledby="cc-desenlace-titulo">
+      <h2 id="cc-desenlace-titulo">Desenlace</h2>
+      <p>No era una coincidencia: tres patrones independientes (el dinero, el terminal y las noches) apuntan a la misma persona.
+        Ana suspende a Héctor. Marcos llama a Iratxe Muñoz para cerrar su reclamación: el pedido 2210 se hizo a su nombre.
+        Iván, todavía molesto, acepta revisar todas las cuentas de servicio.</p>
+      <p class="cc-consejo">Lucía: «Cuentas personales, nunca compartidas; cada una con los mínimos privilegios; y la auditoría, siempre encendida».</p>
+    </section>
+
+    <section class="cc-panel cc-epilogo" aria-labelledby="cc-epilogo-titulo">
+      <h2 id="cc-epilogo-titulo">Epílogo</h2>
+      <p>Ana te llama a su despacho y te ofrece el puesto de <strong>Head of Data</strong>.</p>
+      <p>Lucía sonríe: «SQL ya lo tienes. Lo siguiente: hojas de cálculo para hablar con todo el mundo, una herramienta de BI
+        (Power BI, Tableau o Looker) para los cuadros de mando y Python con pandas para lo que no quepa en una consulta».</p>
+      <p class="cc-tu" data-tu></p>
+      <a class="cc-boton" href="index.html#ruta">‹ Volver a la hoja de ruta</a>
+    </section>
+  </main>
+
+  <script src="js/tema.js"></script>
+  <script src="js/musica.js"></script>
+  <script src="js/curso.js"></script>
+  <script src="js/progreso.js"></script>
+  <script src="js/caso-cerrado.js"></script>
+</body>
+</html>

@@ -109,6 +109,7 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Datos `faro-e8.sql` (octubre 1–14 con Barcelona, `sesiones_web`/`eventos_web` con la prueba A/B, `abonos`,
   `fichas_empleados.cuenta_nomina`, admin_temp desactivada) y cifras en `docs/DATOS.md` (2,1 MB; comprobado con PGlite en Node: `herramientas/consultar.mjs`)
 - [x] Lecciones e8-01…e8-12 (2 agentes `profesor-sql`; verificador 93/93 a la primera; cifras «(verificar)» comprobadas con PGlite)
+- [x] Pantalla final `caso-cerrado.html` (expediente final con retrato en pixel art de Héctor, pruebas, sello, desenlace y epílogo); sello CASO CERRADO al resolver e8-12; pruebas en `esc-inicio.mjs`
 - [ ] **Revisión final, con la etapa 8 terminada** (decisión del usuario): `npm test`, después `qa-estres` y después `alumno-novato` (nunca a la vez), sobre todo el curso
 
 ## Versión publicada

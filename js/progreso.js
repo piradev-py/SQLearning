@@ -165,7 +165,9 @@
     if (datos.turnos.dias >= 7) darCredencial("turnos-7", nuevas);
     if (totalBloques() >= 30) darCredencial("cadena-30", nuevas);
     const b = CURSO.buscar(id);
-    if (b && etapaCerrada(b.etapa)) darCredencial("exp-" + b.etapa.n, nuevas);
+    // El caso final del curso cierra el caso (sello «CASO CERRADO») aunque se resuelva con todo desbloqueado
+    const casoFinal = b && b.etapa === CURSO.ETAPAS[CURSO.ETAPAS.length - 1] && b.indice === b.etapa.niveles.length - 1;
+    if (b && (etapaCerrada(b.etapa) || casoFinal)) darCredencial("exp-" + b.etapa.n, nuevas);
 
     guardar(datos);
     return {

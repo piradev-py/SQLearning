@@ -139,5 +139,30 @@ export default async function (b) {
   await b.esperar(400);
   await b.foto("inicio-tablero-dia");
 
+  // 8. Expediente final: clasificado sin el caso; al resolverlo, sello, noches y acceso desde la hoja de ruta
+  await b.eval("localStorage.clear()");
+  await b.ir("caso-cerrado.html");
+  comprobar("Expediente final: sin el caso sale CLASIFICADO, sin destripar nada", await b.eval("(v => v('[data-clasificado]') && !v('[data-expediente]'))(s => document.querySelector(s).offsetHeight > 0)"));
+  await progresoDe({ creditos: 9000, completados: { "e8-12": { bloques: 3, fecha: "2026-10-15" } }, credenciales: ["acceso", "exp-8"],
+    expediente: [], turnos: { dias: 1, ultimo: "2026-10-15" }, ultimo: "e8-12", ajustes: {} });
+  await b.ir("caso-cerrado.html");
+  comprobar("Expediente final: con el caso resuelto, 7 meses y las 75 noches", await b.eval("document.querySelector('[data-expediente]').offsetHeight > 0 && document.querySelector('[data-clasificado]').offsetHeight === 0 && document.querySelectorAll('.cc-mes').length === 7 && document.querySelectorAll('.cc-noche').length === 75"));
+  for (const [w, h] of [[1366, 768], [390, 844]]) {
+    await b.tam(w, h);
+    await b.esperar(900);
+    comprobar(`Expediente final sin scroll horizontal a ${w}×${h}`, !(await b.eval("document.documentElement.scrollWidth > innerWidth")));
+    await b.foto(`caso-cerrado-${w}`);
+  }
+  await b.tam(1366, 768);
+  await b.eval("document.querySelector('[data-tema]').click()");
+  await b.esperar(400);
+  await b.foto("caso-cerrado-dia");
+  await b.ir("index.html");
+  await avanzarPrologo();
+  comprobar("Prólogo con el caso resuelto: sello CASO CERRADO", (await b.eval("document.querySelector('[data-sello-texto]').textContent")) === "CASO CERRADO");
+  await b.eval("document.querySelector('[data-continuar]').click()");
+  await b.esperar(400);
+  comprobar("Hoja de ruta: enlace al expediente final", await b.eval("document.querySelector('.exp-final')?.getAttribute('href') === 'caso-cerrado.html'"));
+
   b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Inicio: todo correcto");
 }

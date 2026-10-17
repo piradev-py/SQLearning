@@ -10,7 +10,7 @@ const d = new Date();
 const dos = n => String(n).padStart(2, "0");
 const v = `${d.getFullYear()}${dos(d.getMonth() + 1)}${dos(d.getDate())}${dos(d.getHours())}${dos(d.getMinutes())}`;
 
-for (const pagina of ["index.html", "leccion.html", "laboratorio.html"]) {
+for (const pagina of ["index.html", "leccion.html", "laboratorio.html", "caso-cerrado.html"]) {
   const ruta = RAIZ + pagina;
   const html = readFileSync(ruta, "utf8").replace(
     /((?:src|href)="(?:js|css)\/[^"?]+\.(?:js|css))(\?v=\d+)?"/g,
