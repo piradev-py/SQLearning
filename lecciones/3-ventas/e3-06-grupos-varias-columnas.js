@@ -88,6 +88,7 @@ ORDER BY mes, tienda_id;`,
       comprobaciones: [
         { texto: "Tiene las columnas mes, tienda_id y facturacion", prueba: (r) => PRUEBA.columnas(r, ["mes", "tienda_id", "facturacion"]) },
         { texto: "Está ordenado por mes", prueba: (r) => (r?.filas?.length ?? 0) > 0 && PRUEBA.ordenado(r, "mes", "asc") },
+        { texto: "Dentro de cada mes, el ORDER BY ordena por tienda_id (sin él, el orden de las tiendas es cuestión de suerte)", prueba: () => /\border\s+by\b[^;]*,\s*(\w+\.)?(tienda_id|2)\b/i.test(PRUEBA.codigo()) },
         { texto: "Solo cuenta los pedidos entregados, un grupo por mes y tienda", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT mes, tienda_id, SUM(total) AS facturacion
 FROM pedidos
 WHERE estado = 'entregado'

@@ -75,7 +75,8 @@ FROM pedidos;`
   MAX(fecha) AS ultimo_pedido,
   MIN(total) AS mas_barato,
   MAX(total) AS mas_caro
-FROM pedidos;`) }
+FROM pedidos;`) },
+        { texto: "Mira todos los pedidos, sin filtrar con WHERE (los récords son de toda la tabla)", prueba: () => !/\bwhere\b/i.test(PRUEBA.codigo()) }
       ],
       pistas: [
         "Cuatro agregados en el mismo `SELECT`: `MIN` y `MAX` de `fecha`, y `MIN` y `MAX` de `total`, cada uno con su alias y en el orden pedido.",

@@ -35,7 +35,8 @@ WHERE estado = 'cancelado';`,
 FROM pedidos
 WHERE estado = 'reembolsado'
 GROUP BY tienda_id
-ORDER BY tienda_id;`) }
+ORDER BY tienda_id;`) },
+            { texto: "Lleva ORDER BY (el GROUP BY no promete ningún orden)", prueba: () => /\border\s+by\b/i.test(PRUEBA.codigo()) }
           ],
           pistas: [
             "El estado se mira en cada pedido, antes de agrupar: va en el `WHERE`. Luego `GROUP BY tienda_id` y `COUNT(*)`.",
@@ -56,7 +57,8 @@ ORDER BY tienda_id;`
             { texto: "Cuenta todos los pedidos de cada tienda, ordenados por tienda", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT tienda_id, COUNT(*) AS pedidos
 FROM pedidos
 GROUP BY tienda_id
-ORDER BY tienda_id;`) }
+ORDER BY tienda_id;`) },
+            { texto: "Lleva ORDER BY (el GROUP BY no promete ningún orden)", prueba: () => /\border\s+by\b/i.test(PRUEBA.codigo()) }
           ],
           pistas: [
             "Ahora sin `WHERE`: todos los pedidos, agrupados por tienda.",

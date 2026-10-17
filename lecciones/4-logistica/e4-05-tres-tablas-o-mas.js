@@ -83,6 +83,7 @@ JOIN tiendas AS t ON em.tienda_id = t.id;`,
       comprobaciones: [
         { texto: "Tiene las columnas envio_id, pedido_id, cliente, almacen y transportista", prueba: (r) => PRUEBA.columnas(r, ["envio_id", "pedido_id", "cliente", "almacen", "transportista"]) },
         { texto: "Salen los 40 envíos devueltos, ordenados por envio_id", prueba: (r) => (r?.filas?.length ?? 0) === 40 && PRUEBA.ordenado(r, "envio_id", "asc") },
+        { texto: "Filtra por el estado del envío, 'devuelto' (el del pedido es otra cosa, aunque hoy coincidan)", prueba: () => /'devuelto'/i.test(PRUEBA.codigo()) },
         { texto: "Cada envío lleva su cliente, su almacén y su transportista", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT e.id AS envio_id, e.pedido_id, c.nombre AS cliente, al.nombre AS almacen, t.nombre AS transportista
 FROM envios AS e
 JOIN pedidos AS p ON e.pedido_id = p.id

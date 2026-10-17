@@ -66,6 +66,12 @@ Faro acaba de inaugurar su quinta tienda física, **Barcelona** (1 de octubre de
 inventario hace **ajustes de stock** y algún **cambio de precio** de madrugada. Lo hace con la cuenta de sistema
 `admin_temp`, una cuenta antigua de IT que nadie desactivó, para que las sospechas caigan sobre **Iván Soler**.
 
+Detalles de la resolución (decisión del usuario, etapa 8):
+- **Cómo consiguió `admin_temp`:** Iván la dejó configurada en 2019 en el terminal ALM-GET-03 del almacén de Getafe,
+  donde trabaja Héctor. Héctor también conocía la dirección de Iván (compañeros desde hace años) y la usó para los falsos.
+- **Adónde fue el dinero:** los 69 reembolsos del Fantasma se abonan por transferencia a una única cuenta, que es la
+  **cuenta de nómina de Héctor** (`abonos` y `fichas_empleados.cuenta_nomina` en `faro-e8.sql`).
+
 Lo que lo delata en los datos (y cómo lo va descubriendo el alumno):
 
 | Etapa | Pista del Expediente | Qué se ve en los datos |
@@ -77,7 +83,7 @@ Lo que lo delata en los datos (y cómo lo va descubriendo el alumno):
 | 5 | **Una sola dirección** | Al limpiar los datos (mayúsculas, espacios, abreviaturas «C/» = «Calle»), las direcciones de los clientes falsos son la misma, y coincide con la de **Iván Soler** (`fichas_empleados`). Es una **pista falsa** puesta por Héctor, igual que la cuenta `admin_temp`: refuerza que Iván parezca culpable en la etapa 6. |
 | 6 | **La cuenta `admin_temp`** | La tabla de auditoría que diseña el alumno registra que todos los cambios raros los hace `admin_temp`. Iván parece culpable. |
 | 7 | **La coartada de Iván** | Con funciones ventana y fechas: `admin_temp` actúa durante las vacaciones de Iván, y siempre pocos minutos después de que Héctor ficha en el almacén. |
-| 8 | **Caso cerrado** | Analítica de anomalías (z-score) y cuantificación del fraude; el informe final para Ana Beltrán señala a Héctor. |
+| 8 | **Caso cerrado** | Analítica de anomalías (z-score) y cuantificación del fraude; los abonos llegan a la cuenta de nómina de Héctor; el informe final para Ana Beltrán lo señala. |
 
 Reglas para no romper el misterio:
 - Antes de la etapa 7 **nunca** se nombra a Héctor como sospechoso. Puede aparecer como personaje amable.

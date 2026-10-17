@@ -898,7 +898,271 @@ móviles (`ROWS BETWEEN`) y `NTILE`.
 
 ---
 
-## Etapa 8
-Se detalla aquí (mismo formato) antes de escribir sus lecciones. Contenido previsto:
+## Etapa 8 · Analítica 📈 — «De los datos a las decisiones»
 
-- **8 · Analítica 📈:** KPIs, MoM/YoY, cohortes y retención, embudos, RFM, estadística descriptiva, z-score, A/B test, pivotes, dashboard, informe. Caso final: *Caso cerrado*.
+**Historia:** Héctor ya tiene nombre, pero Lucía no acusa por una coincidencia: «Que estuviera allí no prueba que lo
+hiciera. Necesitamos cuantificar el daño y ver si el patrón es suyo». Ana Beltrán acepta con una condición: el consejo
+de octubre sigue en pie y quiere también **el informe del negocio** (cómo va Faro, cómo arranca **Barcelona**, si el
+nuevo pago de la web funciona). La etapa tiene dos carriles: en las lecciones, las herramientas de un Data Analyst
+(KPIs, comparaciones, cohortes, embudos, segmentación, estadística, test A/B, pivotes, cuadro de mando, informe) sobre
+el negocio; en el caso, las mismas herramientas apuntando al Fantasma. Ana pide discreción: **Héctor sigue trabajando y
+no sabe nada**, así que no aparece en los tickets de las lecciones (solo en el caso).
+
+**Tablas** (`datos/faro-e8.sql`, semilla **8008** para lo nuevo): las de la etapa 7 (todo lo anterior a 2026-10-01
+**idéntico**) + lo siguiente, que hay que generar en `herramientas/generar-datos.mjs` y anotar en `docs/DATOS.md`:
+1. **El estado tras e6-12** (lo que Lucía hizo «de verdad»): `cuentas.admin_temp` con `activa = false` y la fila
+   **498** de `auditoria` (`2026-10-01 09:00:00`, `lucia.mora`, `cuentas`, `UPDATE`, 28, `activa`, `true`, `false`).
+2. **Dos semanas de octubre** (2026-10-01 → 2026-10-14) para **todas** las tiendas, con el mismo patrón que los
+   meses normales: `pedidos` (ids desde 2525, `mes` = `'2026-10'`), sus `lineas_pedido` (que sumen el total), `envios`
+   de los online no cancelados y reembolsos a la tasa normal (≈ 2 %, por Atención al cliente de 9 a 18 h, con su
+   `UPDATE estado` en `auditoria`, ids desde 499). **Barcelona (6)** vende por fin: ~4–6 pedidos por día laborable,
+   de 10:00 a 21:00, sin reembolsos; parte de clientes ya existentes con ciudad Barcelona y **al menos 30 clientes
+   nuevos** (ids desde 301, alta la víspera o el mismo día de su primer pedido, `INSERT` en `auditoria` por
+   `app_tienda`; los nuevos online, por `app_web`). En octubre **no hay** actividad de `admin_temp`, ni altas de
+   madrugada, ni nada del Fantasma. `vacaciones`, `fichajes` y `sesiones` siguen acabando el 2026-09-30.
+   *(Barcelona sin empleados ni stock en los datos: lo de e6 fue práctica; no hace falta.)*
+3. **`sesiones_web`** (`id`, `inicio` timestamp, `cliente_id` → clientes, NULL si no inició sesión, `dispositivo`
+   ∈ `movil`/`ordenador` (~60/40), `variante` ∈ `A`/`B`, **NULL fuera de la prueba**) y **`eventos_web`** (`id`,
+   `sesion_id` → sesiones_web, `momento`, `evento` CHECK ∈ `visita`/`producto`/`carrito`/`pago`/`compra`,
+   `pedido_id` → pedidos, solo en `compra`), de **2026-04-01 a 2026-10-14**:
+   - Embudo limpio: cada sesión llega hasta un paso y tiene todos los anteriores, en orden de `momento`; `visita`,
+     `carrito`, `pago` y `compra` una vez; **`producto` de 1 a 5 veces** (para que contar eventos ≠ contar sesiones).
+   - Cada pedido online del periodo (también los cancelados) tiene **exactamente una** sesión con `compra`, del
+     mismo cliente y minutos antes de `pedidos.fecha`. **Los pedidos del Fantasma (y el 2210) no tienen sesión**: se
+     metieron directamente en la base, no por la web.
+   - Proporciones orientativas: visita→producto ~65 %, producto→carrito ~30 %, carrito→pago ~70 %, pago→compra ~80 % en
+     ordenador y ~65 % en **móvil** (la caída del móvil en el pago es el hallazgo de e8-04). Tamaño orientativo
+     6 000–8 000 sesiones; si el archivo pesa demasiado, bajar las visitas sin compra (importan las proporciones).
+   - **Prueba A/B** del 2026-07-01 al 2026-09-30: `variante` al azar 50/50 por sesión; la B («pago en un paso») sube
+     carrito→compra unos **8–10 puntos** (z de dos proporciones claramente > 1,96 con esos tamaños) y **no cambia el
+     ticket medio** (z pequeño). Desde octubre, `variante` NULL (ya es para todos).
+4. **`abonos`** (`id`, `pedido_id` UNIQUE → pedidos, `fecha` date = la del `UPDATE estado` de `auditoria`, `importe`
+   = total del pedido, `medio` ∈ `tarjeta`/`bizum`/`efectivo`/`transferencia`, `cuenta_destino` text, solo en
+   transferencias): una fila por pedido reembolsado (los 123 de antes + los de octubre). Los normales vuelven por el
+   **mismo medio** con que se pagó; si fue transferencia, a una cuenta del propio cliente (siempre la misma por cliente).
+   **Los 69 del Fantasma van por `transferencia` a una sola cuenta**, pagara como pagara el pedido.
+5. **`fichas_empleados.cuenta_nomina`** (text): una cuenta enmascarada distinta por empleado (formato
+   `'ES76 **** **** **** **** 4417'`). La de **Héctor (5)** es exactamente la `cuenta_destino` de los 69 abonos del
+   Fantasma; ninguna otra cuenta de abonos coincide con una nómina.
+
+Cifras que hay que fijar con el verificador antes de escribir (y anotar en DATOS.md): pedidos y facturación de octubre
+por tienda; clientes nuevos de Barcelona; tamaño de cada cohorte trimestral (ver e8-03); sesiones y embudo por mes y
+dispositivo; conversiones y z de la prueba A/B; las 5 primeras de e8-07; que las noches de e8-12 cuadren **75/0/0**.
+
+**Reglas para escribir la etapa:**
+- **«Hoy» es el 2026-10-15** (los datos acaban el 14). Se fija en una CTE de parámetros
+  (`WITH params AS (SELECT DATE '2026-10-15' AS hoy)`) o literal; nunca `CURRENT_DATE`/`now()`.
+- **Octubre está a medias.** Los niveles que comparan meses usan meses completos (`fecha < DATE '2026-10-01'`) y el
+  enunciado lo dice; octubre solo se usa a propósito (comparación «del 1 al 14», Barcelona, antes/después del caso).
+- **Facturación neta** (definida en e8-01 y la misma en toda la etapa): pedidos que **no** están `cancelado` ni
+  `reembolsado`. Los enunciados repiten la definición en una línea.
+- **Comprobaciones sin casualidades** (revisiones 3–4 y 5–7): toda cifra se compara con `PRUEBA.igualA`, nunca con
+  una constante escrita en el texto de la comprobación; los datos se generan para que los errores típicos den otro
+  resultado (olvidar octubre, contar eventos en vez de sesiones, usar la población en vez de la línea base, dividir
+  enteros); cada `ROW_NUMBER`/`NTILE`/`ORDER BY` con `LIMIT` lleva desempate completo **escrito en el enunciado**; las
+  partes del caso con comprobaciones exigen leer las tablas (igualA), no aceptan `SELECT 69, 10…`.
+- **Divisiones:** siempre `* 100.0` o `::numeric` y `NULLIF(…, 0)`; redondeos pedidos en el enunciado (`ROUND(…, 1)`).
+- Funciones nuevas comprobadas en PGlite antes de usarlas en un nivel: `stddev_samp`, `stddev_pop`, `variance`,
+  `mode() WITHIN GROUP`, `floor`, `width_bucket`, `sqrt`, `GROUP BY ROLLUP`/`CUBE`/`GROUPING SETS`, `GROUPING()`.
+  No hay `crosstab` (sin `tablefunc`): se pivota con `FILTER`.
+
+**Al terminarla, el alumno sabrá:** definir y calcular KPIs sin trampas (división entera, cero, definiciones),
+comparar periodos (MoM, YoY, YTD, meses incompletos), analizar cohortes y retención, construir embudos de conversión,
+segmentar clientes con RFM, describir una distribución (centro, dispersión, cuartiles, histograma), detectar atípicos
+con z-score e IQR, evaluar un test A/B con un z de dos proporciones, pivotar y sacar subtotales (`FILTER`, `ROLLUP`),
+montar un cuadro de mando parametrizado y convertir resultados en un informe claro y honesto.
+
+### e8-01 · Medir lo que importa: KPIs · 40 ◈
+- **Conceptos nuevos:** un **KPI** (indicador clave) es un número que responde a una pregunta de negocio y se sigue
+  en el tiempo; se **define antes de calcularlo** (¿la facturación incluye reembolsos? ¿y cancelados?); los cinco de
+  Faro: facturación neta, pedidos, ticket medio (AOV), clientes activos (`COUNT(DISTINCT cliente_id)`) y tasa de
+  reembolso (%); la **división entera** (`COUNT(*) FILTER (…) / COUNT(*)` → 0) y el remedio (`* 100.0`, `::numeric`);
+  `NULLIF(denominador, 0)` para no dividir por cero (repaso e5). Historia: Ana: «Cinco números en una diapositiva».
+- **Trampas:** tasa calculada con enteros (sale 0); `AVG(total)` con cancelados en el ticket medio; clientes contados
+  con `COUNT(cliente_id)` (repite clientes).
+- **Predicción:** `SELECT 3 / 4 AS a, 3 * 100.0 / 4 AS b;` → 0 y 75.
+- **Quiz:** ¿cuál es un buen KPI? («tasa de reembolso mensual» frente a «la tabla de pedidos» o «que vaya bien»).
+- **Reto:** KPIs por tienda del tercer trimestre de 2026 (2026-07-01 a 2026-09-30): `tienda_id`, `pedidos` (todos),
+  `facturacion` (neta), `ticket_medio` (neto, `ROUND` 2), `clientes` (distintos, todos los pedidos), `tasa_reembolso`
+  (% de pedidos reembolsados, `ROUND` 1), por `tienda_id` → **5** filas (Barcelona abrió en octubre). igualA; una
+  comprobación suelta con mensaje propio si la tasa sale 0 en todas («¿división entera?»).
+
+### e8-02 · ¿Vamos mejor o peor?: MoM, YoY y meses a medias · 45 ◈
+- **Conceptos nuevos:** variación frente al mes anterior (**MoM**, repaso de `LAG`, e7-08) y frente al mismo mes del
+  año anterior (**YoY**: `LAG(…, 12)` sobre una serie **sin huecos** —`generate_series`, e7-06— o `JOIN` del mes con
+  `mes - interval '1 year'`); el acumulado del año (**YTD**) frente al mismo tramo del año anterior; el **mes en
+  curso**: octubre lleva 14 días, así que se compara «del 1 al 14» con «del 1 al 14» (MTD), nunca con un mes entero;
+  el porcentaje siempre sobre el valor **anterior**. Historia: Elena Ruiz (ventas) quiere el «¿crecemos?» para Ana.
+- **Trampas:** octubre a medias frente a septiembre entero («¡caemos un 50 %!»); `LAG(12)` con un mes que falta (se
+  descoloca); el % sobre el valor nuevo.
+- **Predicción:** facturación de octubre de 2026 (todo lo que hay) frente a septiembre entero → una caída falsa.
+- **Interpretar:** crecimiento (%) de la facturación neta del 1 al 14 de octubre de 2026 frente al 1–14 de octubre de
+  2025, redondeado a 1 (verificador).
+- **Reto (`grafico: true`):** facturación neta mensual de enero a septiembre de 2026 con la del mismo mes de 2025:
+  `mes` (date), `facturacion`, `mismo_mes_2025`, `yoy_pct` (`ROUND` 1), por `mes` → **9** filas. igualA; comprobación
+  suelta «no incluye octubre (está a medias)».
+
+### e8-03 · Cohortes y retención: ¿vuelven los clientes? · 50 ◈
+- **Conceptos nuevos:** una **cohorte** es un grupo de clientes que empezó a la vez: el **trimestre de su primer
+  pedido** (`MIN(fecha)` por cliente en una CTE + `date_trunc('quarter', …)`); la **edad** de cada pedido en
+  trimestres desde la cohorte (`(años × 4) + trimestres` con `EXTRACT`); la **retención**: % de la cohorte que vuelve a
+  comprar en el trimestre 1, 2, 3…; tabla en formato largo (`cohorte`, `periodo`, `activos`, `pct`) y cómo se lee (en
+  columna: misma edad; en diagonal: mismo momento del calendario). Por qué la cohorte 2024-T1 engaña (los clientes de
+  antes de 2024 parecen nuevos: los datos empiezan ahí) y por qué la de Barcelona (2026-T4) aún no dice nada (demasiado
+  joven). Pedidos no cancelados.
+- **Antes de escribir:** comprobar con el verificador cuántos clientes nuevos trae cada trimestre (300 clientes en 33
+  meses: muchos empiezan en 2024). Si alguna cohorte del reto tiene menos de ~10 clientes, usar **semestres** (misma idea,
+  `date_trunc` por año y `EXTRACT(QUARTER)` ≤ 2) o ampliar las altas de 2025 en el generador.
+- **Trampas:** tamaño de la cohorte contado en pedidos (filas) en vez de clientes distintos; usar `alta` en vez del
+  primer pedido (aquí casi coinciden: el alta es la víspera, pero en la vida real no); comparar cohortes de edad distinta.
+- **Quiz:** la cohorte 2026-T3 tiene 0 % en el periodo 2: ¿son peores clientes? (no: aún no ha pasado el tiempo).
+- **Reto:** retención de las cohortes de 2025: `cohorte` (date), `clientes`, `t1`, `t2`, `t3` (% de la cohorte que
+  compra en el 1.º, 2.º y 3.º trimestre siguiente, `ROUND` 1, con `FILTER`), por `cohorte` → **4** filas. igualA.
+
+### e8-04 · Embudos: dónde se pierden las ventas · 45 ◈
+- **Conceptos nuevos:** las tablas `sesiones_web` y `eventos_web` (pestaña Esquema); un **embudo** son pasos en orden
+  (visita → producto → carrito → pago → compra); **sesiones** que llegan a cada paso con
+  `COUNT(DISTINCT sesion_id) FILTER (WHERE evento = …)`; conversión de cada paso **sobre el anterior** y total; dónde
+  está la mayor caída; segmentar por `dispositivo`; embudo en formato largo para el gráfico (`paso`, `orden`,
+  `sesiones`). Historia: Ana: «Muchas visitas y pocas compras: ¿dónde se cae la gente?».
+- **Trampas:** contar **eventos** en vez de sesiones (`producto` se repite: `COUNT(*)` infla el paso); dividir todo
+  por las visitas cuando se pregunta por un paso; mezclar sesiones de meses distintos.
+- **Predicción:** en septiembre, `COUNT(*)` frente a `COUNT(DISTINCT sesion_id)` de `evento = 'producto'`: ¿cuál es mayor?
+- **Reto:** embudo de septiembre de 2026 (sesiones con `inicio` en septiembre) por dispositivo: `dispositivo`,
+  `visitas`, `productos`, `carrito`, `pago`, `compra`, `conv_pago_compra` (% compra sobre pago, `ROUND` 1), por
+  `dispositivo` → **2** filas (el móvil cae en el pago). igualA; comprobación suelta «cuentas sesiones, no eventos»
+  (`productos` ≤ `visitas`).
+
+### e8-05 · Segmentar clientes: RFM · 50 ◈
+- **Conceptos nuevos:** **RFM**: **R**ecencia (días desde la última compra hasta «hoy», `DATE '2026-10-15'`),
+  **F**recuencia (pedidos) y **M**onetario (gasto), con facturación neta; puntuar cada una de 1 a 5 con `NTILE(5)`
+  (e7-10), con la recencia **al revés** (menos días = 5); segmentos con `CASE` (e5): **campeones** (R ≥ 4 y F ≥ 4),
+  **en riesgo** (R ≤ 2 y F ≥ 4), **nuevos** (R ≥ 4 y F ≤ 2), **dormidos** (R ≤ 2 y F ≤ 2), resto **a cuidar**; para qué
+  sirve (campañas de Elena, llamadas de Marcos).
+- **Trampas:** `NTILE` con empates reparte según el orden de llegada → desempate por `cliente_id` (lo fija el
+  enunciado); la recencia ordenada al derecho (los dormidos salen campeones); meter clientes sin compras netas.
+- **Quiz:** un cliente con R = 1, F = 5, M = 5 → «en riesgo».
+- **Reto:** clientes y gasto por segmento, con exactamente `NTILE(5) OVER (ORDER BY dias DESC, cliente_id)` para R y
+  `NTILE(5) OVER (ORDER BY pedidos, cliente_id)` para F: `segmento`, `clientes`, `gasto` (suma), de más a menos
+  `gasto` → **5** filas. igualA; comprobación suelta: la suma de `clientes` es la de clientes con alguna compra neta.
+
+### e8-06 · Estadística descriptiva: centro, dispersión e histogramas · 45 ◈
+- **Conceptos nuevos:** centro: media, mediana (repaso e7-10) y moda (`mode() WITHIN GROUP (ORDER BY …)`); dispersión:
+  rango, **desviación típica** (`stddev_samp`; `stddev_pop` en un quiz: muestra frente a población), varianza, cuartiles
+  e **IQR** (`percentile_cont(0.75) − percentile_cont(0.25)`); **histograma** con tramos fijos
+  (`floor(total / 250) * 250`; `width_bucket` en el `consejo`); distribución asimétrica: con cola de pedidos caros,
+  la media queda por encima de la mediana. Historia: Ana pregunta «¿cuánto gasta un cliente normal?».
+- **Ejercicio:** por tienda (pedidos netos de 2026): `tienda_id`, `media`, `mediana`, `desviacion` (`ROUND` 2).
+- **Trampas:** la desviación de un solo valor es `NULL`; tramos del histograma que no empiezan en el mismo sitio.
+- **Predicción:** en la tienda online, ¿media mayor o menor que la mediana? (mayor).
+- **Reto (`grafico: true`):** histograma de los pedidos online netos de 2026 (ene–sep) en tramos de 250 €: `tramo`
+  (límite inferior), `pedidos`, por `tramo`. igualA.
+
+### e8-07 · Lo que no es normal: z-score y atípicos · 50 ◈
+- **Conceptos nuevos:** el **z-score**, `(x − media) / desviación`: cuántas desviaciones se aleja un valor; con ventanas
+  (`AVG(x) OVER ()`, `STDDEV_SAMP(x) OVER ()`, e7-07) y por grupo (`PARTITION BY`); |z| > 2 «raro», > 3 «muy raro»; la
+  **regla del IQR** (por encima de Q3 + 1,5·IQR) como alternativa robusta; el **enmascaramiento**: un valor enorme infla
+  la desviación y esconde a los demás → calcular la media y la desviación con una **línea base** «normal» (otra CTE) y
+  aplicarlas al resto; atípico ≠ error ≠ fraude: es una pregunta, no una respuesta. Lista pequeña con
+  `FROM (VALUES (10), (12), (11), (13), (95)) AS t(x)` para verlo sin depender de los datos.
+- **Trampas:** filtrar por z en el `WHERE` de la misma consulta (ventana → CTE); dividir por una desviación 0 (`NULLIF`).
+- **Predicción:** en `VALUES (10), (12), (11), (13), (95), (30)`, ¿el 30 tiene |z| > 2? (no: el 95 lo enmascara); con
+  la línea base de los cuatro primeros, sí.
+- **Reto:** unidades vendidas por producto en 2026 (ene–sep, pedidos netos) y su z frente a todos los productos:
+  `producto_id`, `unidades`, `z` (`ROUND` 2), los 5 de mayor z con desempate por `producto_id` → 5 filas (sin empate
+  en el corte: verificador). igualA.
+
+### e8-08 · ¿Funciona el cambio?: test A/B · 50 ◈
+- **Conceptos nuevos:** tras el embudo, Producto probó del 1 de julio al 30 de septiembre un **pago en un paso**
+  (variante **B**) en la mitad de las sesiones (`sesiones_web.variante`); grupo de control (A) y tratamiento (B), reparto
+  al azar, **una métrica decidida antes** (conversión carrito → compra); tasas, diferencia y la pregunta clave: ¿efecto
+  o suerte? El **z de dos proporciones**: p combinada, error estándar `sqrt(p * (1 − p) * (1.0 / nA + 1.0 / nB))`,
+  `z = (pB − pA) / EE`; |z| > 1,96 ≈ 95 % de confianza (PostgreSQL no trae la normal para el p-valor: 🌍 BigQuery,
+  Python o una hoja de cálculo sí); significativo ≠ importante; no mirar cada día y parar cuando sale bien (*peeking*).
+  Historia: Ana: «¿Lo ponemos para todos?».
+- **Trampas:** dividir por todas las sesiones en vez de por las que llegan al carrito; incluir sesiones fuera de la
+  prueba (`variante` NULL); tasas con enteros.
+- **Quiz:** B convierte 2 puntos más con 40 sesiones por grupo: ¿lanzarlo? (no: muestra pequeña).
+- **Interpretar:** ¿cambia el ticket medio entre A y B? (z pequeño: no).
+- **Reto:** una fila con CTE paso a paso: `carrito_a`, `compra_a`, `carrito_b`, `compra_b`, `conv_a`, `conv_b` (%,
+  `ROUND` 1), `z` (`ROUND` 2). igualA; comprobación suelta «z > 1,96: la diferencia no es suerte».
+
+### e8-09 · Tablas dinámicas: pivotar y subtotales · 45 ◈
+- **Conceptos nuevos:** formato **largo** (una fila por mes y tienda) frente a **ancho** (una columna por tienda, «la
+  tabla dinámica de la hoja de cálculo»); **pivotar** con `SUM(…) FILTER (WHERE tienda_id = …)` (repaso e7-06);
+  **despivotar** con `UNION ALL` (e4); **subtotales y total general** con `GROUP BY ROLLUP (a, b)` y `GROUPING()` para
+  poner «Total» (`COALESCE` falla si hay `NULL` de verdad); `CUBE` y `GROUPING SETS` en un quiz. Gráfico: largo → una
+  serie por tienda; ancho → un panel por columna. 🌍 `crosstab` (extensión `tablefunc`), `PIVOT` en SQL Server,
+  BigQuery y Snowflake.
+- **Ejercicio:** pedidos del tercer trimestre de 2026 por tienda con `ROLLUP` y la fila «Total» (`tienda`, `pedidos`).
+- **Trampas:** cambiar el orden de las columnas del `ROLLUP` cambia los subtotales; el total no sale al final si no
+  se ordena (`ORDER BY GROUPING(…), …`).
+- **Predicción:** filas de `GROUP BY ROLLUP (tienda_id)` sobre los pedidos del tercer trimestre → 6 (5 tiendas + total).
+- **Reto:** facturación neta por trimestre de 2026 (T1–T3) con una columna por tienda: `trimestre` (date), `madrid`,
+  `valencia`, `sevilla`, `bilbao`, `online`, `total`, por `trimestre` → **3** filas. igualA.
+
+### e8-10 · Un cuadro de mando en una consulta · 45 ◈
+- **Conceptos nuevos:** un **cuadro de mando** (dashboard) son pocas cifras, siempre las mismas, **comparadas con algo**
+  (objetivo, mes anterior, año anterior); **parámetros** en una CTE (`WITH params AS (SELECT DATE '2026-09-01' AS mes)`)
+  para cambiar el periodo en un solo sitio; una fila por KPI (formato largo: `kpi`, `valor`, `anterior`, `variacion_pct`)
+  juntando CTE con `UNION ALL`; **semáforo** con `CASE` según un objetivo; guardarlo como vista (e6-11, en la misma
+  ejecución) para que una herramienta de BI (Power BI, Looker, Tableau) lo lea; vistas materializadas solo como concepto.
+- **Trampas:** cada tarjeta con una definición distinta (una con reembolsos y otra sin ellos); umbrales del semáforo
+  con huecos (el `CASE` deja valores en `NULL`); `UNION ALL` con tipos distintos en una columna (error).
+- **Quiz:** ¿qué le falta a un cuadro con 40 gráficos? (foco: pocas cifras, con comparación).
+- **Reto:** con `params` = septiembre de 2026: filas `facturacion`, `pedidos`, `ticket_medio`, `tasa_reembolso` con
+  `valor`, `mes_anterior`, `variacion_pct` (`ROUND` 1; valores con `ROUND` 2), por `kpi` (orden alfabético) → **4** filas.
+  igualA; comprobación suelta: cambiando el mes de `params` a agosto el resultado coincide con el de agosto (la prueba
+  ejecuta la consulta del alumno con el literal sustituido; si es frágil, quitarla).
+
+### e8-11 · Contarlo bien: el informe · 45 ◈
+- **Conceptos nuevos:** del resultado a la frase: estructura de un informe (**pregunta → respuesta en una frase →
+  cifras clave → cómo se calculó → límites**: octubre incompleto, Barcelona joven); redondeo y formato (`ROUND`,
+  `to_char` de e5 —comprobar en PGlite qué separadores da—, `||`); **cuadrar**: una consulta de control que comprueba que
+  la suma de las partes da el total; comentarios `--` con definiciones y supuestos; gráficos honestos (barras desde
+  cero, nada de tartas de 12 porciones). Historia: el informe de Barcelona para el consejo.
+- **Ordenar (papel):** las partes del informe en su orden.
+- **Trampas:** porcentajes que no suman 100 por redondeo (decirlo, no maquillarlo); cifras con 8 decimales;
+  comparar Barcelona (14 días) con meses enteros.
+- **Interpretar:** «Barcelona ha facturado en dos semanas el X % de lo que facturó Madrid en las mismas fechas» (X con 1
+  decimal, verificador).
+- **Reto:** las dos primeras semanas de Barcelona frente a las demás tiendas físicas en las mismas fechas (2026-10-01 a
+  2026-10-14): `tienda` (nombre), `pedidos`, `facturacion` (neta), `ticket_medio` (`ROUND` 2), `pct_nuevos` (% de sus
+  clientes de esas fechas cuyo primer pedido de siempre cae en ellas, `ROUND` 1), de más a menos `facturacion` → **5**
+  filas. igualA.
+
+### e8-12 · Caso: Caso cerrado · 80 ◈ (pista del Expediente: «Caso cerrado»)
+- **Caso:** Lucía reúne el expediente para Ana: «Dos preguntas: cuánto ha costado y si el patrón es de Héctor. Con
+  números que aguanten delante de un abogado». Partes:
+  1. **El daño, mes a mes:** los pedidos que reembolsó `admin_temp` (`auditoria`, solo `tabla = 'pedidos'` y
+     `columna = 'estado'`, unida a `pedidos`) por mes del pedido: `mes`, `pedidos`, `importe`, `acumulado`
+     (`SUM … OVER`), por `mes` → el último acumulado es **36 470,20 €** (69 pedidos, 10 clientes). igualA.
+     `interpretar`: ¿qué % del importe reembolsado en la tienda online de marzo a septiembre de 2026 es del Fantasma?
+     (de los 82 reembolsos online de esos meses, 69 son suyos; el % de importe, con el verificador).
+  2. **Antes, durante y después:** tasa de reembolso online por mes de 2024-01 a 2026-10 (octubre a medias: la tasa sí
+     se puede comparar) y su z frente a la **línea base 2024–2025** (media y desviación de esos 24 meses en una CTE, para
+     que el Fantasma no se enmascare a sí mismo, e8-07): `mes`, `tasa`, `z` (`ROUND` 2). igualA. Marzo–septiembre de
+     2026 se disparan; octubre, con `admin_temp` cerrada, vuelve a lo normal. `interpretar`: ¿cuántos meses tienen z > 3?
+  3. **¿Adónde fue el dinero?** `abonos` por transferencia agrupados por `cuenta_destino`: `cuenta_destino`, `abonos`,
+     `clientes` (distintos), `importe`, de más a menos `abonos` con desempate por cuenta → una cuenta recibe **69** abonos
+     de **10** clientes; las demás, uno o dos de un solo cliente. igualA. `interpretar` (con `JOIN fichas_empleados ON
+     cuenta_nomina`): ¿de quién es esa cuenta? → **Héctor Vidal**.
+  4. **¿El patrón es suyo?** Tabla de contingencia de las noches (2026-01-05 a 2026-09-30): fechas con fichaje de
+     Héctor de madrugada (`entrada` < 6 h) y fechas con sesión de `admin_temp`, unidas con `FULL JOIN` por fecha:
+     `hector` (boolean), `admin_temp` (boolean), `noches`, por `hector`, `admin_temp` → **(true, true) 75** y ninguna
+     noche de uno sin el otro (comprobar 75/0/0 con el verificador). igualA. `interpretar`: ¿en cuántas noches actuó
+     `admin_temp` sin Héctor en el almacén? → **0** (y con Iker, ninguna coincidencia: se cuenta en el `consejo`).
+  5. **El informe para Ana** (una fila, con CTE): `pedidos`, `clientes`, `importe`, `primer_pedido`, `ultimo_pedido`
+     (date), `noches`, `cuenta_destino`, `titular`. igualA.
+  → Pista del Expediente: **Caso cerrado** («69 reembolsos falsos, 36 470,20 €, cobrados en la cuenta de nómina de
+  Héctor Vidal; `admin_temp` actuó solo las 75 noches en que él fichó de madrugada en Getafe»).
+- **Desenlace (regla del misterio):** el culpable es **Héctor Vidal** y la prueba no es una coincidencia sino tres
+  patrones independientes que apuntan a él (las noches, el terminal del muelle y el dinero). Se explican los cabos
+  sueltos: Iván creó `admin_temp` en 2019 para la migración del inventario y la dejó configurada en el terminal del
+  muelle **ALM-GET-03**; nunca la borró (su error fue ese, no el fraude). Héctor la encontró allí y la usó para que todo
+  apuntara a IT; la **dirección de Olmo** era la de Iván, que Héctor conocía (compañeros desde hace años), puesta en los
+  clientes falsos con el mismo fin. Ana suspende a Héctor y lo pasa a los abogados; Marcos llama a Iratxe Muñoz para
+  cerrar su reclamación (el pedido 2210 se hizo a su nombre); Iván, aún molesto, acepta revisar todas las cuentas de
+  servicio. Lucía, en el último `consejo`: cuentas personales, mínimos privilegios y auditoría siempre encendida.
+  El sello del prólogo pasa a **CASO CERRADO** y llega el **epílogo** de HISTORIA (Ana ofrece el puesto de Head of
+  Data; Lucía recomienda hojas de cálculo, una herramienta de BI y Python con pandas).

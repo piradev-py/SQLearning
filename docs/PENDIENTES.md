@@ -74,7 +74,7 @@ quede pendiente y vuelve a pasar los tests.
   «Siguiente», indicador del caso, parte del caso guardada al recargar, «%»/«#»/«pedido» en respuestas numéricas, tolerancia 0,05,
   más formas de respuesta en e3-09/e4-03/e4-10, acentos de día ≥ 4,5:1 sobre la cabecera, botón de tema sin partir.
   Quedan (menores):
-  - [ ] Retos que aprueban por casualidad de los datos (e3-03, e3-05, e3-06 orden, e3-07 `>= 15`, e4-05): reforzar con `igualA` o datos
+  - [x] Retos que aprueban por casualidad de los datos (e3-03, e3-05, e3-06 orden, e3-07 `>= 15`, e4-05): comprobaciones sobre el código con `PRUEBA.codigo()`; regresión en `agentes/qa5-retos.mjs`
   - [ ] e4-06: `COALESCE(SUM(...), 0)` se rechaza sin decir por qué (el enunciado pide dejar el NULL)
   - [ ] `UPDATE` dentro de un CTE altera lo que ve la comprobación (trampa avanzada): `SET TRANSACTION READ ONLY` en retos sin `verificar`
   - [ ] `COPY … TO STDOUT` dice «Consulta ejecutada» sin más
@@ -86,7 +86,7 @@ quede pendiente y vuelve a pasar los tests.
   e4-01 acepta JOIN, e3-08 exige desempate, e3-05 no marca las sumas si solo falla el orden, e3-07 rechaza `>= 15`, erratas
   (e4-10 «devuelto», e4-06 «lo vendido», e3-05 predicción, café repetido) y botón «Ver mi resultado» en «Diligencia superada».
   Quedan (menores):
-  - [ ] e3-09 parte 1: sin `ORDER BY tienda_id` aprueba (el GROUP BY ya lo da en orden por casualidad)
+  - [x] e3-09 partes 1 y 2: sin `ORDER BY tienda_id` aprueba (ahora exige ORDER BY) (el GROUP BY ya lo da en orden por casualidad)
   - [ ] Gráfico de líneas por mes: los meses sin filas no salen y el eje los junta (habrá que enseñar `generate_series` en la etapa 7)
   - [ ] Noche: en gráficos de 5 líneas, las series 2 y 4 (magenta y violeta) se distinguen poco sobre el fondo
   - [ ] e3-03: la comprobación del reto muestra las cifras antes de escribir nada (revisar el patrón en otros retos)
@@ -103,6 +103,12 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Revisión etapas 5–7: `qa-estres` hecha (`docs/revisiones/2026-10-16-qa-etapas-5-7.md`, 🔴1 🟠3 🟡9). Arreglados todos: F1 (`COMMIT; BEGIN; <error>` dejaba cambios: se recarga si el alumno escribió COMMIT/ROLLBACK/END/ABORT), F9 (marca con valor al azar por sesión), F2 (zona horaria UTC en cada sesión), F3 (e7-11 parte 2 exige consultar las tablas), F4/F11/F12/F13 (traductor: 2BP01, 428C9, SAVEPOINT, vistas, regex, ventanas, recursión, detalle de claves en español, intervalos, subconsulta con varias columnas), F5 (e6-04/05 prueban reglas también tras COMMIT; e6-06 cuenta filas cambiadas sin depender del txid), F6 (e6-07 código inicial), F7 (e6-10 exige el plan con el índice y admin_temp), F8 (BEGIN/COMMIT en comentarios o textos no cuentan), F10 (JSON se ve como JSON). Regresiones en `tests/probar-motor.html`
 - [x] Revisión etapas 5–7: `alumno-novato` hecha (`docs/revisiones/2026-10-16-alumno-etapas-5-7.md`, nota 8/10, 🔴0 🟠5 🟡8). Arreglados: aviso de GROUP BY con alias igual a la columna (e5-02, e5-06, e5-10), resultado de DDL y tabla «que no existe» recuerdan que todo se deshace, comprobar con SELECT en la misma ejecución (e6-02, e6-06, e6-07), mensaje de alias en el mismo SELECT, START TRANSACTION aceptado, EXTRACT sobre texto, ROUND con double precision, e7-06 con COUNT(CASE…), e6-12 exige filtrar por tabla, caso e7-11 renombrado «¿Dónde estaba cada uno?» (no destripa)
   Quedan (menores): e7-03 p3 sin correlación solo dice «te falta 1 fila»; coma olvidada antes de `UNIQUE (…)` da «algo mal escrito cerca de (»; e5-08 p8 `COUNT(*)` en vez de contar entregas; e6-01 p5 acepta sin el `SELECT`
+
+## Etapa 8 · Analítica
+- [x] Plan detallado etapa 8 (12 niveles) en `docs/PLAN_CURSO.md`, con los datos nuevos que necesita `faro-e8.sql`
+- [ ] Datos `faro-e8.sql` (octubre 1–14 con Barcelona, `sesiones_web`/`eventos_web` con la prueba A/B, `abonos`,
+  `fichas_empleados.cuenta_nomina`, admin_temp desactivada) y cifras en `docs/DATOS.md`
+- [ ] Lecciones e8-01…e8-12 y revisión final (`qa-estres` + `alumno-novato`)
 
 ## Versión publicada
 - [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)

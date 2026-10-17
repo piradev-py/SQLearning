@@ -94,6 +94,7 @@ GROUP BY metodo_pago;`,
         { texto: "Tiene las columnas tienda_id, pedidos y facturacion", prueba: (r) => PRUEBA.columnas(r, ["tienda_id", "pedidos", "facturacion"]) },
         { texto: "Devuelve una fila por cada tienda con pedidos (5)", prueba: (r) => (r?.filas?.length ?? 0) === 5 },
         { texto: "Está ordenado de mayor a menor facturación", prueba: (r) => PRUEBA.ordenado(r, "facturacion", "desc") },
+        { texto: "El ORDER BY usa la facturación (ordenar por pedidos hoy da lo mismo, pero solo por casualidad)", prueba: () => /\border\s+by\s+(facturacion\b|sum\s*\(\s*(\w+\.)?total\s*\)|3\b)/i.test(PRUEBA.codigo()) },
         { texto: "Los recuentos y las sumas son los de cada tienda", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT tienda_id, COUNT(*) AS pedidos, SUM(total) AS facturacion
 FROM pedidos
 GROUP BY tienda_id
