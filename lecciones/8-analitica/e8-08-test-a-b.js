@@ -107,7 +107,8 @@ FROM con_z;`
         { texto: "Tiene las columnas carrito_a, compra_a, carrito_b, compra_b, conv_a, conv_b y z, en una sola fila", prueba: (r) => PRUEBA.columnas(r, ["carrito_a", "compra_a", "carrito_b", "compra_b", "conv_a", "conv_b", "z"]) && (r?.filas?.length ?? 0) === 1 },
         { texto: "Lo calculas con las tablas sesiones_web y eventos_web (no vale escribir los números a mano)", prueba: () => {
           const sql = MOTOR.sinComentarios(MOTOR.sinTextos(PRUEBA.codigo()));
-          return /\bsesiones_web\b/i.test(sql) && /\beventos_web\b/i.test(sql);
+          // Además tiene que contar: nombrar las tablas en un FROM de adorno con constantes no vale
+          return /\bsesiones_web\b/i.test(sql) && /\beventos_web\b/i.test(sql) && /\b(count|sum)\s*\(/i.test(sql);
         } },
         { texto: "Carritos, compras, conversiones y z de cada grupo, contando sesiones de la prueba", prueba: (r, db) => PRUEBA.igualA(r, db, `WITH ab AS (
   SELECT

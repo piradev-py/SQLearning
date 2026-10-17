@@ -110,7 +110,15 @@ quede pendiente y vuelve a pasar los tests.
   `fichas_empleados.cuenta_nomina`, admin_temp desactivada) y cifras en `docs/DATOS.md` (2,1 MB; comprobado con PGlite en Node: `herramientas/consultar.mjs`)
 - [x] Lecciones e8-01…e8-12 (2 agentes `profesor-sql`; verificador 93/93 a la primera; cifras «(verificar)» comprobadas con PGlite)
 - [x] Pantalla final `caso-cerrado.html` (expediente final con retrato en pixel art de Héctor, pruebas, sello, desenlace y epílogo); sello CASO CERRADO al resolver e8-12; pruebas en `esc-inicio.mjs`
-- [ ] **Revisión final, con la etapa 8 terminada** (decisión del usuario): `npm test`, después `qa-estres` y después `alumno-novato` (nunca a la vez), sobre todo el curso
+- [x] Revisión final · `qa-estres` hecha (`docs/revisiones/2026-10-17-qa-final.md`, 🔴0 🟠1 🟡10). Arreglados: F1 (sin conexión,
+  PGlite se guarda al instalar; mensaje propio sin red; la batería ya no abre nada con red antes de apagar el servidor), F2
+  (respuestas escritas: sí/no por la primera palabra salvo «no sé», nombres contenidos salvo negados, «ninguna»/«cinco»,
+  `49,505.85`, el número del % con varios; tolerancias 0,05), F3 (enunciado de e8-12 parte 3), F4 (e8-08 y e8-12 exigen
+  contar), F5 (`COPY` al revisar), F6 (`ResizeObserver` en el editor), F7 (`npm run publicar` y `npm test` comprueba que la
+  versión coincide), F9 (desempate en e8-07), F10 (cuenta sin partir), F11 (`PROGRESO.casoCerrado()`), y lo que vio al
+  repasarlo: el alias «alta» en e8-03. Regresiones en `tests/probar-motor.html`. Queda aceptado F8 (el desenlace se lee en el
+  código, como las soluciones).
+- [ ] **Revisión final: falta `alumno-novato`** (decisión del usuario): `npm test`, después `qa-estres` y después `alumno-novato` (nunca a la vez), sobre todo el curso
 
 ## Versión publicada
 - [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)

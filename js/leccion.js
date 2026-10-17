@@ -103,7 +103,7 @@
         editor.conocer(esquema);
         RESULTADO.esquema($("[data-vista=esquema]"), esquema);
       } catch (e) {
-        return fallo("No se ha podido arrancar PostgreSQL. Recarga la página. (" + (e?.mensaje || e?.message || e) + ")");
+        return fallo("No se ha podido arrancar PostgreSQL. " + MOTOR.pistaFallo() + " (" + (e?.mensaje || e?.message || e) + ")");
       }
     }
     pintarIndicePasos();

@@ -109,6 +109,20 @@
         const r = await REVISOR.revisarEjercicio(paso, "SELECT nombre, precio, stock FROM productos;");
         return !r.ok && /sobra la columna `stock`/i.test(r.mensaje) || r;
       });
+      await prueba("Revisor: COPY … TO STDOUT al revisar da el error explicado (revisión final F5)", async () => {
+        const r = await REVISOR.revisarEjercicio(paso, "COPY productos TO STDOUT;");
+        return !r.ok && /consola de PostgreSQL/.test(r.mensaje) || r;
+      });
+      await prueba("Respuestas escritas: formas naturales sí, erróneas no (revisión final F2)", async () => {
+        const ok = (d, p) => REVISOR.respuestaCorrecta(d, p);
+        const sino = { respuesta: ["no", "no cambia", "no es significativo"] }, quien = { respuesta: ["Héctor Vidal", "Héctor", "Vidal"] };
+        const casos = [[sino, "No, la diferencia no es significativa", true], [sino, "Sí, cambia", false], [quien, "Es de Héctor Vidal", true],
+          [quien, "Vidal, Héctor", true], [quien, "Iván Soler", false], [quien, "Héctor no", false], [sino, "No sé", false], [{ respuesta: 0 }, "ninguna", true], [{ respuesta: 5 }, "cinco", true],
+          [{ respuesta: 49505.85, tolerancia: 0.01 }, "49,505.85", true], [{ respuesta: 36.5, tolerancia: 0.05 }, "57 de 156 = 36,5 %", true],
+          [{ respuesta: 89.9, tolerancia: 0.05 }, "90", false], [{ respuesta: -1548 }, "-1.548", true]];
+        const mal = casos.filter(([p, d, e]) => ok(d, p) !== e).map(c => c[1]);
+        return !mal.length || mal.join(" · ");
+      });
       await prueba("Revisor: columnas en otro orden", async () => {
         const r = await REVISOR.revisarEjercicio(paso, "SELECT precio, nombre FROM productos;");
         return !r.ok && /otro orden/.test(r.mensaje) || r;

@@ -118,7 +118,11 @@ ORDER BY a.cohorte, a.periodo;`,
       comprobaciones: [
         { texto: "Tiene las columnas cohorte, clientes, t1, t2 y t3", prueba: (r) => PRUEBA.columnas(r, ["cohorte", "clientes", "t1", "t2", "t3"]) },
         { texto: "Salen las 4 cohortes de 2025", prueba: (r) => (r?.filas?.length ?? 0) === 4 },
-        { texto: "La cohorte sale del primer pedido, no de la fecha de alta (aquí casi coinciden, pero en la vida real no)", prueba: () => !/\balta\b/i.test(PRUEBA.codigo()) },
+        { texto: "La cohorte sale del primer pedido, no de la fecha de alta (aquí casi coinciden, pero en la vida real no)", prueba: () => {
+          // Usar la fecha de alta exige leer clientes; un alias que se llame «alta» no cuenta
+          const sql = MOTOR.sinTextos(PRUEBA.codigo());
+          return !(/\b(from|join)\s+clientes\b/i.test(sql) && /\balta\b/i.test(sql.replace(/\bas\s+alta\b/gi, "")));
+        } },
         { texto: "Cada cohorte con su tamaño y su retención en t1, t2 y t3, en orden", prueba: (r, db) => PRUEBA.igualA(r, db, `WITH primeros AS (
   SELECT cliente_id, date_trunc('quarter', MIN(fecha))::date AS cohorte
   FROM pedidos

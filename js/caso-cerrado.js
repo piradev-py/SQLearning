@@ -13,9 +13,7 @@
   const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre"];
   const $ = s => document.querySelector(s);
 
-  const ultima = CURSO.ETAPAS[CURSO.ETAPAS.length - 1];
-  const casoFinal = ultima.niveles[ultima.niveles.length - 1].id;
-  const abierto = PROGRESO.completado(casoFinal) || PROGRESO.datos().credenciales.includes("exp-" + ultima.n);
+  const abierto = PROGRESO.casoCerrado();
   $("[data-clasificado]").hidden = abierto;
   $("[data-expediente]").hidden = !abierto;
   if (!abierto) return;

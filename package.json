@@ -7,6 +7,7 @@
     "servir": "node herramientas/servir.mjs",
     "test": "node tests/navegador/todos.mjs",
     "datos": "node herramientas/generar-datos.mjs && node herramientas/generar-ciudad.mjs && node herramientas/generar-hector.mjs",
-    "version": "node herramientas/version.mjs"
+    "version": "node herramientas/version.mjs",
+    "publicar": "node herramientas/version.mjs && node tests/navegador/todos.mjs"
   }
 }

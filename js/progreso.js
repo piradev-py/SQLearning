@@ -193,6 +193,11 @@
     datos: () => datos,
     autorizacion, totalBloques, completado, etapaCerrada, etapaAbierta, disponible,
     bloquesDe: id => datos.completados[id]?.bloques || 0,
+    /** ¿Resuelto el caso final del curso? (sello CASO CERRADO, expediente final y su enlace en la hoja de ruta) */
+    casoCerrado() {
+      const e = CURSO.ETAPAS[CURSO.ETAPAS.length - 1];
+      return datos.credenciales.includes("exp-" + e.n) || completado(e.niveles[e.niveles.length - 1].id);
+    },
     registrar, anadirPista,
     enPrueba: () => modoPrueba,
     ajustar(clave, valor) { datos = cargar(); datos.ajustes[clave] = valor; guardar(datos); },

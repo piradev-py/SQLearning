@@ -168,7 +168,7 @@
     } catch (e) {
       $("[data-cargando]").innerHTML = `<p>😕 No se ha podido arrancar PostgreSQL.</p>
         <p class="lab-cargando-detalle">${RESULTADO.esc(e?.mensaje || e?.message || e)}</p>
-        <p class="lab-cargando-detalle">Si has abierto el archivo con doble clic, ábrelo con el servidor: <code>npm run servir</code>.</p>`;
+        <p class="lab-cargando-detalle">${RESULTADO.md(MOTOR.pistaFallo())}</p>`;
     }
   })();
 })();

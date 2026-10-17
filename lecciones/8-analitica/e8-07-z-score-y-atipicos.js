@@ -94,6 +94,7 @@ ORDER BY d.x;`,
       comprobaciones: [
         { texto: "Tiene las columnas producto_id, unidades y z", prueba: (r) => PRUEBA.columnas(r, ["producto_id", "unidades", "z"]) },
         { texto: "Están ordenados de mayor a menor z", prueba: (r) => (r?.filas?.length ?? 0) > 0 && PRUEBA.ordenado(r, "z", "desc") },
+        { texto: "El ORDER BY desempata por producto_id (con el empate del 5.º puesto, sin él el que sale es cuestión de suerte)", prueba: () => /\border\s+by\b[^;]*,\s*(\w+\.)?producto_id\b/i.test(PRUEBA.codigo()) },
         { texto: "Son los 5 productos de mayor z (con el desempate por producto_id) y cada uno con sus unidades y su z", prueba: (r, db) => PRUEBA.igualA(r, db, `WITH ventas AS (
   SELECT l.producto_id, SUM(l.cantidad) AS unidades
   FROM lineas_pedido AS l

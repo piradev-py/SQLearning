@@ -85,7 +85,8 @@ SELECT COUNT(*) AS pedidos,
 FROM fraude AS f;`;
 
   const sinTextos = () => MOTOR.sinComentarios(MOTOR.sinTextos(PRUEBA.codigo()));
-  const usa = (...tablas) => { const sql = sinTextos(); return tablas.every(t => new RegExp(`\\b${t}\\b`, "i").test(sql)); };
+  // Además tiene que contar o sumar: nombrar las tablas en un FROM de adorno con constantes no vale
+  const usa = (...tablas) => { const sql = sinTextos(); return tablas.every(t => new RegExp(`\\b${t}\\b`, "i").test(sql)) && /\b(count|sum)\s*\(/i.test(sql); };
 
   CURSO.registrar({
     id: "e8-12",
@@ -149,7 +150,7 @@ ORDER BY 1, 2;`,
             tipo: "interpretar",
             pregunta: "¿Qué **%** del importe reembolsado en la tienda online (tienda 5) en pedidos de marzo a septiembre de 2026 (`mes` entre `'2026-03'` y `'2026-09'`) corresponde a los pedidos que reembolsó `admin_temp`? Redondea a 1 decimal.",
             respuesta: 89.9,
-            tolerancia: 0.1,
+            tolerancia: 0.05,
             pistas: [
               "Pedidos online `reembolsado` de esos meses; el numerador, solo los que están en `auditoria` con `usuario = 'admin_temp'`, `tabla = 'pedidos'` y `columna = 'estado'` (un `LEFT JOIN` a esos `registro_id` y `SUM(total) FILTER (WHERE … IS NOT NULL)`).",
               "De los 82 reembolsos online de esos meses, 69 son de `admin_temp`, y se llevan casi todo el importe: un 89,9 %."
@@ -169,7 +170,7 @@ WHERE p.tienda_id = 5
   AND p.mes BETWEEN '2026-03' AND '2026-09';`
           },
           {
-            enunciado: "**Antes, durante y después.** Tasa de reembolso de la tienda online (tienda 5) por mes, de todos sus meses (de enero de 2024 a octubre de 2026; octubre va a medias, pero una tasa sí se puede comparar), y su z frente a una **línea base**: la media y la desviación (`STDDEV_SAMP`) de las tasas de los 24 meses de **2024 y 2025**, en una CTE aparte, para que el Fantasma no se esconda a sí mismo. Columnas: `mes`, `tasa` (% de pedidos `reembolsado` sobre todos los del mes, redondeado a 2) y `z` (calculado con la tasa **sin redondear**, redondeado a 2), ordenado por `mes`.",
+            enunciado: "**Antes, durante y después.** Tasa de reembolso de la tienda online (tienda 5) por mes, de todos sus meses (de enero de 2024 a octubre de 2026; octubre va a medias, pero una tasa sí se puede comparar), y su z frente a una **línea base**: la media y la desviación (`STDDEV_SAMP`) de las tasas de los 24 meses de **2024 y 2025**, en una CTE aparte, para que el Fantasma no se esconda a sí mismo. Columnas: `mes` (la columna de texto `mes` de `pedidos`, como en la primera parte), `tasa` (% de pedidos `reembolsado` sobre todos los del mes, redondeado a 2) y `z` (calculado con la tasa **sin redondear**, redondeado a 2), ordenado por `mes`.",
             inicial: "",
             comprobaciones: [
               { texto: "Tiene las columnas mes, tasa y z", prueba: (r) => PRUEBA.columnas(r, ["mes", "tasa", "z"]) },

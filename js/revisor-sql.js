@@ -26,6 +26,8 @@
     if (!sinComentarios) return { ok: false, mensaje: "Aún no has escrito ninguna consulta." };
     if (!sinComentarios.endsWith(";"))
       return { ok: false, mensaje: "Termina la consulta con punto y coma `;`: así sabe PostgreSQL dónde acaba." };
+    const copia = MOTOR.noDisponible(sql);
+    if (copia) return { ok: false, mensaje: copia.explicacion || copia.mensaje };
     const n = sentencias(sql).length;
     if (!varias && n > 1)
       return { ok: false, mensaje: `Has escrito ${n} consultas. Aquí se pide **una sola** (un único \`;\` al final).` };
@@ -258,17 +260,30 @@
       // Fuera espacios, unidades y marcas que un novato añade al número («6,7 %», «#2210», «pedido 2210»)
       let t = String(dada).replace(/\s/g, "").replace(/[€◈%#]/g, "").replace(/^(pedido|n\.?º)/i, "");
       // Formato español con punto de miles («-1.548», «12.345,67»): se quitan los puntos y la coma pasa a ser decimal
-      if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, "");
-      // «260 clientes», «el pedido 2210»: si hay un solo número entre palabras, cuenta ese número
+      const miles = x => /^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(x) ? x.replace(/\./g, "")
+        : /^-?\d{1,3}(,\d{3})+\.\d+$/.test(x) ? x.replace(/,/g, "").replace(".", ",") : x;   // y el inglés: «49,505.85»
+      t = miles(t);
+      // «260 clientes», «57 de 156 = 36,5 %»: el número entre palabras (con varios, el del % o el último)
       if (!/^-?[\d.,]+$/.test(t)) {
-        const numeros = String(dada).match(/-?\d[\d.,]*/g) || [];
-        if (numeros.length === 1) t = numeros[0].replace(/[.,]$/, "");
-        if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, "");
+        const numeros = [...String(dada).matchAll(/(-?\d[\d.,]*)\s*(%?)/g)];
+        const elegido = numeros.find(m => m[2]) || numeros[numeros.length - 1];
+        if (elegido) t = miles(elegido[1].replace(/[.,]$/, ""));
+        else {
+          // Sin cifras: «ninguna», «cero», «cinco noches»
+          const PALABRAS = { cero: 0, ninguna: 0, ninguno: 0, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10 };
+          const p = normalizarTexto(dada).split(" ")[0];
+          if (p in PALABRAS) t = String(PALABRAS[p]);
+        }
       }
       const n = Number(t.replace(",", "."));
       return Number.isFinite(n) && Math.abs(n - paso.respuesta) <= (paso.tolerancia || 0) + 1e-9;
     }
-    return [].concat(paso.respuesta).map(normalizarTexto).includes(normalizarTexto(dada));
+    const d = normalizarTexto(dada), validas = [].concat(paso.respuesta).map(normalizarTexto);
+    if (validas.includes(d)) return true;
+    // «No, la diferencia no es significativa»: si la respuesta es un sí/no, cuenta la primera palabra
+    if (!/^no se\b/.test(d) && validas.some(v => (v === "si" || v === "no") && d.split(" ")[0] === v)) return true;   // «no sé» no es «no»
+    // «Es de Héctor Vidal», «Vidal, Héctor»: contiene una respuesta válida larga (palabras enteras), sin negarla («Héctor no»)
+    return !/(^| )no( |$)/.test(d) && validas.some(v => v.length >= 5 && ` ${d} `.includes(` ${v} `));
   }
 
   window.REVISOR = { bienEscrita, ordenImporta, clavesOrden, comparar, revisarEjercicio, revisarReto, resultadoDe, sentencias,

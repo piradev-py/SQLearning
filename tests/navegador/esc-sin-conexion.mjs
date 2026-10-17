@@ -19,11 +19,9 @@ export default async function (b) {
   await b.ir("index.html");
   comprobar("La página queda bajo su control", await b.eval("!!navigator.serviceWorker.controller"));
   const guardadas = await b.eval("caches.keys().then(ks => Promise.all(ks.map(k => caches.open(k).then(c => c.keys())))).then(l => l.flat().map(r => new URL(r.url).pathname))");
-  comprobar("Guarda las lecciones y los datos de todas las etapas", guardadas.filter(p => p.includes("/lecciones/")).length >= 93 && guardadas.filter(p => p.includes("/datos/")).length === 8,
-    guardadas.length + " archivos");
-  // Una diligencia carga PostgreSQL (vendor/), que se guarda al usarlo
-  await b.ir("leccion.html?id=e1-01");
-  comprobar("Primera diligencia con conexión", await listo());
+  comprobar("Guarda las lecciones, los datos de todas las etapas y PostgreSQL", guardadas.filter(p => p.includes("/lecciones/")).length >= 93
+    && guardadas.filter(p => p.includes("/datos/")).length === 8 && guardadas.some(p => p.endsWith("/vendor/pglite/pglite.wasm")), guardadas.length + " archivos");
+  // Sin abrir antes ninguna diligencia con conexión (revisión final, F1): todo tiene que salir de lo guardado al instalar
 
   await b.sinServidor();
   await b.ir("index.html");

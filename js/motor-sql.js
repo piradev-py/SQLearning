@@ -178,6 +178,13 @@
 
   // Órdenes que en el navegador no pueden funcionar y se quedarían esperando
   const NO_DISPONIBLE = /\bCOPY\b[^;]*\b(FROM\s+STDIN|TO\s+STDOUT)\b/i;
+  // El error explicado de esas órdenes, o null (lo usan ejecutar y la revisión de retos y ejercicios)
+  function noDisponible(sql) {
+    const copia = sinTextos(sql).match(NO_DISPONIBLE);
+    if (!copia) return null;
+    const codigo = /^TO/i.test(copia[1]) ? "STDOUT" : "STDIN";
+    return errorAlumno({ mensaje: `COPY … ${codigo === "STDOUT" ? "TO STDOUT" : "FROM STDIN"} no está disponible`, codigo }, sql);
+  }
 
   window.MOTOR = {
     TIEMPO_MAX,
@@ -201,11 +208,8 @@
     ejecutar(sql) {
       return enCola(async () => {
         const t0 = performance.now();
-        const copia = sinTextos(sql).match(NO_DISPONIBLE);
-        if (copia) {
-          const codigo = /^TO/i.test(copia[1]) ? "STDOUT" : "STDIN";
-          return { ok: false, ms: 0, error: errorAlumno({ mensaje: `COPY … ${codigo === "STDOUT" ? "TO STDOUT" : "FROM STDIN"} no está disponible`, codigo }, sql) };
-        }
+        const error = noDisponible(sql);
+        if (error) return { ok: false, ms: 0, error };
         try {
           const resultados = await sesionInterna(db => db.ejecutar(sql));
           const conColumnas = resultados.filter(r => r.columnas.length);
@@ -227,6 +231,14 @@
     },
 
     errorAlumno,
+    noDisponible,
+
+    /** Qué hacer si PostgreSQL no arranca: sin red (aún no guardado), abierto con doble clic o, si no, recargar. */
+    pistaFallo() {
+      if (location.protocol === "file:") return "Has abierto el archivo con doble clic: ábrelo con el servidor (`npm run servir`).";
+      if (!navigator.onLine) return "Estás sin conexión y PostgreSQL aún no se ha guardado en este navegador: conéctate una vez y vuelve a abrirlo.";
+      return "Recarga la página.";
+    },
 
     /** Tablas, columnas, tipos, claves primarias y foráneas del esquema public. */
     esquema() {

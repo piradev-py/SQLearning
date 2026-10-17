@@ -25,7 +25,7 @@
   function piezas() {
     const d = PROGRESO.datos();
     const avance = Object.keys(d.completados).length > 0;
-    const casoCerrado = d.credenciales.includes("exp-8");
+    const casoCerrado = PROGRESO.casoCerrado();
     const lista = FRASES.slice(0, PRESENTACION).map(t => ({ tipo: "frase", html: md(t) }));
     if (!avance) {
       lista.push(...FRASES.slice(PRESENTACION).map(t => ({ tipo: "frase", html: md(t) })));

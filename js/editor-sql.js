@@ -96,7 +96,7 @@
 
     // --- Pintar -----------------------------------------------------------
     // Con textos largos solo se pinta lo que se ve (y un margen): maquetar miles de spans costaba ~70 ms por tecla
-    // shortcut: la ventana se recalcula al escribir y al hacer scroll, no al cambiar de tamaño; basta con un margen generoso
+    // La ventana se recalcula al escribir, al hacer scroll y al cambiar de tamaño (ResizeObserver, más abajo)
     const LINEAS_SIN_VENTANA = 300;
     let lineasHtml = [], altoLinea = 0, ventana = [0, 0];
     function pintar() {
@@ -294,6 +294,7 @@
       opciones.alCambiar?.(area.value);
     });
     area.addEventListener("scroll", () => { sincronizarScroll(); cerrarSugerencias(); });
+    new ResizeObserver(() => pintarVisible(true)).observe(area);   // agrandar el editor descubre líneas sin pintar
     area.addEventListener("blur", () => setTimeout(cerrarSugerencias, 150));
     area.addEventListener("click", cerrarSugerencias);
 

@@ -70,7 +70,7 @@ FROM octubre AS o;`,
       tipo: "interpretar",
       pregunta: "Para la frase de cabecera: ¿qué **%** de **todos** los pedidos de Faro del 1 al 14 de octubre de 2026 (cualquier estado, todas las tiendas) se han hecho en Barcelona (tienda 6)? Redondea a 1 decimal.",
       respuesta: 36.5,
-      tolerancia: 0.1,
+      tolerancia: 0.05,
       pistas: [
         "Filtra `fecha >= '2026-10-01'` (los datos acaban el 14) y calcula `COUNT(*) FILTER (WHERE tienda_id = 6) * 100.0 / COUNT(*)`.",
         "SELECT ROUND(COUNT(*) FILTER (WHERE tienda_id = 6) * 100.0 / COUNT(*), 1) FROM pedidos WHERE fecha >= '2026-10-01' AND fecha < '2026-10-15'; da 36,5."
