@@ -460,14 +460,15 @@ CREATE TABLE envios (
 );
 `;
 
+const ALMACEN_DE = { Valencia: 2, Barcelona: 2, Sevilla: 3, "Málaga": 3, Bilbao: 4 };   // el resto, Getafe
+const TRANSPORTISTAS_DE = { 1: [1, 3], 2: [1, 2], 3: [3], 4: [2] };
+
 function envios() {
   const u = universo();
   const r = azar(4004);
   const ent = (a, b) => a + Math.floor(r() * (b - a + 1));
   const elegir = lista => lista[Math.floor(r() * lista.length)];
   const dos = n => String(n).padStart(2, "0");
-  const ALMACEN_DE = { Valencia: 2, Barcelona: 2, Sevilla: 3, "Málaga": 3, Bilbao: 4 };   // el resto, Getafe
-  const TRANSPORTISTAS_DE = { 1: [1, 3], 2: [1, 2], 3: [3], 4: [2] };
   const ciudadDe = new Map(u.clientes.map(c => [c.id, c.ciudad]));
   const falsos = new Set(u.clientes.filter(c => c.falso).map(c => c.id));
   const delFantasma = p => falsos.has(p.cliente_id) || p.id === u.pedidoReclamado;
@@ -977,3 +978,265 @@ function etapa7() {
 
 writeFileSync(SALIDA + "faro-e7.sql", etapa7());
 console.log("✅ datos/faro-e7.sql");
+
+// --- Etapa 8 (Analítica): lo de la etapa 7 + dos semanas de octubre, la web, los abonos y las nóminas ---------------
+// Semilla propia (8008). Todo lo anterior al 2026-10-01 queda idéntico a la etapa 7.
+// Lucía desactiva admin_temp (lo que se practicó en e6-12) y Faro sigue vendiendo del 1 al 14 de octubre, con
+// Barcelona abierta por fin. La web registra sesiones y pasos del embudo desde abril; la prueba A/B del pago en un paso
+// va de julio a septiembre (desde octubre, para todos). Pista final: los 69 reembolsos del Fantasma se abonaron por
+// transferencia a una sola cuenta… la de la nómina de Héctor. Los pedidos del Fantasma no tienen sesión web.
+const esquemaAnalitica = `
+CREATE TABLE sesiones_web (
+  id integer PRIMARY KEY,
+  inicio timestamp NOT NULL,
+  cliente_id integer REFERENCES clientes (id),
+  dispositivo text NOT NULL CHECK (dispositivo IN ('movil', 'ordenador')),
+  variante text CHECK (variante IN ('A', 'B'))
+);
+
+CREATE TABLE eventos_web (
+  id integer PRIMARY KEY,
+  sesion_id integer NOT NULL REFERENCES sesiones_web (id),
+  momento timestamp NOT NULL,
+  evento text NOT NULL CHECK (evento IN ('visita', 'producto', 'carrito', 'pago', 'compra')),
+  pedido_id integer REFERENCES pedidos (id)
+);
+
+CREATE TABLE abonos (
+  id integer PRIMARY KEY,
+  pedido_id integer NOT NULL UNIQUE REFERENCES pedidos (id),
+  fecha date NOT NULL,
+  importe numeric(10, 2) NOT NULL,
+  medio text NOT NULL CHECK (medio IN ('tarjeta', 'bizum', 'efectivo', 'transferencia')),
+  cuenta_destino text
+);
+`;
+const CUENTA_HECTOR = "ES76 **** **** **** **** 4417";
+
+function etapa8Tablas() {
+  const u = universo(), t6 = etapa6Tablas(), envios4 = envios();
+  const r = azar(8008);
+  const ent = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const elegir = lista => lista[Math.floor(r() * lista.length)];
+  const ponderado = pares => { let x = r() * pares.reduce((s, [, p]) => s + p, 0); for (const [v, p] of pares) { if ((x -= p) < 0) return v; } return pares[0][0]; };
+  const dos = n => String(n).padStart(2, "0");
+  const MIN = 60000, DIA = 86400000;
+  const ms = txt => Date.parse(txt.replace(" ", "T") + "Z");
+  const marca = t => new Date(t).toISOString().slice(0, 19).replace("T", " ");
+  const enDia = (t, minutos) => t + minutos * MIN + ent(0, 59) * 1000;
+  const FIN = ms("2026-10-14 23:59:59");
+  const OCTUBRE = Array.from({ length: 14 }, (_, k) => Date.parse("2026-10-01") + k * DIA);
+  const sinTildes = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ñ/g, "n").replace(/\s+/g, "");
+  const TIENDA_DE = { Madrid: 1, Valencia: 2, Sevilla: 3, Bilbao: 4 };
+  const ATENCION = ["marcos.gil", "diego.castano", "laura.pena"];
+
+  const falsos = new Set(u.clientes.filter(c => c.falso).map(c => c.id));
+  const delFantasma = p => falsos.has(p.cliente_id) || p.id === u.pedidoReclamado;
+  const reales = u.clientes.filter(c => !c.falso);
+  const ciudadDe = new Map(u.clientes.map(c => [c.id, c.ciudad]));
+  const precios = filasProductos.filter(f => f[6]).map(f => ({ pid: f[0], precio: f[3] }));
+  const auditoria = [["2026-10-01 09:00:00", "lucia.mora", "cuentas", "UPDATE", 28, "activa", "true", "false"]];
+
+  // --- Clientes nuevos de octubre: Barcelona (alta en la tienda) y unos pocos online ---
+  const emails = new Set(u.clientes.map(c => c.email)), nombres = new Set(u.clientes.map(c => c.nombre));
+  const NOMBRES_BCN = ["Jordi", "Montserrat", "Pau", "Laia", "Arnau", "Mireia", "Oriol", "Clara", "Pol", "Aina", "Roger", "Berta",
+    "Xavier", "Anna", "Gerard", "Judit", "Albert", "Marta", "Marc", "Núria", "Joan", "Meritxell", "Sergi", "Ona"];
+  const APELLIDOS_BCN = ["Puig", "Roca", "Serra", "Font", "Pujol", "Casas", "Riera", "Vila", "Camps", "Bosch", "Mas", "Costa",
+    "Prats", "Sala", "Grau", "Rovira", "Martí", "Torrent", "Comas", "Ribas"];
+  const nuevos = [];
+  const nuevoCliente = (ciudad, altaT, cuenta) => {
+    let nombre;
+    do { nombre = `${elegir(NOMBRES_BCN)} ${elegir(APELLIDOS_BCN)}`; } while (nombres.has(nombre));
+    nombres.add(nombre);
+    let mail = `${sinTildes(nombre.split(" ")[0])}.${sinTildes(nombre.split(" ")[1])}@${elegir(["correo.example", "mail.example", "red.example"])}`;
+    while (emails.has(mail)) mail = mail.replace("@", ent(1, 9) + "@");
+    emails.add(mail);
+    const c = { id: 301 + nuevos.length, nombre, email: mail, telefono: r() < 0.12 ? null : `6${ent(10, 99)} ${ent(100, 999)} ${ent(100, 999)}`,
+      ciudad, socio: r() < 0.2, alta: marca(altaT) };
+    nuevos.push(c);
+    auditoria.push([c.alta, cuenta, "clientes", "INSERT", c.id, null, null, c.email]);
+    return c;
+  };
+
+  // --- Pedidos del 1 al 14 de octubre: el ritmo de septiembre en cada tienda; Barcelona, de lunes a sábado ---
+  const especificaciones = [];   // { cliente, t, tienda, estado }
+  const septiembre = [1, 2, 3, 4, 5].map(t => u.pedidos.filter(p => p.tienda_id === t && p.fecha.startsWith("2026-09") && !delFantasma(p)).length / 30);
+  const ESTADOS = [["entregado", 83], ["en camino", 4], ["cancelado", 9], ["reembolsado", 2]];
+  for (const dia of OCTUBRE) {
+    for (const t of [1, 2, 3, 4, 5]) {
+      // Redondeo al azar: Bilbao vende ~0,2 pedidos al día y con Math.round no tendría ninguno
+      const n = Math.floor(septiembre[t - 1] * (0.7 + 0.6 * r()) + r());
+      for (let k = 0; k < n; k++) {
+        const online = t === 5;
+        const pool = online ? reales : reales.filter(c => TIENDA_DE[c.ciudad] === t);
+        // Online también de madrugada (6 %); el día 14, no más tarde de las 21 (el envío sale antes de cerrar los datos)
+        const minuto = online ? (r() < 0.06 ? ent(0, 6 * 60) : ent(8 * 60, (dia === OCTUBRE[13] ? 21 : 23) * 60 + 59)) : ent(10 * 60, 20 * 60 + 59);
+        let cliente = elegir(pool);
+        if (online && dia > OCTUBRE[0] && r() < 0.05) cliente = null;    // cliente nuevo de la web (se crea al ordenar)
+        especificaciones.push({ cliente, t: enDia(dia, minuto), tienda: t, estado: ponderado(ESTADOS) });
+      }
+    }
+    if (new Date(dia).getUTCDay() !== 0) {
+      for (let k = ent(4, 6); k > 0; k--)
+        especificaciones.push({ cliente: "barcelona", t: enDia(dia, ent(10 * 60, 20 * 60 + 59)), tienda: 6, estado: ponderado([["entregado", 93], ["cancelado", 7]]) });
+    }
+  }
+  especificaciones.sort((a, b) => a.t - b.t);
+  // Reembolsos de octubre a la tasa normal (~2 %): al menos uno online y otro en tienda, de la primera semana
+  // (con ~100 pedidos, el azar podía dejar octubre sin ninguno)
+  for (const online of [true, false])
+    elegir(especificaciones.filter(e => e.tienda !== 6 && (e.tienda === 5) === online && e.estado === "entregado" && e.t < OCTUBRE[7])).estado = "reembolsado";
+  const deBarcelona = reales.filter(c => c.ciudad === "Barcelona"), nuevosBcn = [];
+  const pedidos = [], lineas = [], enviosOct = [];
+  for (const e of especificaciones) {
+    let cliente = e.cliente;
+    if (cliente === null) cliente = nuevoCliente(elegir(["Madrid", "Valencia", "Sevilla", "Zaragoza", "Málaga", "Valladolid"]), e.t - ent(5, 40) * MIN, "app_web");
+    if (cliente === "barcelona") {
+      const repite = deBarcelona.concat(nuevosBcn.filter(c => ms(c.alta) < e.t - DIA));
+      cliente = r() < 0.6 ? nuevoCliente("Barcelona", e.t - ent(5, 40) * MIN, "app_tienda") : elegir(repite);
+      if (cliente.id > 300 && !nuevosBcn.includes(cliente)) nuevosBcn.push(cliente);
+    }
+    const id = 2525 + pedidos.length;
+    let total = 0;
+    const vistos = new Set();
+    for (let k = ponderado([[1, 55], [2, 30], [3, 15]]); k > 0; k--) {
+      let p;
+      do { p = elegir(precios); } while (vistos.has(p.pid));
+      vistos.add(p.pid);
+      const cantidad = ponderado([[1, 80], [2, 15], [3, 5]]);
+      lineas.push([id, p.pid, cantidad, p.precio]);
+      total += cantidad * p.precio;
+    }
+    const metodo = e.tienda === 5 ? ponderado([["tarjeta", 70], ["bizum", 20], ["transferencia", 10]])
+      : ponderado([["tarjeta", 60], ["efectivo", 25], ["bizum", 15]]);
+    const pedido = { id, cliente_id: cliente.id, tienda_id: e.tienda, fecha: marca(e.t), estado: e.estado, total: Math.round(total * 100) / 100,
+      metodo_pago: metodo, nota: r() < 0.06 ? elegir(["Dejar en conserjería", "Llamar antes de entregar", "Es un regalo", "Entregar por la tarde", "Factura a nombre de empresa"]) : null };
+    // Lo que da tiempo a pasar antes del 14 a medianoche: envío, entrega y, si toca, el reembolso
+    let reembolso = null;
+    if (e.tienda === 5 && pedido.estado !== "cancelado") {
+      const almacen = ALMACEN_DE[ciudadDe.get(cliente.id) ?? cliente.ciudad] || 1;
+      let salida = e.t + ent(60, 36 * 60) * MIN;
+      if (salida > FIN - 60 * MIN) salida = e.t + ent(10, 50) * MIN;
+      let entrega = enDia(Date.parse(marca(salida).slice(0, 10)) + ent(1, 4) * DIA, ent(9 * 60, 20 * 60));
+      if (pedido.estado === "reembolsado") {
+        reembolso = enDia(Date.parse(marca(entrega).slice(0, 10)) + ent(1, 3) * DIA, ent(9 * 60, 18 * 60));
+        if (reembolso > FIN) { pedido.estado = "entregado"; reembolso = null; }
+      }
+      if (entrega > FIN || pedido.estado === "en camino") { pedido.estado = "en camino"; entrega = null; }
+      const estadoEnvio = pedido.estado === "entregado" ? "entregado" : pedido.estado === "en camino" ? "en reparto" : "devuelto";
+      enviosOct.push([envios4.length + enviosOct.length + 1, id, almacen, elegir(TRANSPORTISTAS_DE[almacen]), marca(salida), entrega && marca(entrega), estadoEnvio,
+        (ent(39, 99) / 10).toFixed(2) * 1]);
+    } else if (pedido.estado === "reembolsado") {
+      reembolso = enDia(Date.parse(pedido.fecha.slice(0, 10)) + ent(1, 4) * DIA, ent(9 * 60, 18 * 60));
+      if (reembolso > FIN) { pedido.estado = "entregado"; reembolso = null; }
+    }
+    if (reembolso) auditoria.push([marca(reembolso), elegir(ATENCION), "pedidos", "UPDATE", id, "estado", "entregado", "reembolsado"]);
+    pedidos.push(pedido);
+  }
+  auditoria.sort((a, b) => a[0].localeCompare(b[0]));
+
+  // --- La web: una sesión con compra por cada pedido online (abril → 14 de octubre), menos los del Fantasma ---
+  // El resto del embudo se construye hacia atrás desde las compras, con las tasas de cada grupo:
+  // A (y abril–junio): carrito→pago 70 %, pago→compra 80 % en ordenador y 65 % en móvil.
+  // B (prueba de julio a septiembre, y desde octubre para todos): pago en un paso, ~10 puntos más de carrito→compra.
+  // B recibe más compras (0,545) para que los dos grupos tengan los mismos carritos: el reparto fue al 50 %.
+  const TASAS = { A: { pago: 0.70, ordenador: 0.80, movil: 0.65 }, B: { pago: 0.77, ordenador: 0.86, movil: 0.72 } };
+  const compras = u.pedidos.filter(p => p.tienda_id === 5 && p.fecha >= "2026-04-01" && !delFantasma(p)).concat(pedidos.filter(p => p.tienda_id === 5));
+  const sesiones = [];   // { inicio, cliente_id, dispositivo, variante, pasos: [[momento, evento, pedido_id]] }
+  const celdas = new Map();
+  const PRODUCTOS = [[1, 35], [2, 25], [3, 20], [4, 12], [5, 8]];
+  const ORDEN = ["producto", "carrito", "pago", "compra"];
+  const recorrido = (inicio, hasta, pedidoId = null) => {
+    // visita, producto (1–5 veces), carrito, pago, compra: entre 30 s y 4 min entre pasos
+    const pasos = [[inicio, "visita", null]];
+    let t = inicio;
+    for (const ev of ORDEN.slice(0, ORDEN.indexOf(hasta) + 1)) {
+      for (let k = ev === "producto" ? ponderado(PRODUCTOS) : 1; k > 0; k--) {
+        t += ent(30, 240) * 1000;
+        pasos.push([t, ev, ev === "compra" ? pedidoId : null]);
+      }
+    }
+    return pasos;
+  };
+  for (const p of compras) {
+    const dispositivo = r() < 0.55 ? "movil" : "ordenador";
+    const variante = p.fecha >= "2026-07-01" && p.fecha < "2026-10-01" ? (r() < 0.545 ? "B" : "A") : null;
+    const pasos = recorrido(0, "compra", p.id);
+    const desfase = ms(p.fecha) - ent(1, 3) * MIN - pasos[pasos.length - 1][0];       // la compra, minutos antes del pedido
+    pasos.forEach(x => { x[0] += desfase; });
+    sesiones.push({ inicio: pasos[0][0], cliente_id: p.cliente_id, dispositivo, variante, pasos });
+    const clave = `${p.fecha.slice(0, 7)}|${dispositivo}|${variante ?? ""}`;
+    celdas.set(clave, (celdas.get(clave) || 0) + 1);
+  }
+  const altaDe = new Map(reales.map(c => [c.id, ms(c.alta)]));
+  for (const [clave, c] of celdas) {
+    const [mes, dispositivo, v] = clave.split("|");
+    const tasas = TASAS[v || (mes >= "2026-10" ? "B" : "A")];
+    const pagos = Math.round(c / tasas[dispositivo]), carritos = Math.round(pagos / tasas.pago);
+    const productos = Math.round(carritos / 0.30), visitas = Math.round(productos / 0.65);
+    const inicioMes = Date.parse(mes + "-01"), finMes = FIN - 30 * MIN;
+    for (const [hasta, n] of [["pago", pagos - c], ["carrito", carritos - pagos], ["producto", productos - carritos], ["visita", visitas - productos]]) {
+      for (let k = 0; k < n; k++) {
+        let inicio;
+        do { inicio = enDia(inicioMes + ent(0, 30) * DIA, ponderado([[ent(8 * 60, 23 * 60 + 30), 92], [ent(0, 7 * 60), 8]])); }
+        while (marca(inicio).slice(0, 7) !== mes || inicio > finMes);
+        let cliente = null;
+        if (r() < 0.35) { const x = elegir(reales); if (altaDe.get(x.id) < inicio) cliente = x.id; }
+        sesiones.push({ inicio, cliente_id: cliente, dispositivo, variante: v || null, pasos: recorrido(inicio, hasta) });
+      }
+    }
+  }
+  sesiones.sort((a, b) => a.inicio - b.inicio || a.pasos.length - b.pasos.length);
+  const filasSesiones = sesiones.map((s, i) => [i + 1, marca(s.inicio), s.cliente_id, s.dispositivo, s.variante]);
+  const eventos = sesiones.flatMap((s, i) => s.pasos.map(([t, ev, pid]) => [i + 1, t, ev, pid]))
+    .sort((a, b) => a[1] - b[1] || a[0] - b[0])
+    .map(([sid, t, ev, pid], i) => [i + 1, sid, marca(t), ev, pid]);
+
+  // --- Nóminas (una cuenta enmascarada por empleado) y abonos de cada reembolso ---
+  const usadas = new Set([CUENTA_HECTOR]);
+  const cuentaNueva = () => { let c; do { c = `ES${dos(ent(10, 99))} **** **** **** **** ${ent(1000, 9999)}`; } while (usadas.has(c)); usadas.add(c); return c; };
+  const nominas = Array.from({ length: 23 }, (_, i) => [i + 1, i + 1 === 5 ? CUENTA_HECTOR : cuentaNueva()]);
+  const cuentaCliente = new Map();
+  const fechaReembolso = new Map(t6.auditoria.concat(auditoria.map(a => [0, ...a]))
+    .filter(a => a[3] === "pedidos" && a[4] === "UPDATE" && a[6] === "estado").map(a => [a[5], a[1].slice(0, 10)]));
+  const abonos = u.pedidos.concat(pedidos).filter(p => p.estado === "reembolsado").map(p => {
+    if (delFantasma(p)) return [p.id, fechaReembolso.get(p.id), p.total, "transferencia", CUENTA_HECTOR];
+    if (p.metodo_pago !== "transferencia") return [p.id, fechaReembolso.get(p.id), p.total, p.metodo_pago, null];
+    if (!cuentaCliente.has(p.cliente_id)) cuentaCliente.set(p.cliente_id, cuentaNueva());
+    return [p.id, fechaReembolso.get(p.id), p.total, "transferencia", cuentaCliente.get(p.cliente_id)];
+  });
+  if (abonos.some(a => !a[1])) throw new Error("Hay un reembolso sin su UPDATE en auditoria");
+  abonos.sort((a, b) => a[1].localeCompare(b[1]) || a[0] - b[0]);
+
+  // Último acceso de las cuentas que han trabajado en octubre
+  const ultimo = new Map();
+  for (const a of auditoria) if (!ultimo.has(a[1]) || a[0] > ultimo.get(a[1])) ultimo.set(a[1], a[0]);
+  return { nuevos, pedidos, lineas, envios: enviosOct, auditoria: auditoria.map((a, i) => [498 + i, ...a]), ultimo, filasSesiones, eventos,
+    abonos: abonos.map((a, i) => [i + 1, ...a]), nominas };
+}
+
+function etapa8() {
+  const t = etapa8Tablas();
+  return [
+    etapa7().replace("datos de la etapa 7", "datos de la etapa 8"),
+    "UPDATE cuentas SET activa = FALSE WHERE usuario = 'admin_temp';",
+    insertar("clientes", ["id", "nombre", "email", "telefono", "ciudad", "socio", "alta"],
+      t.nuevos.map(c => [c.id, c.nombre, c.email, c.telefono, c.ciudad, c.socio, c.alta])),
+    insertar("pedidos", ["id", "cliente_id", "tienda_id", "fecha", "estado", "total", "metodo_pago", "nota", "mes"],
+      t.pedidos.map(p => [p.id, p.cliente_id, p.tienda_id, p.fecha, p.estado, p.total, p.metodo_pago, p.nota, p.fecha.slice(0, 7)])),
+    insertar("lineas_pedido", ["pedido_id", "producto_id", "cantidad", "precio_unitario"], t.lineas),
+    insertar("envios", ["id", "pedido_id", "almacen_id", "transportista_id", "salida", "entrega", "estado", "coste"], t.envios),
+    insertar("auditoria", ["id", "momento", "usuario", "tabla", "operacion", "registro_id", "columna", "valor_antes", "valor_despues"], t.auditoria),
+    ...[...t.ultimo].map(([us, m]) => `UPDATE cuentas SET ultimo_acceso = '${m}' WHERE usuario = '${us}' AND (ultimo_acceso IS NULL OR ultimo_acceso < '${m}');`),
+    esquemaAnalitica,
+    insertar("sesiones_web", ["id", "inicio", "cliente_id", "dispositivo", "variante"], t.filasSesiones),
+    insertar("eventos_web", ["id", "sesion_id", "momento", "evento", "pedido_id"], t.eventos),
+    insertar("abonos", ["id", "pedido_id", "fecha", "importe", "medio", "cuenta_destino"], t.abonos),
+    "ALTER TABLE fichas_empleados ADD COLUMN cuenta_nomina text;",
+    ...t.nominas.map(([id, c]) => `UPDATE fichas_empleados SET cuenta_nomina = '${c}' WHERE empleado_id = ${id};`),
+    "ALTER TABLE fichas_empleados ALTER COLUMN cuenta_nomina SET NOT NULL;"
+  ].join("\n");
+}
+
+writeFileSync(SALIDA + "faro-e8.sql", etapa8());
+console.log("✅ datos/faro-e8.sql");

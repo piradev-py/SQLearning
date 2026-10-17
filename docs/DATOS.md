@@ -172,4 +172,45 @@ Igual que `faro-e6.sql` + `vacaciones` + `fichajes` + `sesiones` (todo de 2026-0
   evento anterior a cada primera acción de la noche es siempre un fichaje de Héctor (75 de 75; las otras 10 acciones van detrás de otra acción).
 - Aquí, por fin, se nombra a Héctor como sospechoso (regla de HISTORIA). La etapa 8 lo confirma y cuantifica el fraude.
 
+## Etapa 8 · `faro-e8.sql` (semilla 8008 para lo nuevo)
+Igual que `faro-e7.sql` (todo lo anterior al 2026-10-01 **idéntico**) + lo siguiente. Comprobado con PGlite
+(`node herramientas/consultar.mjs faro-e8 "SELECT …"`). «Hoy» es el **2026-10-15**: los datos acaban el 14.
+- **Estado tras e6-12:** `admin_temp` con `activa = false`; `auditoria` 498 = `2026-10-01 09:00:00`, `lucia.mora`, `cuentas`, `UPDATE`,
+  28, `activa`, `true` → `false`. `auditoria` llega a **533** (498–533 en octubre: 32 altas de `app_tienda`, 1 de `app_web`, 2 reembolsos
+  y la de Lucía). En octubre **nada** de `admin_temp`, ni altas de madrugada. `vacaciones`, `fichajes` y `sesiones` acaban el 2026-09-30.
+- **Octubre (1–14):** **156 pedidos** (ids 2525–2680, `mes` = `'2026-10'`; total **2 680**), 4 257 líneas en total, 1 387 envíos.
+  Por tienda: Madrid 18 · Valencia 11 · Sevilla 11 · Bilbao 4 · Online 55 · **Barcelona 57**. Facturación neta de octubre (sin
+  cancelados ni reembolsados) **49 505,85 €**. Reembolsos: **2** (Madrid y online), los dos por Atención al cliente.
+  Pedidos online de octubre: 35 entregados, 14 en camino (envío «en reparto», sin entrega), 5 cancelados (sin envío), 1 reembolsado.
+- **Barcelona (6):** 57 pedidos de lunes a sábado (10:00–21:00), 44 clientes distintos, **32 clientes nuevos** (de los 33 nuevos, ids 301–333;
+  el otro es online, de Valladolid; alta minutos antes de su primer pedido), sin reembolsos. **333** clientes.
+- **`sesiones_web`** (**5 403**; `id`, `inicio`, `cliente_id` NULL en 3 188, `dispositivo` móvil/ordenador, `variante`) y **`eventos_web`**
+  (**16 018**; `id`, `sesion_id`, `momento`, `evento`, `pedido_id` solo en `compra`), del 2026-04-01 al 2026-10-14.
+  - Sesiones que llegan a cada paso: visita 5 403 · producto 3 512 (**8 238 eventos**: contar eventos ≠ contar sesiones) · carrito 1 054 ·
+    pago 764 · compra 559. Embudo limpio: cada sesión tiene todos los pasos anteriores, en orden.
+  - **559 compras = 559 pedidos online** de abril a octubre (también cancelados), mismo cliente, 1–3 min antes de `pedidos.fecha`. Los
+    pedidos del Fantasma y el 2210 **no tienen sesión**.
+  - Abril–junio (sin prueba): visita→producto 65,0 % · producto→carrito 30,0 % · carrito→pago ~70 % · pago→compra **79,6 % ordenador y
+    64,9 % móvil** (la caída del móvil, e8-04). Sesiones: ~60 % móvil.
+  - **Prueba A/B** (2026-07-01 a 09-30; 1 475 sesiones A y 1 462 B; fuera de la prueba, `variante` NULL): carrito→compra
+    **A 142/288 = 49,3 %**, **B 171/285 = 60,0 %**, **z = 2,57**. Ticket medio de sus pedidos: A 398,97 € y B 423,81 €, **z = 0,45** (no cambia).
+    Desde octubre el pago en un paso es para todos (tasas de B).
+- **`abonos`** (**125**, uno por pedido reembolsado; `fecha` = la del `UPDATE estado` de `auditoria`; `importe` = total): transferencia 74 ·
+  tarjeta 39 · bizum 10 · efectivo 2. Los normales vuelven por el medio de pago; las transferencias, a una cuenta del cliente.
+  **Los 69 del Fantasma: transferencia a `ES76 **** **** **** **** 4417`** (69 abonos, 10 clientes, **36 470,20 €**); las demás cuentas
+  reciben 1 abono de 1 cliente.
+- **`fichas_empleados.cuenta_nomina`**: una por empleado; la de **Héctor (5) es `ES76 **** **** **** **** 4417`**. Ninguna otra nómina
+  recibe abonos.
+
+### Cifras para las lecciones de la etapa 8
+- e8-03 · Clientes por cohorte trimestral (primer pedido no cancelado): 2024-T1 73 (engaña: los datos empiezan ahí) · T2 39 · T3 25 ·
+  T4 20 · **2025: 18 · 28 · 18 · 18** · 2026: 17 · 22 · 15 · T4 35 (Barcelona). Todas ≥ 15: valen trimestres.
+- e8-07 · z de unidades por producto (2026 ene–sep, netos): 32 (74 u., z 2,69) · 30 (68, 2,03) · 12 (62, 1,36) · 13 (60, 1,14) ·
+  **8 y 25 empatan con 59 (z 1,03) en el 5.º puesto**: el desempate por `producto_id` del enunciado deja el 8; decir en el enunciado
+  que el desempate decide, o pedir el top 4.
+- e8-12 · Daño de `admin_temp`: 69 pedidos, 10 clientes, 36 470,20 €. Reembolsos online de mar–sep 2026: 82, de ellos 69 del Fantasma
+  (**89,9 %** del importe). Tasa de reembolso online frente a la línea base 2024–2025: z > 3 en **5** meses (2026-03 4,40 · 04 5,85 ·
+  05 5,58 · 06 3,38 · 08 4,60; 09 2,98; 07 solo 1,42) y z > 2 en 8 (incluido 2025-10, 2,45, que es de la línea base); **octubre 1,82 %,
+  z −0,15** (vuelve a lo normal). Noches: **(true, true) 75** y ninguna fila más (75/0/0).
+
 Las cifras exactas se consultan con el propio motor (laboratorio o `tests/`), nunca a ojo.

@@ -106,8 +106,8 @@ quede pendiente y vuelve a pasar los tests.
 
 ## Etapa 8 · Analítica
 - [x] Plan detallado etapa 8 (12 niveles) en `docs/PLAN_CURSO.md`, con los datos nuevos que necesita `faro-e8.sql`
-- [ ] Datos `faro-e8.sql` (octubre 1–14 con Barcelona, `sesiones_web`/`eventos_web` con la prueba A/B, `abonos`,
-  `fichas_empleados.cuenta_nomina`, admin_temp desactivada) y cifras en `docs/DATOS.md`
+- [x] Datos `faro-e8.sql` (octubre 1–14 con Barcelona, `sesiones_web`/`eventos_web` con la prueba A/B, `abonos`,
+  `fichas_empleados.cuenta_nomina`, admin_temp desactivada) y cifras en `docs/DATOS.md` (2,1 MB; comprobado con PGlite en Node: `herramientas/consultar.mjs`)
 - [ ] Lecciones e8-01…e8-12 y revisión final (`qa-estres` + `alumno-novato`)
 
 ## Versión publicada
