@@ -3,7 +3,7 @@
    Las frases aparecen una a una; un clic (o Enter/Espacio) adelanta
    la siguiente. Si ya hay avance, tras la frase 4 llega
    «Anteriormente en el caso…». Al final: sello y «Continuar».
-   Con movimiento reducido: todo a la vez y el botón a los 3 s.
+   Con movimiento reducido: el mismo ritmo, con un fundido sin movimiento (css/inicio.css).
    PROLOGO.iniciar(alTerminar)
    ============================================================ */
 (function () {
@@ -20,7 +20,6 @@
   const PRESENTACION = 3;                // frases que se ven también al volver con avance
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const md = s => esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  const reducido = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Las piezas que se van mostrando, según el avance del analista
   function piezas() {
@@ -100,20 +99,14 @@
       if (empezado) return;
       empezado = true;
       entrar.hidden = true;
-      ayuda.hidden = reducido();
+      ayuda.hidden = false;
       if (window.MUSICA && !MUSICA.vozSilenciada()) MUSICA.voz(VOZ);
-      if (reducido()) {
-        lista.forEach(mostrar);
-        i = lista.length;
-        reloj = setTimeout(terminar, 3000);
-      } else {
-        siguiente();
-      }
+      siguiente();
       raiz.focus();
     }
 
     // Antes de empezar, cualquier clic o Enter/Espacio abre el caso; después, adelantan la frase siguiente
-    const avanzar = () => { if (!empezado) empezar(); else if (!terminado && !reducido()) siguiente(); };
+    const avanzar = () => { if (!empezado) empezar(); else if (!terminado) siguiente(); };
     raiz.onclick = ev => {
       if (ev.target.closest("[data-musica], [data-voz], [data-continuar]")) return;
       avanzar();

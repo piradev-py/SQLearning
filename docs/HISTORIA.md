@@ -14,7 +14,7 @@ le hablan de tú («Oye, ¿puedes mirar…?»).
 ## Prólogo (se ve SIEMPRE al entrar, antes de la hoja de ruta)
 Secuencia breve (~30–40 s): las frases aparecen una a una sobre la ciudad de neón; al final, el botón
 «Continuar a la hoja de ruta». Hacer clic adelanta la frase siguiente (se leen todas igualmente). Con movimiento
-reducido aparecen todas a la vez y el botón llega a los pocos segundos. Texto (en `js/prologo.js`):
+reducido el ritmo es el mismo, pero cada frase entra con un fundido, sin desplazamiento (petición del usuario). Texto (en `js/prologo.js`):
 
 Texto definitivo del usuario (igual que la locución, que no se puede cambiar):
 

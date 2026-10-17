@@ -52,6 +52,11 @@ body { background: transparent; min-height: 100vh; }
 .prologo-pista { color: var(--texto); }
 .prologo-ultimo { color: var(--texto-suave); }
 @keyframes aparecer { from { opacity: 0; transform: translateY(6px); filter: blur(3px); } }
+@keyframes fundido { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  /* Prólogo: frase a frase con un fundido, sin movimiento (la regla general de tema.css dejaría la duración en 0) */
+  .prologo-frase, .prologo-antes, .prologo-sello { animation-name: fundido !important; animation-duration: 0.8s !important; }
+}
 
 .prologo-sello {
   margin: 8px 0 0;

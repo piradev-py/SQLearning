@@ -87,7 +87,7 @@ quede pendiente y vuelve a pasar los tests.
   (e4-10 «devuelto», e4-06 «lo vendido», e3-05 predicción, café repetido) y botón «Ver mi resultado» en «Diligencia superada».
   Quedan (menores):
   - [x] e3-09 partes 1 y 2: sin `ORDER BY tienda_id` aprueba (ahora exige ORDER BY) (el GROUP BY ya lo da en orden por casualidad)
-  - [ ] Gráfico de líneas por mes: los meses sin filas no salen y el eje los junta (habrá que enseñar `generate_series` en la etapa 7)
+  - [x] Gráfico de líneas por mes: los meses sin filas no salen y el eje los junta → salen como hueco (sin inventar ceros), con nota que sugiere `generate_series`; un valor aislado lleva su punto
   - [x] Noche: en gráficos de 5 líneas, las series 2 y 4 (magenta y violeta) se distinguen poco → violeta `#9085e9` (ΔE 15 → 20,6, validado)
   - [x] e3-03: la comprobación del reto muestra las cifras antes de escribir nada → ya no (revisados los demás retos: solo pasaba aquí)
 
@@ -116,7 +116,7 @@ quede pendiente y vuelve a pasar los tests.
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)
-- [ ] Prólogo con movimiento reducido: ¿frase a frase con fundido (sin movimiento) en vez de todo de golpe? (el Windows del usuario lo tiene activado)
+- [x] Prólogo con movimiento reducido: frase a frase con un fundido de opacidad (sin desplazamiento), como sin movimiento reducido
 - [ ] Figuras del ambiente historia (lluvia, carteles, siluetas de personajes, el Fantasma) — ver `docs/ESTILO.md`
 - [ ] Pulido visual de la página de lección, pasos «sobre el papel» y pantalla de diligencia superada
 

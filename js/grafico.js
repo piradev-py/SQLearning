@@ -26,6 +26,24 @@
   const etiqueta = v => (v === null || v === undefined ? "NULL" : v instanceof Date ? v.toISOString().slice(0, 10) : String(v));
   const pareceMes = s => /^\d{4}-\d{2}(-\d{2})?([ T].*)?$/.test(s);
 
+  // Meses sin filas: se añaden al eje como huecos (la línea se corta), sin inventar ceros.
+  // Solo si todas las etiquetas son meses ('2026-08') o días 1 a medianoche (date_trunc('month', …)).
+  const esMes = s => s.length === 7 || (s.slice(7, 10) === "-01" && (s.length === 10 || /^[ T]00:00/.test(s.slice(10))));
+  function rellenarMeses(xs) {
+    if (xs.length < 2 || !xs.every(esMes)) return { xs, huecos: new Set() };
+    const resto = xs[0].slice(7), tiene = new Set(xs.map(x => x.slice(0, 7)));
+    let [y, m] = xs[0].slice(0, 7).split("-").map(Number);
+    const fin = xs[xs.length - 1].slice(0, 7), todas = [], huecos = new Set();
+    for (let k = 0; k <= MAX_PUNTOS; k++) {
+      const mes = `${y}-${String(m).padStart(2, "0")}`;
+      if (!tiene.has(mes)) huecos.add(mes + resto);
+      todas.push(tiene.has(mes) ? xs.find(x => x.startsWith(mes)) : mes + resto);
+      if (mes === fin) return huecos.size ? { xs: todas, huecos } : { xs, huecos };
+      if (++m > 12) { m = 1; y++; }
+    }
+    return { xs, huecos: new Set() };       // demasiados meses: se dejan como estaban
+  }
+
   // --- Análisis: ¿se puede dibujar? ¿cómo? ---------------------------------
   // Además de la forma, descarta lo que no se puede dibujar con sentido: todo NULL, o valores
   // gigantes o infinitos (1e308 dejaba sin fin el bucle de marcas)
@@ -63,8 +81,8 @@
 
     // Tres columnas con la primera repetida: (x, grupo, valor) → una serie por grupo
     if (repetidas && r.columnas.length === 3 && num(2)) {
-      const xs = [...new Set(etiquetas0)];
-      if (ordenar) xs.sort(ordenar);
+      let xs = [...new Set(etiquetas0)], huecos = new Set();
+      if (ordenar) { xs.sort(ordenar); ({ xs, huecos } = rellenarMeses(xs)); }
       const grupos = [...new Set(r.filas.map(f => etiqueta(f[1])))]
         .sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
       if (grupos.length > MAX_SERIES) {
@@ -81,7 +99,7 @@
       const limite = forma === "barras" ? MAX_BARRAS : MAX_PUNTOS;
       if (xs.length > limite) return demasiadas(xs.length, limite, c[0]);
       return {
-        ok: true, forma, x: r.columnas[0], etiquetas: xs, ordenado: !!ordenar,
+        ok: true, forma, x: r.columnas[0], etiquetas: xs, ordenado: !!ordenar, huecos,
         paneles: [{ titulo: `${r.columnas[2]} por ${r.columnas[0]} y ${r.columnas[1]}`, medida: r.columnas[2],
           series: grupos.map((g, i) => ({ nombre: num(1) ? `${r.columnas[1]} ${g}` : g, valores: valores[i], color: i })) }]
       };
@@ -100,14 +118,16 @@
     let filas = r.filas;
     if (ordenar) filas = [...filas].sort((a, b) => ordenar(etiqueta(a[0]), etiqueta(b[0])));
     const usadas = medidas.slice(0, MAX_PANELES);
+    const { xs, huecos } = ordenar ? rellenarMeses(filas.map(f => etiqueta(f[0]))) : { xs: filas.map(f => etiqueta(f[0])), huecos: new Set() };
+    const filaDe = new Map(filas.map(f => [etiqueta(f[0]), f]));
     return {
-      ok: true, forma, x: r.columnas[0], etiquetas: filas.map(f => etiqueta(f[0])),
+      ok: true, forma, x: r.columnas[0], etiquetas: xs, huecos,
       ordenado: !!ordenar && filas.some((f, i) => f !== r.filas[i]),
       nota: medidas.length > MAX_PANELES ? `Se dibujan las ${MAX_PANELES} primeras columnas numéricas.` : "",
       // Cada medida en su panel: escalas distintas (pedidos ≈ 1 000, facturación ≈ 100 000) no comparten eje
       paneles: usadas.map(i => ({
         titulo: `${r.columnas[i]} por ${r.columnas[0]}`, medida: r.columnas[i],
-        series: [{ nombre: r.columnas[i], valores: filas.map(f => numero(f[i])), color: 0 }]
+        series: [{ nombre: r.columnas[i], valores: xs.map(x => numero(filaDe.get(x)?.[i])), color: 0 }]
       }))
     };
   }
@@ -188,7 +208,7 @@
             fila.appendChild(k);
           }
           const v = document.createElement("strong");
-          v.textContent = f.valor === null ? "NULL" : fmt.format(f.valor);
+          v.textContent = f.valor === null ? "NULL" : typeof f.valor === "string" ? f.valor : fmt.format(f.valor);
           const n = document.createElement("span");
           n.textContent = f.nombre;
           fila.append(v, n);
@@ -315,7 +335,9 @@
         dentro = true;
       });
       el("path", { d, class: `gr-linea gr-c${s.color}` }, marcas);
-      if (conPuntos) s.valores.forEach((v, i) => { if (v !== null) el("circle", { cx: sx(i), cy: sy(v), r: 4, class: `gr-punto gr-c${s.color}` }, marcas); });
+      // Un valor entre dos huecos no tiene línea: lleva su punto aunque haya demasiados para dibujarlos todos
+      const aislado = i => (s.valores[i - 1] ?? null) === null && (s.valores[i + 1] ?? null) === null;
+      s.valores.forEach((v, i) => { if (v !== null && (conPuntos || aislado(i))) el("circle", { cx: sx(i), cy: sy(v), r: 4, class: `gr-punto gr-c${s.color}` }, marcas); });
       if (ns === 1) {
         const ult = s.valores.map((v, i) => [v, i]).filter(([v]) => v !== null).pop();
         if (ult) texto(textos, sx(ult[1]) + 8, sy(ult[0]) + 4, fmt.format(ult[0]), { class: "gr-valor" });
@@ -334,7 +356,8 @@
       activos.replaceChildren();
       panel.series.forEach(s => { if (s.valores[i] !== null) el("circle", { cx: sx(i), cy: sy(s.valores[i]), r: 5, class: `gr-punto gr-c${s.color}` }, activos); });
       const ys = panel.series.map(s => s.valores[i]).filter(v => v !== null);
-      tooltip.mostrar(a.etiquetas[i], panel.series.map(s => ({ nombre: s.nombre, valor: s.valores[i], color: ns > 1 ? s.color : undefined })),
+      const hueco = a.huecos?.has(a.etiquetas[i]);
+      tooltip.mostrar(a.etiquetas[i] + (hueco ? " · sin filas" : ""), panel.series.map(s => ({ nombre: s.nombre, valor: hueco ? "—" : s.valores[i], color: ns > 1 ? s.color : undefined })),
         sx(i), ys.length ? sy(Math.max(...ys)) : arriba);
     };
     const salir = () => { activa = -1; guia.setAttribute("visibility", "hidden"); activos.replaceChildren(); tooltip.ocultar(); };
@@ -405,6 +428,7 @@
       controles.push(c);
     }
     const notas = [a.nota, a.ordenado ? `Ordenado por \`${a.x}\` de más antiguo a más reciente.` : "",
+      a.huecos?.size ? `${a.huecos.size === 1 ? "Un mes no tiene filas" : `${a.huecos.size} meses no tienen filas`}: la línea se corta ahí. Para que salgan con 0, rellénalos con \`generate_series\`.` : "",
       "Los valores exactos están en la pestaña **Resultado**."].filter(Boolean);
     const p = document.createElement("p");
     p.className = "r-nota";

@@ -116,13 +116,15 @@ export default async function (b) {
   comprobar("Los enlaces de la lección vuelven a #ruta", await b.eval("[...document.querySelectorAll('a[href^=\"index.html\"]')].every(a => a.getAttribute('href') === 'index.html#ruta')"));
   await b.ir("about:blank");
 
-  // 6b. Movimiento reducido: todo el texto a la vez y el botón a los 3 s
+  // 6b. Movimiento reducido: frase a frase igualmente, con un fundido sin desplazamiento
   await b.reducido();
   await b.ir("index.html");
   await b.eval("document.querySelector('[data-entrar]').click()");
-  comprobar("Reducido: las 7 frases a la vez, sin botón aún", await b.eval("document.querySelectorAll('.prologo-frase').length === 7 && document.querySelector('[data-continuar]').hidden"));
-  await b.esperar(3300);
-  comprobar("Reducido: el botón llega a los 3 s", await b.eval("!document.querySelector('[data-continuar]').hidden"));
+  comprobar("Movimiento reducido: empieza por una sola frase, sin botón", await b.eval("document.querySelectorAll('.prologo-frase').length === 1 && document.querySelector('[data-continuar]').hidden"));
+  const anim = await b.eval("(s => s.animationName + ' ' + s.animationDuration)(getComputedStyle(document.querySelector('.prologo-frase')))");
+  comprobar("Movimiento reducido: la frase entra con un fundido (sin moverse)", anim === "fundido 0.8s", anim);
+  await avanzarPrologo();
+  comprobar("Movimiento reducido: clic a clic llegan las 7 frases y «Continuar»", await b.eval("document.querySelectorAll('.prologo-frase').length === 7 && !document.querySelector('[data-continuar]').hidden"));
   await b.movimiento();
 
   // 7. Tamaños y tema día

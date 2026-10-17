@@ -148,6 +148,16 @@ export default async function (b) {
     sinGrafico[0].forma === "lineas" && sinGrafico[0].paneles[0].series.length === 2 && sinGrafico[0].etiquetas.join() === "2026-01,2026-02" && sinGrafico[0].paneles[0].series[0].valores.join() === "3,10.5",
     JSON.stringify(sinGrafico[0]));
   comprobar("Gráfico: dos medidas → dos paneles (nunca dos ejes)", sinGrafico[1].paneles.length === 2 && sinGrafico[1].paneles[1].series[0].valores[1] === null);
+  const huecos = await b.eval(`[
+    GRAFICO.analizar({ columnas: ['mes', 'pedidos'], tipos: ['text', 'bigint'], filas: [['2026-04', 5], ['2025-12', 2]] }),
+    GRAFICO.analizar({ columnas: ['mes', 'tienda_id', 'total'], tipos: ['text', 'integer', 'numeric'], filas: [['2026-01-01 00:00:00', 1, '3'], ['2026-03-01 00:00:00', 1, '4'], ['2026-03-01 00:00:00', 2, '1']] }),
+    GRAFICO.analizar({ columnas: ['dia', 'n'], tipos: ['text', 'bigint'], filas: [['2026-01-05', 1], ['2026-03-07', 2]] })
+  ].map(a => ({ e: a.etiquetas.join(), v: a.paneles[0].series[0].valores.join(), h: [...a.huecos].join() }))`);
+  comprobar("Gráfico: los meses sin filas salen como hueco (sin inventar ceros)",
+    huecos[0].e === "2025-12,2026-01,2026-02,2026-03,2026-04" && huecos[0].v === "2,,,,5" && huecos[0].h === "2026-01,2026-02,2026-03", JSON.stringify(huecos[0]));
+  comprobar("Gráfico: también con date_trunc('month') y una serie por grupo",
+    huecos[1].e === "2026-01-01 00:00:00,2026-02-01 00:00:00,2026-03-01 00:00:00" && huecos[1].v === "3,,4" && huecos[1].h === "2026-02-01 00:00:00", JSON.stringify(huecos[1]));
+  comprobar("Gráfico: los días sueltos no se rellenan", huecos[2].e === "2026-01-05,2026-03-07" && huecos[2].h === "", JSON.stringify(huecos[2]));
   comprobar("Gráfico: una sola columna no se dibuja", sinGrafico[2].ok === false);
   await b.eval("document.querySelector('[data-pestana=resultado]').click()");
 
