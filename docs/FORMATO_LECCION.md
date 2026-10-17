@@ -112,6 +112,13 @@ Reglas para el enunciado:
 Igual que `ejercicio`, pero `inicial` trae la consulta con el fallo (error de sintaxis o lógica) y el enunciado
 explica qué **debería** devolver. El `inicial` debe fallar la revisión.
 
+**Trampas del paso** (`ejercicio` y `arreglar`, opcional): `trampas: [{ si: /regex/i, mensaje: "…" }]`. Si la consulta
+falla y el código del alumno (sin comentarios ni textos) cumple `si`, se añade `mensaje` tras el fallo. Sirve para el
+error que la lección acaba de explicar (división entera, contar eventos en vez de sesiones…).
+
+**`desdeEjemplo: true`** (`ejercicio`, opcional, sin `inicial`): el editor empieza con el último `ejemplo` de la lección,
+para los ejercicios que son «lo mismo que el ejemplo, pero…». El verificador comprueba que ese ejemplo no aprueba ya.
+
 ### `prediccion` — adivinar antes de ejecutar
 ```js
 { tipo: "prediccion",

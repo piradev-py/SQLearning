@@ -185,6 +185,7 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
   display: inline-flex; align-items: center; padding: 8px 16px; border-radius: var(--radio);
   border: 1px solid var(--borde); background: var(--superficie-2); color: var(--texto); text-decoration: none;
 }
+.lec-final-grande { font-size: 16px; padding: 12px 22px; }
 .boton-enlace--principal { background: var(--primario); border-color: var(--primario); color: var(--primario-texto); font-weight: 700; }
 
 @media (max-width: 900px) {

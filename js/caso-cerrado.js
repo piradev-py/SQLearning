@@ -37,6 +37,6 @@
 
   // Lo que se lleva el analista
   const d = PROGRESO.datos(), aut = PROGRESO.autorizacion();
-  $("[data-tu]").textContent = `Tu expediente: ${d.creditos.toLocaleString("es")} ◈ · L${aut.nivel} ${aut.nombre} · ` +
-    `${PROGRESO.totalBloques()} bloques verificados · ${d.expediente.length} pistas.`;
+  $("[data-tu]").innerHTML = `Tu expediente: ${d.creditos.toLocaleString("es")} ◈ · L${aut.nivel} ${aut.nombre} · ` +
+    `${PROGRESO.totalBloques()} bloques verificados · <a href="index.html#expediente">${d.expediente.length} pistas</a>.`;
 })();

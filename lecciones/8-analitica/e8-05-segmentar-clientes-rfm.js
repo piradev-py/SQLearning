@@ -27,6 +27,7 @@ LIMIT 10;`,
     },
     {
       tipo: "ejercicio",
+      desdeEjemplo: true,
       enunciado: "Los 5 clientes que más han gastado (facturación neta: sin pedidos `cancelado` ni `reembolsado`): `cliente_id`, `dias` (`DATE '2026-10-15' - MAX(fecha)::date`), `pedidos` y `gasto` (suma de `total`), de más a menos `gasto` y, si empatan, por `cliente_id`.",
       solucion: `SELECT cliente_id,
   DATE '2026-10-15' - MAX(fecha)::date AS dias,
@@ -98,6 +99,9 @@ SELECT r, COUNT(*) AS clientes, ROUND(AVG(dias), 1) AS dias_medios
 FROM notas
 GROUP BY r
 ORDER BY r;`,
+      trampas: [
+        { si: /\border\s+by\s+(\w+\.)?r\s+desc\b/i, mensaje: "Has dado la vuelta a la lista, pero los grupos siguen igual: el 5 sigue siendo el de más días. Lo que hay que cambiar es el orden de **dentro** del `OVER` del `NTILE`." }
+      ],
       pistas: [
         "El fallo está en el orden del `NTILE`: ordenando por `dias` de menor a mayor, el grupo 5 se lo llevan los que tienen **más** días.",
         "Cambia `ORDER BY dias, cliente_id` por `ORDER BY dias DESC, cliente_id` dentro del `OVER`."

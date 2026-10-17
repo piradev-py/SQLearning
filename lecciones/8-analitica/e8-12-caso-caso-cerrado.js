@@ -113,7 +113,7 @@ ORDER BY abonos DESC, medio;`,
       {
         tipo: "explicacion",
         titulo: "Tabla de contingencia con FULL JOIN",
-        texto: "Para saber si dos cosas van **siempre juntas**, cruza dos listas de fechas con un `FULL JOIN` (e4): salen las fechas que están en las dos, las que solo están en la primera y las que solo están en la segunda. Agrupando por «¿está en A?» y «¿está en B?» (`a.dia IS NOT NULL`) tienes una **tabla de contingencia**: cuántos días de cada combinación.\nSi un patrón es de alguien, las casillas «uno sin el otro» deben estar vacías. El ejemplo usa dos listas pequeñas escritas a mano.",
+        texto: "Para saber si dos cosas van **siempre juntas**, cruza dos listas de fechas con un `FULL JOIN` (e4): salen las fechas que están en las dos, las que solo están en la primera y las que solo están en la segunda. Agrupando por «¿está en A?» y «¿está en B?» (`a.dia IS NOT NULL`) tienes una **tabla de contingencia**: cuántos días de cada combinación.\nSi un patrón es de alguien, las casillas «uno sin el otro» deben estar vacías. Ojo: una combinación sin ningún día **no sale como fila**; si no ves una casilla, vale 0. El ejemplo usa dos listas pequeñas escritas a mano.",
         ejemplo: `WITH a AS (
   SELECT dia FROM (VALUES (DATE '2026-01-01'), (DATE '2026-01-02')) AS t(dia)
 ),
@@ -244,7 +244,7 @@ WHERE fe.cuenta_nomina = (
 );`
           },
           {
-            enunciado: "**¿El patrón es suyo?** Tabla de contingencia de las noches entre el 2026-01-05 y el 2026-09-30: en una CTE, las fechas distintas (`entrada::date`) con un fichaje de Héctor (empleado 5) que **entra antes de las 6** (`EXTRACT(HOUR FROM entrada) < 6`); en otra, las fechas distintas (`inicio::date`) con una sesión de `'admin_temp'`. Únelas con `FULL JOIN` por fecha y cuenta: `hector` (`true` si la fecha está en la lista de Héctor), `admin_temp` (`true` si está en la de la cuenta) y `noches`, agrupado y ordenado por `hector` y `admin_temp`.",
+            enunciado: "**¿El patrón es suyo?** Tabla de contingencia de las noches entre el 2026-01-05 y el 2026-09-30: en una CTE, las fechas distintas (`entrada::date`) con un fichaje de Héctor (empleado 5) que **entra antes de las 6** (`EXTRACT(HOUR FROM entrada) < 6`); en otra, las fechas distintas (`inicio::date`) con una sesión de `'admin_temp'`. Únelas con `FULL JOIN` por fecha y cuenta: `hector` (`true` si la fecha está en la lista de Héctor), `admin_temp` (`true` si está en la de la cuenta) y `noches`, agrupado y ordenado por `hector` y `admin_temp`. Las combinaciones sin ninguna noche no salen: si solo ves una fila, las demás valen 0.",
             inicial: "",
             comprobaciones: [
               { texto: "Tiene las columnas hector, admin_temp y noches", prueba: (r) => PRUEBA.columnas(r, ["hector", "admin_temp", "noches"]) },
@@ -288,6 +288,7 @@ WHERE NOT EXISTS (SELECT 1 FROM hector AS h WHERE h.noche = c.noche);`
             comprobaciones: [
               { texto: "Tiene las columnas pedidos, clientes, importe, primer_pedido, ultimo_pedido, noches, cuenta_destino y titular, en una sola fila", prueba: (r) => PRUEBA.columnas(r, ["pedidos", "clientes", "importe", "primer_pedido", "ultimo_pedido", "noches", "cuenta_destino", "titular"]) && (r?.filas?.length ?? 0) === 1 },
               { texto: "Lo calculas con auditoria, abonos, fichas_empleados y sesiones (no vale escribir los datos a mano)", prueba: () => usa("auditoria", "abonos", "fichas_empleados", "sesiones") },
+              { texto: "primer_pedido y ultimo_pedido son fechas sin hora (con ::date)", prueba: (r) => ["primer_pedido", "ultimo_pedido"].every(c => r?.tipos?.[(r.columnas || []).indexOf(c)] === "date") },
               { texto: "Todas las cifras del informe coinciden con las de las partes anteriores", prueba: (r, db) => PRUEBA.igualA(r, db, INFORME) }
             ],
             pistas: [
@@ -300,7 +301,7 @@ WHERE NOT EXISTS (SELECT 1 FROM hector AS h WHERE h.noche = c.noche);`
         expediente: {
           id: "caso-cerrado",
           titulo: "Caso cerrado",
-          texto: "**69 reembolsos falsos, 36 470,20 €**, a nombre de 10 clientes, cobrados en la **cuenta de nómina de Héctor Vidal**. La tasa de reembolso online se dispara de marzo a septiembre de 2026 (5 meses con z > 3 frente a 2024–2025) y vuelve a lo normal en octubre, con `admin_temp` cerrada. Y `admin_temp` actuó **solo** las 75 noches en que Héctor fichó de madrugada en Getafe: ni una más, ni una menos.\nNo es una coincidencia: son tres patrones independientes (las noches, el terminal del muelle y el dinero) que apuntan a la misma persona.\nLos cabos sueltos: en 2019, Iván creó `admin_temp` para migrar el inventario y la dejó configurada en **ALM-GET-03**, el terminal del muelle. Nunca la borró; ese fue su error, no el fraude. Héctor la encontró allí y la usó para que todo apuntara a IT, igual que la **dirección de Olmo** de los clientes falsos: la de Iván, que conocía de tantos años.\nAna suspende a Héctor y pasa el expediente a los abogados. Marcos llama a **Iratxe Muñoz** para cerrar su reclamación: el pedido 2210 se hizo a su nombre. Iván, todavía molesto, acepta revisar todas las cuentas de servicio. Lucía, en su último consejo: «Cuentas personales, nunca compartidas; cada una con los mínimos privilegios; y la auditoría, siempre encendida».\n**Epílogo.** Ana te llama a su despacho y te ofrece el puesto de **Head of Data**. Lucía sonríe: «SQL ya lo tienes. Lo siguiente: hojas de cálculo para hablar con todo el mundo, una herramienta de BI (Power BI, Tableau o Looker) para los cuadros de mando y Python con pandas para lo que no quepa en una consulta». **Caso cerrado.**"
+          texto: "**69 reembolsos falsos, 36 470,20 €**, cobrados en la **cuenta de nómina de Héctor Vidal**. Tres patrones independientes (el dinero, el terminal del muelle y las 75 noches) apuntan a él.\nEl desenlace y el epílogo te esperan en el **expediente final**. **Caso cerrado.**"
         }
       }
     ]

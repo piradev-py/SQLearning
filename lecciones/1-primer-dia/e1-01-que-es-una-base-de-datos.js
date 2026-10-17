@@ -7,7 +7,7 @@ CURSO.registrar({
     {
       tipo: "historia",
       de: "lucia",
-      asunto: "Bienvenida a Faro",
+      asunto: "Te damos la bienvenida a Faro",
       texto: "Ya tienes acceso a la base de datos de Faro. Antes de pedirte nada serio, quiero que te muevas por ella con soltura.\nEmpieza por algo sencillo: mirar qué hay dentro."
     },
     {

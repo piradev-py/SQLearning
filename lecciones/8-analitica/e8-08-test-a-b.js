@@ -22,6 +22,7 @@ ORDER BY variante;`
     },
     {
       tipo: "ejercicio",
+      desdeEjemplo: true,
       enunciado: "Conversión de cada grupo de la prueba (solo sesiones con `variante` no nula): `variante`, `carrito` (sesiones distintas que tienen el evento `'carrito'`), `compra` (sesiones distintas con `'compra'`) y `conversion` (% de `compra` sobre `carrito`, con `* 100.0` y `NULLIF`, redondeado a 1), ordenado por `variante`.",
       solucion: `SELECT s.variante,
   COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'carrito') AS carrito,

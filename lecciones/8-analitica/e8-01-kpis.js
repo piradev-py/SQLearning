@@ -86,6 +86,9 @@ WHERE fecha >= DATE '2025-01-01'
   AND fecha < DATE '2026-01-01'
 GROUP BY tienda_id
 ORDER BY tienda_id;`,
+      trampas: [
+        { si: /\/\s*(nullif\s*\(\s*)?count\s*\(\s*\*\s*\)(\s*,\s*0\s*\))?\s*\*\s*100/i, mensaje: "Sigue saliendo 0: el `* 100.0` va **antes** de dividir. Si va después, la división entera ya ha dado 0 y multiplicar 0 por 100 sigue siendo 0." }
+      ],
       pistas: [
         "La división se hace antes de multiplicar por 100, y entre dos enteros. ¿Qué pasa si multiplicas por `100.0` **antes** de dividir?",
         "Cambia la expresión por `ROUND(COUNT(*) FILTER (WHERE estado = 'reembolsado') * 100.0 / NULLIF(COUNT(*), 0), 1)`."

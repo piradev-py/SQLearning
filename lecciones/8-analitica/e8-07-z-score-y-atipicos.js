@@ -39,6 +39,7 @@ ORDER BY z DESC, id;`,
     },
     {
       tipo: "ejercicio",
+      desdeEjemplo: true,
       enunciado: "Facturación neta mensual de **2025** (pedidos que no están `cancelado` ni `reembolsado`) y su z frente a los 12 meses de ese año: `mes` (la columna `mes` de `pedidos`), `facturacion` (suma de `total`) y `z` (con `AVG` y `STDDEV_SAMP` como ventana sobre los 12 meses, redondeado a 2), ordenado por `mes`.",
       solucion: `WITH mensual AS (
   SELECT mes, SUM(total) AS facturacion

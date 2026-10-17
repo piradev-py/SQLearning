@@ -87,6 +87,7 @@ body { min-height: 100vh; }
 .cc-desenlace, .cc-epilogo { margin-top: 14px; }
 .cc-consejo { border-left: 2px solid var(--cian); padding-left: 12px; color: var(--texto); font-style: italic; }
 .cc-tu { color: var(--texto-suave); font-family: var(--fuente-codigo); font-size: 13px; }
+.cc-tu a { color: var(--cian); }
 .cc-boton {
   display: inline-flex; align-items: center; margin-top: 10px; padding: 8px 16px;
   border-radius: var(--radio); background: var(--primario); color: var(--primario-texto); font-weight: 700; text-decoration: none;

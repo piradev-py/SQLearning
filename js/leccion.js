@@ -386,7 +386,8 @@
       ${p.bonus ? `<p class="lec-bonus">⚡ Extra (+${p.bonus.xp || 10} ◈): ${md(p.bonus.texto)}</p>` : ""}
       <div class="lec-feedback" data-feedback hidden aria-live="polite"></div>
       ${htmlPistas(p)}`;
-    const inicial = p.inicial ?? "";
+    // `desdeEjemplo`: el ejercicio empieza con el último ejemplo de la lección (casi siempre es «lo mismo, pero…»)
+    const inicial = p.inicial ?? (p.desdeEjemplo ? lec.pasos.slice(0, i).findLast(x => x.ejemplo)?.ejemplo ?? "" : "");
     ponerEditor(borradores[i] ?? inicial);
     botonesEditor({ revisar: true, reiniciar: true });
     RESULTADO.aviso($("[data-vista=resultado]"), "Escribe tu consulta, ejecútala para ver qué devuelve y pulsa **Revisar**.");
@@ -509,8 +510,10 @@
     else if (!siguiente && ref.etapa === CURSO.ETAPAS[CURSO.ETAPAS.length - 1]) {
       // El caso final del curso: su salida es el expediente final (sello, desenlace y epílogo)
       enlace.href = "caso-cerrado.html"; enlace.textContent = "Abrir el expediente final ›"; enlace.hidden = false;
+      enlace.classList.add("lec-final-grande");
     }
     $("[data-final]").showModal();
+    $("[data-final]").scrollTop = 0;   // el foco cae en los botones: que se lea desde el título
   }
   // «Ver mi resultado»: cierra el cuadro para mirar la tabla o el gráfico (el reto suele pedirlo) y deja en el paso
   // una franja con la salida: siguiente diligencia o volver a ver el resumen

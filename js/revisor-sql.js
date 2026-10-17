@@ -196,13 +196,16 @@
     const orden = paso.orden === undefined || paso.orden === "auto" ? ordenImporta(fuenteOrden) : !!paso.orden;
     const claves = orden && esperado ? clavesOrden(fuenteOrden, esperado.columnas) : null;
     const r = comparar(alumno, esperado, { orden, nombres: paso.nombres !== false, claves });
-    if (!r.ok) { const c = consejoTrampa(sql); if (c) r.mensaje += " " + c; }
+    if (!r.ok) { const c = consejoTrampa(sql, paso); if (c) r.mensaje += " " + c; }
     return r;
   }
 
-  // Trampas típicas que dan un resultado incorrecto sin error: se avisan junto al fallo
-  function consejoTrampa(sql) {
+  // Trampas típicas que dan un resultado incorrecto sin error: se avisan junto al fallo.
+  // Primero las del paso (`trampas: [{ si: /regex/, mensaje }]`, el error que la lección acaba de explicar)
+  function consejoTrampa(sql, paso) {
     const s = MOTOR.sinComentarios(sql).replace(/'(?:[^']|'')*'/g, "''");
+    const propia = (paso?.trampas || []).find(t => t.si.test(s));
+    if (propia) return propia.mensaje;
     if (/(=|<>|!=)\s*null\b/i.test(s)) return "Ojo: con `NULL` no vale `=`; se pregunta con `IS NULL` (o `IS NOT NULL`).";
     if (/(?<![\w.])\d{1,3}\.\d{3}(?![\d.])/.test(s)) return "Ojo: en SQL el punto es el **decimal**: `100.000` es cien, no cien mil. Escribe `100000`.";
     return "";

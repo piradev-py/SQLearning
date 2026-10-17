@@ -66,6 +66,7 @@ FROM (VALUES (42)) AS t(x);`,
     },
     {
       tipo: "ejercicio",
+      desdeEjemplo: true,
       enunciado: "Por tienda, con los pedidos netos (sin `cancelado` ni `reembolsado`) de **enero a septiembre de 2026** (`fecha >= DATE '2026-01-01'` y `< DATE '2026-10-01'`): `tienda_id`, `media` (de `total`), `mediana` (`percentile_cont(0.5)`) y `desviacion` (`stddev_samp`), las tres redondeadas a 2, ordenado por `tienda_id`.",
       solucion: `SELECT tienda_id,
   ROUND(AVG(total), 2) AS media,

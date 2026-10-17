@@ -99,15 +99,21 @@
   <script src="js/prologo.js?v=202610172331"></script>
   <script src="js/tablero.js?v=202610172331"></script>
   <script>
-    // Al volver de una lección o del laboratorio (index.html#ruta) se va directo a la hoja de ruta;
-    // al entrar en la web, siempre el prólogo.
+    // Al volver de una lección o del laboratorio (index.html#ruta) se va directo a la hoja de ruta
+    // (#expediente: además abre el expediente de pistas); al entrar en la web, siempre el prólogo.
     const irARuta = () => {
       window.MUSICA?.callar();
       document.querySelector("[data-prologo]").hidden = true;
       TABLERO.mostrar();
     };
-    if (location.hash === "#ruta") irARuta(); else PROLOGO.iniciar(() => TABLERO.mostrar());
-    addEventListener("hashchange", () => { if (location.hash === "#ruta") irARuta(); });
+    const porHash = () => {
+      if (location.hash !== "#ruta" && location.hash !== "#expediente") return false;
+      irARuta();
+      if (location.hash === "#expediente") document.querySelector("[data-abrir-expediente]").click();
+      return true;
+    };
+    if (!porHash()) PROLOGO.iniciar(() => TABLERO.mostrar());
+    addEventListener("hashchange", porHash);
   </script>
 </body>
 </html>

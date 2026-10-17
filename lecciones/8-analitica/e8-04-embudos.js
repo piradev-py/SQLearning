@@ -53,6 +53,7 @@ WHERE e.evento = 'producto'
     },
     {
       tipo: "ejercicio",
+      desdeEjemplo: true,
       enunciado: "El embudo de **septiembre de 2026**: sesiones con `inicio` en septiembre (`>= DATE '2026-09-01'` y `< DATE '2026-10-01'`). Une `eventos_web` con `sesiones_web` y devuelve una fila con `visitas`, `productos`, `carrito`, `pago` y `compra` (sesiones que llegan a cada paso).",
       solucion: `SELECT
   COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'visita') AS visitas,
@@ -64,6 +65,9 @@ FROM eventos_web AS e
 JOIN sesiones_web AS s ON s.id = e.sesion_id
 WHERE s.inicio >= DATE '2026-09-01'
   AND s.inicio < DATE '2026-10-01';`,
+      trampas: [
+        { si: /\bcount\s*\(\s*(\*|(\w+\.)?sesion_id\b)/i, mensaje: "Ojo: así cuentas **eventos**, no sesiones (una sesión puede ver varios productos). Usa `COUNT(DISTINCT e.sesion_id)`." }
+      ],
       pistas: [
         "El ejemplo de los cinco pasos, más un `JOIN sesiones_web AS s ON s.id = e.sesion_id` y un `WHERE` sobre `s.inicio`.",
         "SELECT COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'visita') AS visitas, COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'producto') AS productos, COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'carrito') AS carrito, COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'pago') AS pago, COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'compra') AS compra FROM eventos_web AS e JOIN sesiones_web AS s ON s.id = e.sesion_id WHERE s.inicio >= DATE '2026-09-01' AND s.inicio < DATE '2026-10-01';"
@@ -127,6 +131,10 @@ ORDER BY s.dispositivo;`
           const p = (r?.columnas || []).findIndex(c => String(c).toLowerCase() === "productos");
           const filas = r?.filas || [];
           return v >= 0 && p >= 0 && filas.length > 0 && filas.every(f => Number(f?.[p] ?? 0) <= Number(f?.[v] ?? 0));
+        } },
+        { texto: "conv_pago_compra no sale 0 en todos los dispositivos (¿división entera?)", prueba: (r) => {
+          const i = (r?.columnas || []).findIndex(c => String(c).toLowerCase() === "conv_pago_compra");
+          return i >= 0 && (r?.filas || []).some(f => Number(f?.[i] ?? 0) > 0);
         } },
         { texto: "Cada dispositivo con su embudo de septiembre y su conversión de pago a compra, en orden", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT s.dispositivo,
   COUNT(DISTINCT e.sesion_id) FILTER (WHERE e.evento = 'visita') AS visitas,

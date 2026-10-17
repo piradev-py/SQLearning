@@ -28,6 +28,7 @@ ORDER BY cohorte;`,
     },
     {
       tipo: "ejercicio",
+      desdeEjemplo: true,
       enunciado: "Lo mismo pero solo con las cohortes de **2025**: `cohorte` (primer día del trimestre del primer pedido no cancelado de cada cliente, como fecha) y `clientes` (cuántos clientes distintos), ordenado por `cohorte`.",
       solucion: `WITH primeros AS (
   SELECT cliente_id, date_trunc('quarter', MIN(fecha))::date AS cohorte
@@ -118,6 +119,12 @@ ORDER BY a.cohorte, a.periodo;`,
       comprobaciones: [
         { texto: "Tiene las columnas cohorte, clientes, t1, t2 y t3", prueba: (r) => PRUEBA.columnas(r, ["cohorte", "clientes", "t1", "t2", "t3"]) },
         { texto: "Salen las 4 cohortes de 2025", prueba: (r) => (r?.filas?.length ?? 0) === 4 },
+        { texto: "clientes cuenta clientes distintos, no pedidos (¿falta un DISTINCT?)", prueba: async (r, db) => {
+          const e = await db.consulta("SELECT COUNT(*) FROM (SELECT date_trunc('quarter', MIN(fecha))::date AS c FROM pedidos WHERE estado <> 'cancelado' GROUP BY cliente_id) AS x WHERE c >= DATE '2025-01-01' AND c < DATE '2026-01-01' GROUP BY c");
+          const i = (r?.columnas || []).findIndex(c => String(c).toLowerCase() === "clientes");
+          const lista = filas => filas.map(Number).sort((a, b) => a - b).join();
+          return i >= 0 && lista((r.filas || []).map(f => f[i])) === lista(e.filas.map(f => f[0]));
+        } },
         { texto: "La cohorte sale del primer pedido, no de la fecha de alta (aquí casi coinciden, pero en la vida real no)", prueba: () => {
           // Usar la fecha de alta exige leer clientes; un alias que se llame «alta» no cuenta
           const sql = MOTOR.sinTextos(PRUEBA.codigo());

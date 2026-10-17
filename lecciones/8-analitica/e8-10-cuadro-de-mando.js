@@ -23,7 +23,7 @@ SELECT 'facturacion' AS kpi, ROUND(a.facturacion, 2) AS valor, ROUND(b.facturaci
   ROUND((a.facturacion - b.facturacion) * 100.0 / NULLIF(b.facturacion, 0), 1) AS variacion_pct
 FROM actual AS a CROSS JOIN anterior AS b
 UNION ALL
-SELECT 'pedidos', ROUND(a.pedidos, 2), ROUND(b.pedidos, 2),
+SELECT 'pedidos', a.pedidos, b.pedidos,
   ROUND((a.pedidos - b.pedidos) * 100.0 / NULLIF(b.pedidos, 0), 1)
 FROM actual AS a CROSS JOIN anterior AS b
 UNION ALL
@@ -64,6 +64,7 @@ GROUP BY params.mes;`,
       },
       {
         tipo: "ejercicio",
+        desdeEjemplo: true,
         enunciado: "Con `WITH params AS (SELECT DATE '2026-09-01' AS mes)`, una fila con los pedidos del mes de `params`: `pedidos` (todos) y `facturacion` (suma de `total` de los que no están `cancelado` ni `reembolsado`). El mes va de `params.mes` (incluido) a `params.mes + INTERVAL '1 month'` (excluido).",
         solucion: `WITH params AS (SELECT DATE '2026-09-01' AS mes)
 SELECT COUNT(*) AS pedidos,
@@ -125,7 +126,7 @@ ORDER BY tienda_id;`
       {
         tipo: "reto",
         de: "ana",
-        enunciado: "Mi diapositiva. Empieza **exactamente** con `WITH params AS (SELECT DATE '2026-09-01' AS mes)` y no escribas esa fecha en ningún otro sitio (lo demás, a partir de `params.mes`). Una fila por KPI del mes de `params` frente al mes anterior: `kpi` (`'facturacion'`, `'pedidos'`, `'ticket_medio'` y `'tasa_reembolso'`), `valor` (el mes de `params`), `mes_anterior` y `variacion_pct` (% de cambio sobre el mes anterior). Definiciones: `facturacion` = suma de `total` neta (sin `cancelado` ni `reembolsado`); `pedidos` = todos; `ticket_medio` = media de `total` neta; `tasa_reembolso` = % de pedidos `reembolsado` sobre todos. `valor` y `mes_anterior` redondeados a 2; `variacion_pct` calculada con los valores **sin redondear** y redondeada a 1. Ordenado por `kpi`.",
+        enunciado: "Mi diapositiva. Empieza **exactamente** con `WITH params AS (SELECT DATE '2026-09-01' AS mes)` y no escribas esa fecha en ningún otro sitio (lo demás, a partir de `params.mes`). Una fila por KPI del mes de `params` frente al mes anterior: `kpi` (`'facturacion'`, `'pedidos'`, `'ticket_medio'` y `'tasa_reembolso'`), `valor` (el mes de `params`), `mes_anterior` y `variacion_pct` (% de cambio sobre el mes anterior). Definiciones: `facturacion` = suma de `total` neta (sin `cancelado` ni `reembolsado`); `pedidos` = todos; `ticket_medio` = media de `total` neta; `tasa_reembolso` = % de pedidos `reembolsado` sobre todos. `valor` y `mes_anterior` redondeados a 2 (los `pedidos` son enteros: tal cual, sin decimales); `variacion_pct` calculada con los valores **sin redondear** y redondeada a 1. Ordenado por `kpi`.",
         inicial: "WITH params AS (SELECT DATE '2026-09-01' AS mes)\n-- Sigue aquí\n",
         comprobaciones: [
           { texto: "Tiene las columnas kpi, valor, mes_anterior y variacion_pct", prueba: (r) => PRUEBA.columnas(r, ["kpi", "valor", "mes_anterior", "variacion_pct"]) },

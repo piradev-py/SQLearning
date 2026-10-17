@@ -65,6 +65,7 @@ ORDER BY tienda_id;`,
     },
     {
       tipo: "ejercicio",
+      desdeEjemplo: true,
       enunciado: "Pedidos (todos) del tercer trimestre de 2026 (`fecha` desde el 2026-07-01 y antes del 2026-10-01) por tienda, con el nombre de la ciudad (une `pedidos AS p` con `tiendas AS t`) y una fila final de total: `tienda` (la `ciudad` de `tiendas`, o `'Total'` en la fila del `ROLLUP`, con `GROUPING`) y `pedidos`, ordenado con `ORDER BY GROUPING(t.ciudad), t.ciudad` (las ciudades en orden alfabético y el total al final).",
       solucion: `SELECT CASE WHEN GROUPING(t.ciudad) = 1 THEN 'Total' ELSE t.ciudad END AS tienda,
   COUNT(*) AS pedidos

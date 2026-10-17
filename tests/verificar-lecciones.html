@@ -94,7 +94,9 @@
             if (!terminaEnPuntoYComa(p.solucion)) problemas.push(`${donde}: la solución no termina en ;`);
             const bien = await REVISOR.revisarEjercicio(p, p.solucion);
             if (!bien.ok) problemas.push(`${donde}: la SOLUCIÓN no aprueba: ${bien.mensaje}`);
-            const mal = await REVISOR.revisarEjercicio(p, p.inicial || "");
+            const ejemplo = p.desdeEjemplo ? lec.pasos.slice(0, i).findLast(x => x.ejemplo)?.ejemplo : null;
+            if (p.desdeEjemplo && !ejemplo) problemas.push(`${donde}: desdeEjemplo sin ningún ejemplo antes`);
+            const mal = await REVISOR.revisarEjercicio(p, p.inicial || ejemplo || "");
             if (mal.ok) problemas.push(`${donde}: el código INICIAL ya aprueba`);
             if (p.tipo === "arreglar" && !sinComentarios(p.inicial)) problemas.push(`${donde}: «arreglar» necesita una consulta rota en inicial`);
             if (!p.pistas?.length) problemas.push(`${donde}: sin pistas`);

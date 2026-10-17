@@ -130,12 +130,12 @@ quede pendiente y vuelve a pasar los tests.
 - [x] 6 · Hoja de ruta: el enlace al expediente final no puede quedar dentro de EXP.8 plegado (sacarlo fuera o no plegar); botón «Ver el expediente final» junto al sello en la portada
 - [x] 7 · e8-01 reto: «desde el 2026-07-01 y antes del 2026-10-01» + comprobaciones propias (clientes distintos, 30 de septiembre entero)
 - [x] 8 · e8-02 p5: el ejemplo debe ser la autounión (YoY), no el YTD
-- [ ] 9 · Comprobaciones propias en errores ya explicados: e8-01 p6 (`100.0` después de dividir), e8-04 p4 (eventos ≠ sesiones), e8-04 p8 (división entera), e8-03 p6 (sin DISTINCT), e8-05 p4, e8-12 p9 (`::date`)
-- [ ] 10 · Diálogo final de e8-12: dos líneas + botón grande «Abrir el expediente final», abierto arriba; desenlace y epílogo solo en `caso-cerrado.html` (acortar `expediente.texto` de e8-12)
-- [ ] 11 · «la dirección de Olmo» → «la dirección de la calle Olmo»
-- [ ] 12 · e8-12 p2/p7: decir que las combinaciones con 0 noches no salen como fila
-- [ ] 13 · e8-10 p6: `pedidos` sin decimales (redondear solo importes) · 14 · ejercicios de e8 con el ejemplo ya en el editor · 15 · e1-01 «Bienvenida» → «Te damos la bienvenida a Faro»
-- [ ] 🕵️ «Tu expediente: … · 8 pistas» en `caso-cerrado.html`: enlazar el expediente de pistas
+- [x] 9 · Comprobaciones propias en errores ya explicados: e8-01 p6 (`100.0` después de dividir), e8-04 p4 (eventos ≠ sesiones), e8-04 p8 (división entera), e8-03 p6 (sin DISTINCT), e8-05 p4, e8-12 p9 (`::date`)
+- [x] 10 · Diálogo final de e8-12: dos líneas + botón grande «Abrir el expediente final», abierto arriba; desenlace y epílogo solo en `caso-cerrado.html` (acortar `expediente.texto` de e8-12)
+- [x] 11 · «la dirección de Olmo» → «la dirección de la calle Olmo»
+- [x] 12 · e8-12 p2/p7: decir que las combinaciones con 0 noches no salen como fila
+- [x] 13 · e8-10 p6: `pedidos` sin decimales (redondear solo importes) · 14 · ejercicios de e8 con el ejemplo ya en el editor · 15 · e1-01 «Bienvenida» → «Te damos la bienvenida a Faro»
+- [x] 🕵️ «Tu expediente: … · 8 pistas» en `caso-cerrado.html`: enlazar el expediente de pistas
 
 ### B. «Lucía, en voz baja» (idea del usuario, 2026-10-18): notas de pasillo que dan trasfondo, desvían sospechas y cierran el «Ten cuidado. Puede que él también te esté buscando» del prólogo
 - Mecánica propuesta (sin pasos nuevos): campo opcional `rumor: "…"` en la lección; `js/leccion.js` (`terminar`) lo muestra en «Diligencia superada» como tarjeta «Lucía, en voz baja». Documentarlo en `docs/FORMATO_LECCION.md` y el arco en `docs/HISTORIA.md` (reglas: antes de la etapa 7 Héctor solo amable/curioso, nunca sospechoso).

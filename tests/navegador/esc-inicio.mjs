@@ -146,6 +146,7 @@ export default async function (b) {
   await progresoDe({ creditos: 9000, completados: { "e8-12": { bloques: 3, fecha: "2026-10-15" } }, credenciales: ["acceso", "exp-8"],
     expediente: [], turnos: { dias: 1, ultimo: "2026-10-15" }, ultimo: "e8-12", ajustes: {} });
   await b.ir("caso-cerrado.html");
+  comprobar("Expediente final: «N pistas» enlaza con el expediente de pistas", await b.eval("document.querySelector('[data-tu] a')?.getAttribute('href') === 'index.html#expediente'"));
   comprobar("Expediente final: con el caso resuelto, 7 meses y las 75 noches", await b.eval("document.querySelector('[data-expediente]').offsetHeight > 0 && document.querySelector('[data-clasificado]').offsetHeight === 0 && document.querySelectorAll('.cc-mes').length === 7 && document.querySelectorAll('.cc-noche').length === 75"));
   for (const [w, h] of [[1366, 768], [390, 844]]) {
     await b.tam(w, h);
@@ -166,6 +167,10 @@ export default async function (b) {
   await b.eval("(e => e.closest('.exp--plegado') || e.querySelector('.exp-flecha').click())(document.querySelector('.exp[data-exp=\"8\"]'))");
   await b.esperar(300);
   comprobar("Hoja de ruta: enlace al expediente final visible con EXP.8 plegado", await b.eval("(a => a?.getAttribute('href') === 'caso-cerrado.html' && a.offsetHeight > 0)(document.querySelector('.exp .exp-final')) && !!document.querySelector('.exp[data-exp=\"8\"].exp--plegado')"));
+
+  await b.ir("index.html#expediente");
+  await b.esperar(600);
+  comprobar("index.html#expediente: hoja de ruta con el expediente de pistas abierto", await b.eval("document.querySelector('[data-prologo]').hidden && document.querySelector('[data-dialogo-expediente]').open"));
 
   b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Inicio: todo correcto");
 }
