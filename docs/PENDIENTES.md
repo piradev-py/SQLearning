@@ -118,7 +118,33 @@ quede pendiente y vuelve a pasar los tests.
   versión coincide), F9 (desempate en e8-07), F10 (cuenta sin partir), F11 (`PROGRESO.casoCerrado()`), y lo que vio al
   repasarlo: el alias «alta» en e8-03. Regresiones en `tests/probar-motor.html`. Queda aceptado F8 (el desenlace se lee en el
   código, como las soluciones).
-- [ ] **Revisión final: falta `alumno-novato`** (decisión del usuario): `npm test`, después `qa-estres` y después `alumno-novato` (nunca a la vez), sobre todo el curso
+- [x] Revisión final · `alumno-novato` hecha (`docs/revisiones/2026-10-17-alumno-final.md`, nota 8,5/10; 🔴2 🟠6 🟡7 🕵️3)
+
+## Para terminar y publicar (siguiente sesión; el usuario pidió hacerlo paso a paso y «que quede perfecto»)
+### A. Arreglos de la revisión del alumno (números del informe)
+- [ ] 1 · e8-07 reto: la comprobación del desempate debe aceptar posiciones (`ORDER BY 3 DESC, 1`), no solo el texto `producto_id`
+- [ ] 2 · e8-12 parte 7: exigir `FULL JOIN` (un `JOIN` interior da lo mismo con estos datos pero no prueba nada)
+- [ ] 3 · traductor: 22012 con división de enteros → «¿Has dividido dos enteros? multiplica por 1.0 antes» (no solo NULLIF)
+- [ ] 4 · traductor: alias de una letra que no existe (`t.ciudad` sin `AS t`) → «¿falta `AS t` detrás de la tabla?», no lo de las comillas; y e8-09 p5 decir `pedidos AS p` / `tiendas AS t`
+- [ ] 5 · e8-08 p5: preguntar si la diferencia es **significativa** (o aceptar «sí» con mensaje sobre el z)
+- [ ] 6 · Hoja de ruta: el enlace al expediente final no puede quedar dentro de EXP.8 plegado (sacarlo fuera o no plegar); botón «Ver el expediente final» junto al sello en la portada
+- [ ] 7 · e8-01 reto: «desde el 2026-07-01 y antes del 2026-10-01» + comprobaciones propias (clientes distintos, 30 de septiembre entero)
+- [ ] 8 · e8-02 p5: el ejemplo debe ser la autounión (YoY), no el YTD
+- [ ] 9 · Comprobaciones propias en errores ya explicados: e8-01 p6 (`100.0` después de dividir), e8-04 p4 (eventos ≠ sesiones), e8-04 p8 (división entera), e8-03 p6 (sin DISTINCT), e8-05 p4, e8-12 p9 (`::date`)
+- [ ] 10 · Diálogo final de e8-12: dos líneas + botón grande «Abrir el expediente final», abierto arriba; desenlace y epílogo solo en `caso-cerrado.html` (acortar `expediente.texto` de e8-12)
+- [ ] 11 · «la dirección de Olmo» → «la dirección de la calle Olmo»
+- [ ] 12 · e8-12 p2/p7: decir que las combinaciones con 0 noches no salen como fila
+- [ ] 13 · e8-10 p6: `pedidos` sin decimales (redondear solo importes) · 14 · ejercicios de e8 con el ejemplo ya en el editor · 15 · e1-01 «Bienvenida» → «Te damos la bienvenida a Faro»
+- [ ] 🕵️ «Tu expediente: … · 8 pistas» en `caso-cerrado.html`: enlazar el expediente de pistas
+
+### B. «Lucía, en voz baja» (idea del usuario, 2026-10-18): notas de pasillo que dan trasfondo, desvían sospechas y cierran el «Ten cuidado. Puede que él también te esté buscando» del prólogo
+- Mecánica propuesta (sin pasos nuevos): campo opcional `rumor: "…"` en la lección; `js/leccion.js` (`terminar`) lo muestra en «Diligencia superada» como tarjeta «Lucía, en voz baja». Documentarlo en `docs/FORMATO_LECCION.md` y el arco en `docs/HISTORIA.md` (reglas: antes de la etapa 7 Héctor solo amable/curioso, nunca sospechoso).
+- Arco propuesto (**enseñarlo al usuario antes de escribirlo**): e1 Héctor pregunta quién es «el becario nuevo» (majo) · e1-09 Nuria pregunta si el stock negativo «ha salido en algún informe» · e2 Marcos agobiado por una clienta de Bilbao · e2-09 Iván pregunta quién consulta las altas a deshoras · e3 Elena nerviosa por su bonus · e3-09 Héctor, muy amable: «que me pida a mí los datos de logística» · e4 Iván pide un informe de quién mira los envíos · e4-10 Héctor pregunta qué hacías con los envíos de Getafe · e5 «Supe que Iván ha tenido problemas con la hipoteca…» · e5-11 Iván no viene a trabajar · e6 Iván da un portazo: «¿quién audita mis cuentas?» · e6-12 Héctor manda un comunicado «a disposición de quien investigue» (nadie le preguntó) · e7 Héctor quiere verte «para entender por qué miras los fichajes del almacén» · e7-11 Iván deja de dar portazos · e8 Héctor pregunta dos veces si has terminado «eso de los datos» · e8-11 alguien intentó entrar con tu usuario esta mañana (cierra el «te está buscando»).
+- Cierre en el expediente final: una frase de Héctor, su motivo (deudas) y el giro: el rumor de la hipoteca de Iván lo había contado Héctor en la cafetería.
+
+### C. Publicar
+- [ ] `npm run publicar` (marca la versión y pasa `npm test`) → confirmar con el usuario → `git push` (GitHub Pages)
+
 
 ## Versión publicada
 - [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)
