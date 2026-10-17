@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e3-09",
   titulo: "Caso: Reembolsos disparados",
   xp: 60,
+  rumor: "Héctor ha pasado a felicitarte, muy amable: dice que, cuando necesites datos de logística, se los pidas a él directamente, «así no pierdes el tiempo con las tablas». Majo, ¿verdad? Tú, por si acaso, sigue con las tablas.",
   objetivo: "Sabrás comparar grupos de distinto tamaño con proporciones en lugar de cifras sueltas y seguir la evolución de un problema mes a mes con GROUP BY y el gráfico.",
   pasos: [
     {

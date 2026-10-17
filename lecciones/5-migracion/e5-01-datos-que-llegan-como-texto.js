@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e5-01",
   titulo: "Datos que llegan como texto: CAST",
   xp: 30,
+  rumor: "En la cafetería se dice que Iván anda mal de dinero, algo de la hipoteca de su piso. No sé quién lo ha empezado. Ni caso: un rumor no es un dato.",
   objetivo: "Sabrás por qué una exportación llega como texto, cómo convertir sus valores a número, fecha o sí/no con CAST y ::, y qué pasa cuando un valor no se deja convertir.",
   pasos: [
     {

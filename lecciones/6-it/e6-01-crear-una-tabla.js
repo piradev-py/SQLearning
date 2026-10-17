@@ -10,6 +10,7 @@
     id: "e6-01",
     titulo: "Crear una tabla: CREATE TABLE",
     xp: 30,
+    rumor: "Iván ha vuelto. Ha dado un portazo y ha preguntado en voz alta quién está auditando sus cuentas. Nadie ha contestado. Ahora trabaja con los cascos puestos y no saluda.",
     objetivo: "Sabrás distinguir entre consultar, construir y cambiar datos, crear una tabla con CREATE TABLE eligiendo el tipo de cada columna, y trabajar en el entorno de pruebas, donde todo se deshace al terminar.",
     pasos: [
       {

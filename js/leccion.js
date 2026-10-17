@@ -503,7 +503,8 @@
       <p class="lec-final-creditos">${res.creditos > 0 ? `+${res.creditos} ◈` : "Sin créditos nuevos (ya la tenías con estos bloques)"}${extra ? " · incluye el extra ⚡" : ""}</p>
       ${res.subeAutorizacion ? `<p class="lec-final-aut">Nueva autorización: <strong>L${res.subeAutorizacion.nivel} · ${esc(res.subeAutorizacion.nombre)}</strong></p>` : ""}
       ${res.credenciales.length ? `<ul class="lec-final-credenciales">${res.credenciales.map(c => `<li>🪪 Credencial: <strong>${esc(c.nombre)}</strong> — ${esc(c.desc)}</li>`).join("")}</ul>` : ""}
-      ${pistaNueva ? `<div class="lec-final-pista"><p class="lec-etiqueta">Nueva pista en el expediente</p><h3>${esc(pista.titulo)}</h3><p>${md(pista.texto)}</p></div>` : ""}`;
+      ${pistaNueva ? `<div class="lec-final-pista"><p class="lec-etiqueta">Nueva pista en el expediente</p><h3>${esc(pista.titulo)}</h3><p>${md(pista.texto)}</p></div>` : ""}
+      ${lec.rumor ? `<div class="lec-final-rumor"><p class="lec-etiqueta">Lucía, en voz baja</p><p>${md(lec.rumor)}</p></div>` : ""}`;
     const siguiente = ref.etapa.niveles[ref.indice + 1];
     const enlace = $("[data-final-siguiente]");
     if (siguiente?.listo) { enlace.href = `leccion.html?id=${siguiente.id}`; enlace.hidden = false; }

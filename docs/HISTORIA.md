@@ -93,6 +93,21 @@ Reglas para no romper el misterio:
 - Las cifras y nombres concretos los fija `herramientas/generar-datos.mjs` (semilla fija). Si una lección cita
   un número, debe salir de ahí.
 
+## «Lucía, en voz baja» (notas de pasillo, idea del usuario)
+Campo `rumor` de la lección: al superar la primera diligencia y el caso de cada etapa, Lucía te cuenta algo del pasillo.
+Dan trasfondo, desvían sospechas y **siembran lo que se paga en el expediente final**. Reglas: antes de la etapa 7 Héctor
+solo es amable, servicial o curioso, nunca sospechoso; cada siembra tiene su pago.
+
+| Siembra (diligencia) | Pago |
+|---|---|
+| Héctor pregunta por la persona nueva de datos (e1-01), te busca por los envíos de Getafe (e4-10), quiere «entender» lo de los fichajes (e7-01), pregunta si has terminado (e8-01) | Alguien intenta entrar con tu usuario desde el almacén (e8-11) → salió de ALM-GET-03: «él también te estaba buscando» (expediente final; cierra la frase 7 del prólogo) |
+| Héctor llega de madrugada al muelle y el terminal «aún tiene cosas de IT de la migración de 2019» (e4-01) | `admin_temp` en ALM-GET-03 y las 75 noches (e7, e8) |
+| Iván «mal de dinero, la hipoteca» (e5-01) | Lo contó Héctor (expediente final) |
+| Héctor ayudó a Iván con la mudanza a la calle Olmo y lo defiende tres veces (e5-11) | Conocía la dirección de los clientes falsos (desenlace) |
+| Correo de Héctor «a disposición de quien investigue» (e6-12), le llaman del banco (e7-11) | Su frase y sus deudas (expediente final) |
+| Marcos y la clienta de Bilbao (e2-01) | Iratxe Muñoz, pedido 2210 (e2, desenlace) |
+| Iván pregunta quién mira las altas (e2-09), portazos (e6-01), deja de darlos y te trae un café (e7-11) | Iván, sospechoso evidente que queda limpio |
+
 ## Recompensas (decisión del usuario: nada de estrellas ni insignias infantiles)
 - **Créditos ◈** (la criptomoneda interna de Faro) en lugar de XP: `xp` del nivel + 10 por bloque.
 - **Bloques verificados** (1–3 por nivel) en lugar de estrellas: 3 = sin pistas · 2 = con pistas · 1 = viendo la

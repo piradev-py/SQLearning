@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e5-11",
   titulo: "Caso: Una sola dirección",
   xp: 75,
+  rumor: "Iván no ha venido hoy. Héctor dice que se conocen desde hace quince años, que hasta le ayudó con la mudanza a la **calle Olmo**, y que «no puede ser él». Lo ha repetido tres veces.",
   objetivo: "Sabrás combinar todo lo aprendido para normalizar un texto escrito a mano, agrupar por esa clave limpia contando personas (no filas) y cruzarla con otra tabla para ver de quién es.",
   pasos: [
     {

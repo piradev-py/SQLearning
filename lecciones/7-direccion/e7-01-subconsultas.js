@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e7-01",
   titulo: "Una consulta dentro de otra: subconsultas",
   xp: 35,
+  rumor: "Héctor ha venido a mi mesa. Quería «entender» por qué miras los fichajes del almacén. Le he dicho que es para un informe de Ana. Se ha ido sin despedirse.",
   objetivo: "Sabrás meter una consulta dentro de otra: una subconsulta que devuelve un solo valor (en WHERE o en SELECT) y una que devuelve una lista (con IN), y sabrás leerlas de dentro afuera.",
   pasos: [
     {

@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e1-09",
   titulo: "Caso: El inventario imposible",
   xp: 50,
+  rumor: "Nuria ha pasado a preguntar si lo del stock negativo «ha salido en algún informe». Le he dicho que todavía no. Héctor, que estaba con ella en la máquina de café, dice que será un error al contar el almacén, que pasa mucho.",
   objetivo: "Sabrás comentar tus consultas y combinar todo lo de la etapa para revisar una tabla en busca de datos que no tienen sentido.",
   pasos: [
     {

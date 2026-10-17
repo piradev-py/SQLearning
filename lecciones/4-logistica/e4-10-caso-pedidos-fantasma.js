@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e4-10",
   titulo: "Caso: Pedidos fantasma",
   xp: 70,
+  rumor: "Héctor te ha buscado antes, sonriente. Quería saber qué hacías con los envíos de Getafe: «si falta algo, seguro que es cosa del transportista». Le he dicho que es rutina.",
   objetivo: "Sabrás comprobar que lo que debería existir existe de verdad: cruzar pedidos con envíos para encontrar los que nunca salieron de un almacén, resumirlos y seguir su rastro hasta los clientes y el almacén.",
   pasos: [
     {

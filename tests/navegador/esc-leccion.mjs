@@ -84,6 +84,7 @@ export default async function (b) {
   comprobar("Reto superado → pantalla final", await b.eval("document.querySelector('[data-final]').open"));
   comprobar("2 bloques (usó pista) y créditos 20 + 2×10 = 40", await b.eval("document.querySelectorAll('.lec-final-bloques .b-lleno').length === 2 && /\\+40 ◈/.test(document.querySelector('[data-final-cuerpo]').textContent)"));
   comprobar("Credencial «Acceso concedido»", await b.eval("/Acceso concedido/.test(document.querySelector('[data-final-cuerpo]').textContent)"));
+  comprobar("Nota «Lucía, en voz baja» de e1-01", await b.eval("/Lucía, en voz baja/.test(document.querySelector('.lec-final-rumor')?.textContent || '')"));
   await b.foto("leccion-final");
   const prog = await b.eval("JSON.parse(localStorage.getItem('sqlearning-progreso-v1'))");
   comprobar("Progreso guardado: e1-01 con 2 bloques y 40 ◈", prog?.completados?.["e1-01"]?.bloques === 2 && prog.creditos === 40, JSON.stringify(prog));

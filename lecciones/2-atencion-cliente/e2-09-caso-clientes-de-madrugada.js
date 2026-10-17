@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e2-09",
   titulo: "Caso: Clientes de madrugada",
   xp: 60,
+  rumor: "**Iván**, el de sistemas, ha venido a preguntar quién consulta las altas de clientes «a deshoras». Tiene alertas en todo. Le he dicho que eras tú, y de día. No le ha gustado que nadie le avisara.",
   objetivo: "Sabrás seguir el rastro de un problema de una tabla a otra usando sus identificadores y combinar los filtros de la etapa para encontrar un patrón.",
   pasos: [
     {

@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e3-01",
   titulo: "Contar filas: COUNT",
   xp: 25,
+  rumor: "Elena está nerviosa: este trimestre se juega el bonus con la tienda online, y con tantos reembolsos no llega. No te extrañe si te pide las cifras «para ayer».",
   objetivo: "Sabrás resumir una tabla entera en un solo número con COUNT, contar solo las filas que cumplen un WHERE y entender por qué COUNT(columna) se salta los NULL.",
   pasos: [
     {

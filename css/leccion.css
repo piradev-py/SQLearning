@@ -180,6 +180,10 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
 .lec-final-credenciales { padding-left: 0; list-style: none; }
 .lec-final-pista { margin: 14px 0; padding: 12px 14px; border-left: 2px solid var(--acento); background: var(--acento-fondo); }
 .lec-final-pista h3 { margin: 4px 0; }
+/* Nota de pasillo: lo que Lucía te cuenta en voz baja al terminar (trasfondo de la historia) */
+.lec-final-rumor { margin: 14px 0; padding: 10px 14px; border: 1px dashed var(--borde); border-radius: var(--radio); color: var(--texto-suave); font-style: italic; }
+.lec-final-rumor .lec-etiqueta { font-style: normal; }
+.lec-final-rumor p:last-child { margin: 4px 0 0; }
 .lec-final-botones { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
 .boton-enlace {
   display: inline-flex; align-items: center; padding: 8px 16px; border-radius: var(--radio);

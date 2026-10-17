@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e6-12",
   titulo: "Caso: La cuenta admin_temp",
   xp: 75,
+  rumor: "Héctor ha mandado un correo a toda la empresa: «Logística está a disposición de quien investigue lo de los reembolsos». Nadie le había preguntado nada. Ana lo ha leído dos veces.",
   objetivo: "Sabrás investigar un registro de auditoría combinando todo lo aprendido (filtros por hora, agrupaciones, JOIN) y cerrar un acceso peligroso con una transacción que deja constancia del cambio.",
   pasos: [
     {

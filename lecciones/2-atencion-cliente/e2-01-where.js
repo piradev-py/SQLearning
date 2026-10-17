@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e2-01",
   titulo: "Filtrar filas: WHERE",
   xp: 25,
+  rumor: "Marcos lleva toda la mañana al teléfono con una clienta de **Bilbao**. Jura que hay un pedido a su nombre que ella nunca hizo. Él ya no sabe qué decirle. Apúntatelo: cuando un cliente insiste tanto, a veces tiene razón.",
   objetivo: "Sabrás quedarte solo con las filas que cumplen una condición de igualdad, con números y con textos.",
   pasos: [
     {

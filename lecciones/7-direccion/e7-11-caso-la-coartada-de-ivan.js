@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e7-11",
   titulo: "Caso: ¿Dónde estaba cada uno?",
   xp: 80,
+  rumor: "Iván ha dejado de dar portazos: esta mañana te ha dejado un café en la mesa, sin decir nada. Y otra cosa: Elena dice que a Héctor le llaman del banco casi todos los días.",
   objetivo: "Sabrás reconstruir dónde estaba cada persona cruzando momentos con periodos (vacaciones, fichajes, sesiones), combinando EXISTS, JOIN por rangos, CTE y LAG sobre una línea de tiempo.",
   pasos: [
     {

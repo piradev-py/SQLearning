@@ -116,6 +116,9 @@ explica qué **debería** devolver. El `inicial` debe fallar la revisión.
 falla y el código del alumno (sin comentarios ni textos) cumple `si`, se añade `mensaje` tras el fallo. Sirve para el
 error que la lección acaba de explicar (división entera, contar eventos en vez de sesiones…).
 
+**`rumor`** (de la lección, opcional, junto a `objetivo`): nota de pasillo de 1–3 frases que se ve en «Diligencia superada»
+como tarjeta «Lucía, en voz baja». Va en la primera diligencia y en el caso de cada etapa; el arco y sus reglas, en `docs/HISTORIA.md`.
+
 **`desdeEjemplo: true`** (`ejercicio`, opcional, sin `inicial`): el editor empieza con el último `ejemplo` de la lección,
 para los ejercicios que son «lo mismo que el ejemplo, pero…». El verificador comprueba que ese ejemplo no aprueba ya.
 

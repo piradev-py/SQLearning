@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e1-01",
   titulo: "¿Qué es una base de datos?",
   xp: 20,
+  rumor: "Ese que te ha saludado tan simpático en la entrada es **Héctor Vidal**, de logística. Lleva en Faro desde que era una sola tienda. Me ha preguntado quién es «la persona nueva de datos». Le he dicho que estás aprendiendo SQL; le ha hecho gracia.",
   objetivo: "Sabrás qué es una tabla y cómo pedirle a la base de datos que te la enseñe entera.",
   pasos: [
     {

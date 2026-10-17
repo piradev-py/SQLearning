@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e4-01",
   titulo: "Claves que conectan tablas: PK y FK",
   xp: 25,
+  rumor: "Hoy empiezas con logística. Héctor ya me ha contado que en el muelle de Getafe él llega antes que nadie: «las madrugadas son lo más tranquilo». Y que el terminal de allí es tan viejo que aún tiene cosas de IT de la migración de 2019.",
   objetivo: "Sabrás qué es una clave primaria y una clave foránea, cómo se ven en el Esquema y cómo seguir a mano el hilo de un número de una tabla a otra.",
   pasos: [
     {

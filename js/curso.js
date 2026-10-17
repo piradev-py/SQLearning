@@ -6,7 +6,7 @@
    ============================================================ */
 (function () {
   // Versión de la web (la escribe herramientas/version.mjs): evita mezclar archivos viejos de la caché
-  const VERSION = "202610172331";
+  const VERSION = "202610180055";
 
   // Diligencias aún sin título (expedientes que se escribirán más adelante)
   const pendientes = (etapa, n) => Array.from({ length: n }, (_, i) => {

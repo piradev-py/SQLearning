@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e8-11",
   titulo: "Contarlo bien: el informe",
   xp: 45,
+  rumor: "Esta madrugada alguien ha intentado entrar **con tu usuario**: tres veces, desde un terminal del almacén. IT lo ha bloqueado. Ana quiere el informe mañana. Ten cuidado.",
   objetivo: "Sabrás convertir resultados en un informe claro y honesto: estructura (pregunta, respuesta, cifras, método y límites), redondeo y frases con ||, consultas de control que cuadran las partes con el total y gráficos que no engañan.",
   pasos: [
     {

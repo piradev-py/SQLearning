@@ -8,7 +8,7 @@
    Cada publicación (npm run version) cambia VERSION y borra la caché de la anterior; la de PGlite se conserva.
    Se registra en js/curso.js (en local solo si localStorage «sqlearning-sw» = "1": estorbaría a las pruebas).
    ============================================================ */
-const VERSION = "202610172331";
+const VERSION = "202610180055";
 const APP = "sqlearning-" + VERSION;
 // shortcut: la caché fija no lleva versión; si se cambia PGlite (vendor/) o una imagen de recursos/, sube este número
 const FIJO = "sqlearning-fijo-1";

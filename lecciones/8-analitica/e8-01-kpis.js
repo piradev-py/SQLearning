@@ -2,6 +2,7 @@ CURSO.registrar({
   id: "e8-01",
   titulo: "Medir lo que importa: KPIs",
   xp: 40,
+  rumor: "Héctor ha preguntado dos veces si has terminado «eso de los datos». La segunda, a mí, en el ascensor. Sonreía, pero no con los ojos.",
   objetivo: "Sabrás definir un KPI antes de calcularlo, sacar los cinco indicadores de Faro (facturación neta, pedidos, ticket medio, clientes activos y tasa de reembolso) y evitar las dos trampas de las divisiones: la división entera y dividir por cero.",
   pasos: [
     {
