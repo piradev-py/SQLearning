@@ -103,12 +103,13 @@ export default async function (b) {
   comprobar("F13: Esc (cierra la lista) y Tab sale del editor", await b.eval("document.activeElement !== document.querySelector('.es-texto')"));
   await b.eval("document.querySelector('.es-texto').focus()");
   await teclear("\n".repeat(30) + "SELECT pr");
-  comprobar("F3: en las últimas líneas la lista se ve dentro del editor", await b.eval(`(() => {
+  // Espera a que la lista se coloque (antes se miraba al instante y fallaba de vez en cuando)
+  comprobar("F3: en las últimas líneas la lista se ve dentro del editor", await b.hasta(`(() => {
     const l = document.querySelector('.es-sugerencias'), e = document.querySelector('.editor-sql');
     if (l.hidden) return false;
     const a = l.getBoundingClientRect(), c = e.getBoundingClientRect();
     return a.top >= c.top && a.bottom <= c.bottom + 1;
-  })()`));
+  })()`, 3000));
   await tecla("Escape", "Escape", 27);
   const antesDeBorrar = await b.eval("document.querySelector('.es-texto').value");
   await b.eval("document.querySelector('[data-limpiar]').click()");

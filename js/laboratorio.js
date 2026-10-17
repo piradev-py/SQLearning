@@ -27,8 +27,13 @@
   const vistaEsquema = $("[data-vista=esquema]");
   const vistaGrafico = $("[data-vista=grafico]");
 
-  const leer = (k, def) => { try { return localStorage.getItem(k) ?? def; } catch (e) { return def; } };
-  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* sin guardado */ } };
+  // Cada pestaña guarda lo suyo en sessionStorage (dos pestañas abiertas no se pisan al recargar);
+  // localStorage lleva lo último guardado, para la próxima pestaña que se abra
+  const leer = (k, def) => { try { return sessionStorage.getItem(k) ?? localStorage.getItem(k) ?? def; } catch (e) { return def; } };
+  const guardar = (k, v) => {
+    try { sessionStorage.setItem(k, v); } catch (e) { /* sin guardado */ }
+    try { localStorage.setItem(k, v); } catch (e) { /* sin guardado */ }
+  };
 
   const editor = EDITOR_SQL.crear($("[data-editor]"), {
     valor: leer(CLAVE_BORRADOR, EJEMPLOS[0].sql),

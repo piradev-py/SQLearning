@@ -68,7 +68,7 @@ FROM pedidos;`
       inicial: "-- Escribe tu consulta aquí\n",
       comprobaciones: [
         { texto: "Tiene las columnas primer_pedido, ultimo_pedido, mas_barato y mas_caro", prueba: (r) => PRUEBA.columnas(r, ["primer_pedido", "ultimo_pedido", "mas_barato", "mas_caro"]) },
-        { texto: "El pedido más barato es de 12,90 € y el más caro de 4 404 €", prueba: (r) => (r?.filas?.length ?? 0) === 1
+        { texto: "Los importes del pedido más barato y del más caro son los correctos", prueba: (r) => (r?.filas?.length ?? 0) === 1
           && Math.abs((PRUEBA.valor(r, 0, "mas_barato") ?? -1) - 12.9) < 0.005
           && Math.abs((PRUEBA.valor(r, 0, "mas_caro") ?? -1) - 4404) < 0.005 },
         { texto: "Las fechas del primer y el último pedido son correctas", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT MIN(fecha) AS primer_pedido,

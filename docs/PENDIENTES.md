@@ -19,8 +19,8 @@ quede pendiente y vuelve a pasar los tests.
   `tests/probar-motor.html` (46/46) y `esc-laboratorio.mjs`. De paso: la regla de movimiento reducido creaba
   transiciones en todo (0.01ms → 0s) y el motor recargaba los datos en cada consulta (DISCARD ALL en bloque).
   Quedan pendientes (menores):
-  - [ ] F16 · editor lento con textos enormes (500 líneas: 70 ms/tecla): repintar solo lo visible
-  - [ ] Dos pestañas del laboratorio se pisan el borrador
+  - [x] F16 · editor lento con textos enormes (500 líneas: 58 → 21 ms/tecla): con más de 300 líneas solo se pinta lo visible
+  - [x] Dos pestañas del laboratorio se pisan el borrador: cada pestaña guarda el suyo en `sessionStorage`; `localStorage` para la próxima
   - [ ] Sin conexión: service worker para cachear PGlite y las fuentes (antes de publicar)
   - [x] GitHub Pages sirve wasm/data con gzip (10,5→3,7 MB y 6,2→1,8 MB)
 - [ ] Revisión fin de fase 3 (interfaz)
@@ -75,9 +75,9 @@ quede pendiente y vuelve a pasar los tests.
   más formas de respuesta en e3-09/e4-03/e4-10, acentos de día ≥ 4,5:1 sobre la cabecera, botón de tema sin partir.
   Quedan (menores):
   - [x] Retos que aprueban por casualidad de los datos (e3-03, e3-05, e3-06 orden, e3-07 `>= 15`, e4-05): comprobaciones sobre el código con `PRUEBA.codigo()`; regresión en `agentes/qa5-retos.mjs`
-  - [ ] e4-06: `COALESCE(SUM(...), 0)` se rechaza sin decir por qué (el enunciado pide dejar el NULL)
-  - [ ] `UPDATE` dentro de un CTE altera lo que ve la comprobación (trampa avanzada): `SET TRANSACTION READ ONLY` en retos sin `verificar`
-  - [ ] `COPY … TO STDOUT` dice «Consulta ejecutada» sin más
+  - [x] e4-06: `COALESCE(SUM(...), 0)` se rechaza sin decir por qué → ahora se acepta
+  - [x] `UPDATE` dentro de un CTE altera lo que ve la comprobación: los retos cuya solución solo consulta corren en `READ ONLY`
+  - [x] `COPY … TO STDOUT` dice «Consulta ejecutada» sin más → error explicado, como `FROM STDIN`
 - [x] Revisión de las etapas 3 y 4: `alumno-novato` hecha (`docs/revisiones/2026-10-15-alumno-etapas-3-4.md`, nota 8/10). Arreglados:
   el **Almacén central ya no señala a Héctor** (nuevo empleado 23, Iker Salas, jefe de muelle que depende de él; 23 empleados en e4),
   **altas antes del primer pedido** (las 11 que no lo cumplían pasan a la víspera; falsos: 4 mar–30 abr 2026), mensajes de error de JOIN
@@ -88,8 +88,8 @@ quede pendiente y vuelve a pasar los tests.
   Quedan (menores):
   - [x] e3-09 partes 1 y 2: sin `ORDER BY tienda_id` aprueba (ahora exige ORDER BY) (el GROUP BY ya lo da en orden por casualidad)
   - [ ] Gráfico de líneas por mes: los meses sin filas no salen y el eje los junta (habrá que enseñar `generate_series` en la etapa 7)
-  - [ ] Noche: en gráficos de 5 líneas, las series 2 y 4 (magenta y violeta) se distinguen poco sobre el fondo
-  - [ ] e3-03: la comprobación del reto muestra las cifras antes de escribir nada (revisar el patrón en otros retos)
+  - [x] Noche: en gráficos de 5 líneas, las series 2 y 4 (magenta y violeta) se distinguen poco → violeta `#9085e9` (ΔE 15 → 20,6, validado)
+  - [x] e3-03: la comprobación del reto muestra las cifras antes de escribir nada → ya no (revisados los demás retos: solo pasaba aquí)
 
 ## Etapa 5 · Migración
 - [x] Datos `faro-e5.sql` (CRM antiguo sucio + fichas de empleados; pista falsa contra Iván, decisión del usuario), temario (11 niveles) y **etapa completa** (2 agentes `profesor-sql`; verificador 58/58). Cifras de los profesores comprobadas con PGlite
@@ -112,7 +112,7 @@ quede pendiente y vuelve a pasar los tests.
 
 ## Versión publicada
 - [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)
-- [ ] Test inestable: `esc-laboratorio` F3 (lista de sugerencias dentro del editor) falla de vez en cuando por tiempos
+- [x] Test inestable: `esc-laboratorio` F3 (lista de sugerencias dentro del editor) falla de vez en cuando por tiempos → espera a que se coloque
 
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)

@@ -206,6 +206,9 @@
     return "";
   }
 
+  // Órdenes que cambian datos o la transacción: si la solución no lleva ninguna, el reto solo pide consultar
+  const ESCRIBE = /\b(INSERT|UPDATE|DELETE|MERGE|CREATE|ALTER|DROP|TRUNCATE|GRANT|REVOKE|COPY|COMMENT|BEGIN|START|COMMIT|ROLLBACK)\b/i;
+
   /**
    * Revisa un `reto` (o una parte de un `caso`): cada comprobación más la de «bien escrita».
    * Devuelve { ok, filas: [{ texto, ok }], error? }.
@@ -217,6 +220,8 @@
       return { ok: false, mensaje: escrita.mensaje, filas: paso.comprobaciones.map(c => ({ texto: c.texto, ok: false })).concat(filaEscrita) };
     try {
       return await MOTOR.sesion(async db => {
+        // Si la solución solo consulta, solo lectura: un UPDATE escondido (p. ej. en un CTE) no cambia lo que ven las comprobaciones
+        if (!ESCRIBE.test(MOTOR.sinTextos(MOTOR.sinComentarios(paso.solucion || "")))) await db.ejecutar("SET TRANSACTION READ ONLY;");
         const lista = await db.ejecutar(sql);
         const conColumnas = lista.filter(r => r.columnas.length);
         const r = conColumnas[conColumnas.length - 1] || { columnas: [], tipos: [], filas: [], afectadas: lista.at(-1)?.afectadas || 0 };

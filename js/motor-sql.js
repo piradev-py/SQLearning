@@ -177,7 +177,7 @@
   }
 
   // Órdenes que en el navegador no pueden funcionar y se quedarían esperando
-  const NO_DISPONIBLE = /\bCOPY\b[^;]*\bFROM\s+STDIN\b/i;
+  const NO_DISPONIBLE = /\bCOPY\b[^;]*\b(FROM\s+STDIN|TO\s+STDOUT)\b/i;
 
   window.MOTOR = {
     TIEMPO_MAX,
@@ -201,8 +201,11 @@
     ejecutar(sql) {
       return enCola(async () => {
         const t0 = performance.now();
-        if (NO_DISPONIBLE.test(sinTextos(sql)))
-          return { ok: false, ms: 0, error: errorAlumno({ mensaje: "COPY … FROM STDIN no está disponible", codigo: "STDIN" }, sql) };
+        const copia = sinTextos(sql).match(NO_DISPONIBLE);
+        if (copia) {
+          const codigo = /^TO/i.test(copia[1]) ? "STDOUT" : "STDIN";
+          return { ok: false, ms: 0, error: errorAlumno({ mensaje: `COPY … ${codigo === "STDOUT" ? "TO STDOUT" : "FROM STDIN"} no está disponible`, codigo }, sql) };
+        }
         try {
           const resultados = await sesionInterna(db => db.ejecutar(sql));
           const conColumnas = resultados.filter(r => r.columnas.length);

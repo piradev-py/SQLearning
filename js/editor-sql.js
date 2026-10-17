@@ -60,6 +60,16 @@
     return html + "\n ";
   }
 
+  // Parte el HTML resaltado en líneas: un span que cruza saltos (comentario /* */, texto largo) se cierra y se reabre
+  function partirEnLineas(html) {
+    let abierto = "";
+    return html.split("\n").map(trozo => {
+      const linea = abierto + trozo;
+      for (const m of trozo.matchAll(/<span class="[^"]*">|<\/span>/g)) abierto = m[0] === "</span>" ? "" : m[0];
+      return abierto ? linea + "</span>" : linea;
+    });
+  }
+
   function crear(contenedor, opciones = {}) {
     contenedor.classList.add("editor-sql");
     contenedor.innerHTML = `
@@ -85,16 +95,36 @@
     let sugerencias = [], elegida = 0, palabraActual = null;
 
     // --- Pintar -----------------------------------------------------------
+    // Con textos largos solo se pinta lo que se ve (y un margen): maquetar miles de spans costaba ~70 ms por tecla
+    // shortcut: la ventana se recalcula al escribir y al hacer scroll, no al cambiar de tamaño; basta con un margen generoso
+    const LINEAS_SIN_VENTANA = 300;
+    let lineasHtml = [], altoLinea = 0, ventana = [0, 0];
     function pintar() {
       const txt = area.value;
-      codigo.innerHTML = resaltar(txt, tablas);
+      lineasHtml = partirEnLineas(resaltar(txt, tablas));
+      altoLinea = parseFloat(getComputedStyle(area).lineHeight) || 20;
+      pintarVisible(true);
       const n = txt.split("\n").length;
       let h = "";
       for (let i = 1; i <= n; i++) h += `<div${i === lineaError ? ' class="es-error"' : ""}>${i}</div>`;
       numeros.innerHTML = h;
       sincronizarScroll();
     }
+    function pintarVisible(forzar) {
+      const total = lineasHtml.length;
+      if (total <= LINEAS_SIN_VENTANA) {
+        if (forzar) codigo.innerHTML = lineasHtml.join("\n");
+        return;
+      }
+      const visibles = Math.max(60, Math.ceil(area.clientHeight / altoLinea));
+      const primera = Math.floor(area.scrollTop / altoLinea);
+      if (!forzar && primera >= ventana[0] && primera + visibles <= ventana[1]) return;
+      const desde = Math.max(0, primera - visibles), hasta = Math.min(total, primera + 2 * visibles);
+      ventana = [desde, hasta];
+      codigo.innerHTML = `<span style="display:block;height:${desde * altoLinea}px"></span>` + lineasHtml.slice(desde, hasta).join("\n");
+    }
     function sincronizarScroll() {
+      pintarVisible(false);
       pre.style.transform = `translate(${-area.scrollLeft}px, ${-area.scrollTop}px)`;
       numeros.style.transform = `translateY(${-area.scrollTop}px)`;
     }

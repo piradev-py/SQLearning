@@ -116,7 +116,12 @@ ORDER BY p.tienda_id;`,
           const ie = (r?.columnas || []).findIndex(x => String(x).toLowerCase() === "envios");
           return ie >= 0 && (r?.filas || []).reduce((s, f) => s + Number(f[ie] ?? 0), 0) === 1337;
         } },
-        { texto: "Cada transportista tiene su coste, de más a menos envíos", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT t.nombre AS transportista, COUNT(e.id) AS envios, SUM(e.coste) AS coste_total
+        // Quien ya sabe COALESCE puede convertir el NULL en 0: también vale
+        { texto: "Cada transportista tiene su coste, de más a menos envíos", prueba: async (r, db) => await PRUEBA.igualA(r, db, `SELECT t.nombre AS transportista, COUNT(e.id) AS envios, SUM(e.coste) AS coste_total
+FROM transportistas AS t
+LEFT JOIN envios AS e ON e.transportista_id = t.id
+GROUP BY t.id, t.nombre
+ORDER BY envios DESC;`) || await PRUEBA.igualA(r, db, `SELECT t.nombre AS transportista, COUNT(e.id) AS envios, COALESCE(SUM(e.coste), 0) AS coste_total
 FROM transportistas AS t
 LEFT JOIN envios AS e ON e.transportista_id = t.id
 GROUP BY t.id, t.nombre

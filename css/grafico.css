@@ -9,7 +9,7 @@
   --serie-0: #00a6ba;   /* cian */
   --serie-1: #b53c7f;   /* magenta */
   --serie-2: #be8832;   /* oro */
-  --serie-3: #795bbf;   /* violeta */
+  --serie-3: #9085e9;   /* violeta (más claro: con #795bbf se confundía con el magenta, ΔE 15) */
   --serie-4: #3ca368;   /* verde */
 }
 :root[data-theme="light"] {
