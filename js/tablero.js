@@ -84,9 +84,9 @@
           ${etapa.niveles.map((n, i) => nodoHTML(n, i, etapa, est, cols)).join("")}
         </ol>
         ${est === "clasificado" ? `<p class="exp-sello" aria-hidden="true">CLASIFICADO</p>` : ""}
-        ${etapa === CURSO.ETAPAS[CURSO.ETAPAS.length - 1] && PROGRESO.casoCerrado()
-          ? `<a class="exp-final" href="caso-cerrado.html">CASO CERRADO · Ver el expediente final ›</a>` : ""}
       </div>
+      ${etapa === CURSO.ETAPAS[CURSO.ETAPAS.length - 1] && PROGRESO.casoCerrado()
+        ? `<a class="exp-final" href="caso-cerrado.html">CASO CERRADO · Ver el expediente final ›</a>` : ""}
     </section>`;
   }
 

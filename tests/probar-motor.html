@@ -87,6 +87,14 @@
         const r = await MOTOR.ejecutar("SELECT * FROM empleados WHERE email = ana.beltran@faro.example;");
         return !r.ok && !/null/.test(r.error.explicacion) || r.error;
       });
+      await prueba("Error traducido: alias sin declarar → falta AS e (no lo de las comillas)", async () => {
+        const r = await MOTOR.ejecutar("SELECT e.nombre FROM empleados;");
+        return !r.ok && /AS e\b/.test(r.error.explicacion) && !/comillas/.test(r.error.explicacion) || r.error;
+      });
+      await prueba("Error traducido: división entre cero por división entera → multiplica por 1.0", async () => {
+        const a = await MOTOR.ejecutar("SELECT 1 / (2 / 3);"), b = await MOTOR.ejecutar("SELECT 1.0 / 0;");
+        return !a.ok && /1\.0/.test(a.error.explicacion) && !b.ok && !/enteros/.test(b.error.explicacion) || [a.error, b.error];
+      });
       await prueba("Error traducido: sintaxis (coma de más)", async () => {
         const r = await MOTOR.ejecutar("SELECT nombre, FROM productos;");
         return !r.ok && r.error.codigo === "42601" && !!r.error.explicacion || r;

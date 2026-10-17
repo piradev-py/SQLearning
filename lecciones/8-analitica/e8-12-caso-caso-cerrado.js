@@ -249,6 +249,7 @@ WHERE fe.cuenta_nomina = (
             comprobaciones: [
               { texto: "Tiene las columnas hector, admin_temp y noches", prueba: (r) => PRUEBA.columnas(r, ["hector", "admin_temp", "noches"]) },
               { texto: "Lo calculas con las tablas fichajes y sesiones (no vale escribir los números a mano)", prueba: () => usa("fichajes", "sesiones") },
+              { texto: "Las unes con FULL JOIN (con un JOIN normal solo salen las noches comunes y la tabla no prueba nada)", prueba: () => /\bfull\s+(outer\s+)?join\b/i.test(sinTextos()) },
               { texto: "Cada combinación de noches, contada con las dos listas de fechas", prueba: (r, db) => PRUEBA.igualA(r, db, NOCHES) }
             ],
             pistas: [

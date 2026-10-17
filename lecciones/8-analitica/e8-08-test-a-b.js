@@ -66,7 +66,7 @@ FROM tasas;`,
     },
     {
       tipo: "interpretar",
-      pregunta: "Que compre más gente no sirve de mucho si cada compra es más pequeña. ¿Cambia el **ticket medio** entre A y B? Toma los pedidos de las sesiones de la prueba con `compra` (`eventos_web.pedido_id`, se cancelaran o no después: se mide lo que se compró) y calcula `z = (media_B − media_A) / sqrt(dA² / nA + dB² / nB)`, con la media, `STDDEV_SAMP` y el número de pedidos de cada grupo. Responde **sí** o **no**.",
+      pregunta: "Que compre más gente no sirve de mucho si cada compra es más pequeña. ¿La diferencia de **ticket medio** entre A y B es **significativa** (|z| > 1,96), o es la que daría la suerte? Toma los pedidos de las sesiones de la prueba con `compra` (`eventos_web.pedido_id`, se cancelaran o no después: se mide lo que se compró) y calcula `z = (media_B − media_A) / sqrt(dA² / nA + dB² / nB)`, con la media, `STDDEV_SAMP` y el número de pedidos de cada grupo. Responde **sí** o **no**.",
       respuesta: ["no", "no cambia", "no no cambia", "no hay diferencia", "no significativo", "no es significativo", "no z pequeño"],
       pistas: [
         "Une `sesiones_web` (con `variante` no nula) con `eventos_web` (evento `'compra'`) y con `pedidos` por `pedido_id`. Con `FILTER (WHERE variante = 'A')` y `'B'` saca `AVG(total)`, `STDDEV_SAMP(total)` y `COUNT(*)` de cada grupo.",

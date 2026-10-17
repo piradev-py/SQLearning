@@ -160,9 +160,12 @@ export default async function (b) {
   await b.ir("index.html");
   await avanzarPrologo();
   comprobar("Prólogo con el caso resuelto: sello CASO CERRADO", (await b.eval("document.querySelector('[data-sello-texto]').textContent")) === "CASO CERRADO");
+  comprobar("Prólogo con el caso resuelto: botón «Ver el expediente final»", await b.eval("document.querySelector('[data-final]').offsetHeight > 0"));
   await b.eval("document.querySelector('[data-continuar]').click()");
   await b.esperar(400);
-  comprobar("Hoja de ruta: enlace al expediente final", await b.eval("document.querySelector('.exp-final')?.getAttribute('href') === 'caso-cerrado.html'"));
+  await b.eval("(e => e.closest('.exp--plegado') || e.querySelector('.exp-flecha').click())(document.querySelector('.exp[data-exp=\"8\"]'))");
+  await b.esperar(300);
+  comprobar("Hoja de ruta: enlace al expediente final visible con EXP.8 plegado", await b.eval("(a => a?.getAttribute('href') === 'caso-cerrado.html' && a.offsetHeight > 0)(document.querySelector('.exp .exp-final')) && !!document.querySelector('.exp[data-exp=\"8\"].exp--plegado')"));
 
   b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Inicio: todo correcto");
 }

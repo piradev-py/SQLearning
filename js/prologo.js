@@ -51,12 +51,14 @@
     const boton = raiz.querySelector("[data-continuar]");
     const ayuda = raiz.querySelector("[data-ayuda]");
     const entrar = raiz.querySelector("[data-entrar]");
+    const final = raiz.querySelector("[data-final]");
     const lista = piezas();
     let i = 0, reloj = null, terminado = false, empezado = false;
 
     caja.innerHTML = "";
     sello.hidden = true;
     boton.hidden = true;
+    final.hidden = true;
     ayuda.hidden = true;
     entrar.hidden = false;
     raiz.hidden = false;
@@ -67,6 +69,7 @@
       clearTimeout(reloj);
       ayuda.hidden = true;
       boton.hidden = false;
+      final.hidden = !PROGRESO.casoCerrado();
       boton.focus();
     }
 
@@ -108,11 +111,11 @@
     // Antes de empezar, cualquier clic o Enter/Espacio abre el caso; después, adelantan la frase siguiente
     const avanzar = () => { if (!empezado) empezar(); else if (!terminado) siguiente(); };
     raiz.onclick = ev => {
-      if (ev.target.closest("[data-musica], [data-voz], [data-continuar]")) return;
+      if (ev.target.closest("[data-musica], [data-voz], [data-continuar], [data-final]")) return;
       avanzar();
     };
     raiz.onkeydown = ev => {
-      if ((ev.key === "Enter" || ev.key === " ") && !ev.target.closest("[data-continuar], [data-voz], [data-musica]")) {
+      if ((ev.key === "Enter" || ev.key === " ") && !ev.target.closest("[data-continuar], [data-voz], [data-musica], [data-final]")) {
         ev.preventDefault();
         avanzar();
       }

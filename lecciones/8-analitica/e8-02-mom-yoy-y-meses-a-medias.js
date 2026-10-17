@@ -68,12 +68,18 @@ WHERE estado NOT IN ('cancelado', 'reembolsado')
     {
       tipo: "explicacion",
       titulo: "YoY mes a mes y el acumulado del año (YTD)",
-      texto: "Para tener el YoY de cada mes, une la tabla mensual **consigo misma**: cada mes con el que está un año antes, `b.mes = a.mes - INTERVAL '1 year'`.\nTambién se puede con `LAG(facturacion, 12)`, que mira 12 filas atrás… pero solo si **no falta ningún mes**: con un hueco, «12 filas atrás» ya no es «hace un año». Si usas `LAG`, monta antes un calendario con `generate_series`.\nEl **YTD** (*year to date*) es el acumulado del año: de enero a septiembre de 2026 frente a enero–septiembre de 2025, el mismo tramo.",
-      ejemplo: `SELECT
-  SUM(total) FILTER (WHERE fecha >= DATE '2026-01-01' AND fecha < DATE '2026-10-01') AS ytd_2026,
-  SUM(total) FILTER (WHERE fecha >= DATE '2025-01-01' AND fecha < DATE '2025-10-01') AS ytd_2025
-FROM pedidos
-WHERE estado NOT IN ('cancelado', 'reembolsado');`,
+      texto: "Para tener el YoY de cada mes, une la tabla mensual **consigo misma**: cada mes con el que está un año antes, `b.mes = a.mes - INTERVAL '1 year'`.\nTambién se puede con `LAG(facturacion, 12)`, que mira 12 filas atrás… pero solo si **no falta ningún mes**: con un hueco, «12 filas atrás» ya no es «hace un año». Si usas `LAG`, monta antes un calendario con `generate_series`.\nEl **YTD** (*year to date*) es el acumulado del año: de enero a septiembre de 2026 frente a enero–septiembre de 2025, el mismo tramo: una columna por año con `SUM(total) FILTER (WHERE fecha >= … AND fecha < …)`, como el MTD de antes.\nEl ejemplo hace la autounión con tres meses: cada fila de `a` busca en `b` la del año anterior.",
+      ejemplo: `WITH mensual AS (
+  SELECT date_trunc('month', fecha)::date AS mes, SUM(total) AS facturacion
+  FROM pedidos
+  WHERE estado NOT IN ('cancelado', 'reembolsado')
+  GROUP BY date_trunc('month', fecha)::date
+)
+SELECT a.mes, a.facturacion, b.mes AS mes_anterior, b.facturacion AS facturacion_anterior
+FROM mensual AS a
+JOIN mensual AS b ON b.mes = a.mes - INTERVAL '1 year'
+WHERE a.mes BETWEEN DATE '2026-07-01' AND DATE '2026-09-01'
+ORDER BY a.mes;`,
       otrosMotores: "`date - INTERVAL '1 year'` es de PostgreSQL. En SQL Server se escribe `DATEADD(year, -1, mes)`, en MySQL `mes - INTERVAL 1 YEAR` y en BigQuery `DATE_SUB(mes, INTERVAL 1 YEAR)`."
     },
     {

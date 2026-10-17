@@ -94,7 +94,7 @@ ORDER BY tienda_id;`,
     {
       tipo: "reto",
       de: "ana",
-      enunciado: "La diapositiva del **tercer trimestre de 2026** (pedidos con `fecha` del 2026-07-01 al 2026-09-30), por tienda. Columnas:\n- `tienda_id`\n- `pedidos`: todos los pedidos.\n- `facturacion`: neta (suma de `total` sin `cancelado` ni `reembolsado`).\n- `ticket_medio`: media de `total` de esos mismos pedidos netos, redondeada a 2.\n- `clientes`: clientes distintos, contando todos los pedidos.\n- `tasa_reembolso`: % de pedidos con estado `'reembolsado'` sobre todos, redondeado a 1.\nOrdenado por `tienda_id`.",
+      enunciado: "La diapositiva del **tercer trimestre de 2026** (pedidos con `fecha` desde el 2026-07-01 y antes del 2026-10-01), por tienda. Columnas:\n- `tienda_id`\n- `pedidos`: todos los pedidos.\n- `facturacion`: neta (suma de `total` sin `cancelado` ni `reembolsado`).\n- `ticket_medio`: media de `total` de esos mismos pedidos netos, redondeada a 2.\n- `clientes`: clientes distintos, contando todos los pedidos.\n- `tasa_reembolso`: % de pedidos con estado `'reembolsado'` sobre todos, redondeado a 1.\nOrdenado por `tienda_id`.",
       inicial: "-- Escribe tu consulta aquí\n",
       grafico: true,
       comprobaciones: [
@@ -102,6 +102,11 @@ ORDER BY tienda_id;`,
         { texto: "La tasa de reembolso no sale 0 en todas las tiendas (¿división entera?)", prueba: (r) => {
           const i = (r?.columnas || []).findIndex(c => String(c).toLowerCase() === "tasa_reembolso");
           return i >= 0 && (r?.filas || []).some(f => Number(f?.[i] ?? 0) > 0);
+        } },
+        { texto: "Cuentas clientes distintos (COUNT(DISTINCT cliente_id)), no pedidos", prueba: () => /\bcount\s*\(\s*distinct\b/i.test(PRUEBA.codigo()) },
+        { texto: "Entra el 30 de septiembre entero (fecha < '2026-10-01': con <= '2026-09-30' se pierde el día, porque la fecha lleva hora)", prueba: async (r, db) => {
+          const e = await db.consulta("SELECT tienda_id, COUNT(*) FROM pedidos WHERE fecha >= '2026-07-01' AND fecha < '2026-10-01' GROUP BY tienda_id");
+          return e.filas.every(([t, n]) => (r?.filas || []).some(f => String(f[0]) === String(t) && Number(f[1]) === Number(n)));
         } },
         { texto: "Cada tienda con sus cinco KPI del trimestre, en orden de tienda", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT tienda_id,
   COUNT(*) AS pedidos,

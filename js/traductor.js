@@ -72,6 +72,10 @@
     "42P01": (e, sql) => {
       // «missing FROM-clause entry for table "julia"»: casi siempre un texto sin comillas (julia.martinez@…)
       const sinFrom = entre(e.mensaje, /missing FROM-clause entry for table "([^"]+)"/);
+      // …salvo que parezca un alias sin declarar (una o dos letras, o el principio de una tabla del FROM: `t` → `tiendas`)
+      const delFrom = sinFrom && tablas.filter(t => new RegExp(`\\b(from|join)\\s+${t}\\b`, "i").test(limpio(sql)));
+      const tabla = delFrom && (delFrom.find(t => t.startsWith(sinFrom.toLowerCase())) || (sinFrom.length <= 2 && delFrom[0]));
+      if (tabla) return `No hay ninguna tabla ni alias llamado \`${sinFrom}\` en el \`FROM\`. ¿Falta \`AS ${sinFrom}\` detrás de \`${tabla}\`? (\`FROM ${tabla} AS ${sinFrom}\`)`;
       if (sinFrom) return `Has escrito \`${sinFrom}.algo\` como si \`${sinFrom}\` fuera una tabla. Si es un texto (un email, un nombre…), va entre comillas simples: \`'así'\`.`;
       // «invalid reference to FROM-clause entry for table "envios"» + HINT con el alias: usa el nombre de la tabla tras darle un alias
       const conAlias = entre(e.mensaje, /invalid reference to FROM-clause entry for table "([^"]+)"/);
@@ -146,7 +150,13 @@
       ? "Ese intervalo no tiene un formato válido. Escríbelo así: `INTERVAL '3 days'` o `'2 hours 30 minutes'`."
       : "La fecha u hora no tiene un formato válido. Escríbela así: `'2024-03-31'`.",
     "22008": () => "Esa fecha no existe o se sale de rango.",
-    "22012": () => "Estás dividiendo entre cero. Usa `NULLIF(divisor, 0)` para evitarlo.",
+    "22012": (e, sql) => {
+      const s = limpio(sql);
+      // Sin ningún decimal ni conversión, lo habitual es una división entera que dio 0 y luego se usó como divisor
+      return /\//.test(s) && !/\d\.\d|::\s*(numeric|decimal|float|real|double)|\bcast\s*\(/i.test(s)
+        ? "Estás dividiendo entre cero. ¿Has dividido dos enteros? En PostgreSQL `142 / 288` da `0` (se pierden los decimales) y ese 0 acaba de divisor: multiplica por `1.0` antes de dividir (`142 * 1.0 / 288`). Si el divisor puede ser 0 de verdad, usa `NULLIF(divisor, 0)`."
+        : "Estás dividiendo entre cero. Usa `NULLIF(divisor, 0)` para evitarlo.";
+    },
     "23505": (e) => `Ya existe una fila con ese valor y la columna no admite repetidos (PRIMARY KEY o UNIQUE)${detalleClave(e.detalle)}.`,
     "23503": (e) => /still referenced/.test(e.detalle || "")
       ? `No puedes borrar (o cambiar) esa fila: otras la necesitan (FOREIGN KEY)${detalleClave(e.detalle)}.`
