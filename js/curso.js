@@ -134,7 +134,22 @@
         { id: "e7-11", archivo: "e7-11-caso-la-coartada-de-ivan.js", titulo: "Caso: ¿Dónde estaba cada uno?", listo: true, caso: true }
       ]
     },
-    { n: 8, carpeta: "8-analitica", titulo: "Analítica", departamento: "Datos · El desenlace", datos: "faro-e8", niveles: pendientes(8, 12) }
+    { n: 8, carpeta: "8-analitica", titulo: "Analítica", departamento: "Datos · El desenlace", datos: "faro-e8",
+      niveles: [
+        { id: "e8-01", archivo: "e8-01-kpis.js", titulo: "Medir lo que importa: KPIs", listo: true },
+        { id: "e8-02", archivo: "e8-02-mom-yoy-y-meses-a-medias.js", titulo: "¿Vamos mejor o peor?: MoM, YoY y meses a medias", listo: true },
+        { id: "e8-03", archivo: "e8-03-cohortes-y-retencion.js", titulo: "Cohortes y retención: ¿vuelven los clientes?", listo: true },
+        { id: "e8-04", archivo: "e8-04-embudos.js", titulo: "Embudos: dónde se pierden las ventas", listo: true },
+        { id: "e8-05", archivo: "e8-05-segmentar-clientes-rfm.js", titulo: "Segmentar clientes: RFM", listo: true },
+        { id: "e8-06", archivo: "e8-06-estadistica-descriptiva.js", titulo: "Estadística descriptiva: centro, dispersión e histogramas", listo: true },
+        { id: "e8-07", archivo: "e8-07-z-score-y-atipicos.js", titulo: "Lo que no es normal: z-score y atípicos", listo: true },
+        { id: "e8-08", archivo: "e8-08-test-a-b.js", titulo: "¿Funciona el cambio?: test A/B", listo: true },
+        { id: "e8-09", archivo: "e8-09-tablas-dinamicas.js", titulo: "Tablas dinámicas: pivotar y subtotales", listo: true },
+        { id: "e8-10", archivo: "e8-10-cuadro-de-mando.js", titulo: "Un cuadro de mando en una consulta", listo: true },
+        { id: "e8-11", archivo: "e8-11-contarlo-bien-el-informe.js", titulo: "Contarlo bien: el informe", listo: true },
+        { id: "e8-12", archivo: "e8-12-caso-caso-cerrado.js", titulo: "Caso: Caso cerrado", listo: true, caso: true }
+      ]
+    }
   ];
   // El último nivel de cada etapa es su caso
   for (const e of ETAPAS) e.niveles[e.niveles.length - 1].caso = true;

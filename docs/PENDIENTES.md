@@ -23,8 +23,8 @@ quede pendiente y vuelve a pasar los tests.
   - [x] Dos pestañas del laboratorio se pisan el borrador: cada pestaña guarda el suyo en `sessionStorage`; `localStorage` para la próxima
   - [ ] Sin conexión: service worker para cachear PGlite y las fuentes (antes de publicar)
   - [x] GitHub Pages sirve wasm/data con gzip (10,5→3,7 MB y 6,2→1,8 MB)
-- [ ] Revisión fin de fase 3 (interfaz)
-- [ ] Revisión etapa 1 antes de publicar (las dos)
+- [x] ~~Revisión fin de fase 3 (interfaz)~~ → sustituida por las revisiones de las etapas 0–7 y la revisión final (decisión del usuario)
+- [x] ~~Revisión etapa 1 antes de publicar (las dos)~~ → sustituida por la revisión final
 
 ## Fase 2 · Motor
 - [x] Vendorizar PGlite 0.5.10 (`vendor/pglite/`, 18,3 MB) en un Web Worker; corte a los 4 s con reinicio y recarga de datos
@@ -44,7 +44,7 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Pasos «sobre el papel» (`js/papel.js`): `clasificar` (también Venn), `seleccionar`, `ordenar`, `diagrama`, con clics y teclado; prueba `esc-papel.mjs`
 - [x] Verificador de lecciones (`tests/verificar-lecciones.html`, `esc-verificar.mjs`) y `npm test` (todas las baterías)
 - [x] Niveles de referencia: `e1-01` (SQL) y `e0-01` (sobre el papel)
-- [ ] Revisión fin de fase 3 (`qa-estres` + `alumno-novato` con e0-01 y e1-01)
+- [x] ~~Revisión fin de fase 3 (`qa-estres` + `alumno-novato` con e0-01 y e1-01)~~ → sustituida por la revisión final
 
 ## Fase 4 · Primer hito jugable
 - [x] Etapa 0 completa (10 niveles) y Etapa 1 completa (9 niveles): verificador 19/19 y `npm test` en verde
@@ -108,7 +108,8 @@ quede pendiente y vuelve a pasar los tests.
 - [x] Plan detallado etapa 8 (12 niveles) en `docs/PLAN_CURSO.md`, con los datos nuevos que necesita `faro-e8.sql`
 - [x] Datos `faro-e8.sql` (octubre 1–14 con Barcelona, `sesiones_web`/`eventos_web` con la prueba A/B, `abonos`,
   `fichas_empleados.cuenta_nomina`, admin_temp desactivada) y cifras en `docs/DATOS.md` (2,1 MB; comprobado con PGlite en Node: `herramientas/consultar.mjs`)
-- [ ] Lecciones e8-01…e8-12 y revisión final (`qa-estres` + `alumno-novato`)
+- [x] Lecciones e8-01…e8-12 (2 agentes `profesor-sql`; verificador 93/93 a la primera; cifras «(verificar)» comprobadas con PGlite)
+- [ ] **Revisión final, con la etapa 8 terminada** (decisión del usuario): `npm test`, después `qa-estres` y después `alumno-novato` (nunca a la vez), sobre todo el curso
 
 ## Versión publicada
 - [x] **Modo prueba y «desbloquear todo» solo en local** (`SOLO_LOCAL` en `js/progreso.js`): en la web publicada no se puede saltar a una diligencia (petición del usuario)

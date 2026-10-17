@@ -1069,8 +1069,8 @@ montar un cuadro de mando parametrizado y convertir resultados en un informe cla
 - **Predicción:** en `VALUES (10), (12), (11), (13), (95), (30)`, ¿el 30 tiene |z| > 2? (no: el 95 lo enmascara); con
   la línea base de los cuatro primeros, sí.
 - **Reto:** unidades vendidas por producto en 2026 (ene–sep, pedidos netos) y su z frente a todos los productos:
-  `producto_id`, `unidades`, `z` (`ROUND` 2), los 5 de mayor z con desempate por `producto_id` → 5 filas (sin empate
-  en el corte: verificador). igualA.
+  `producto_id`, `unidades`, `z` (`ROUND` 2), los 5 de mayor z con desempate por `producto_id` → 5 filas (8 y 25
+  empatan en el 5.º puesto: el enunciado lo avisa y el desempate deja el 8). igualA.
 
 ### e8-08 · ¿Funciona el cambio?: test A/B · 50 ◈
 - **Conceptos nuevos:** tras el embudo, Producto probó del 1 de julio al 30 de septiembre un **pago en un paso**
@@ -1124,8 +1124,7 @@ montar un cuadro de mando parametrizado y convertir resultados en un informe cla
 - **Ordenar (papel):** las partes del informe en su orden.
 - **Trampas:** porcentajes que no suman 100 por redondeo (decirlo, no maquillarlo); cifras con 8 decimales;
   comparar Barcelona (14 días) con meses enteros.
-- **Interpretar:** «Barcelona ha facturado en dos semanas el X % de lo que facturó Madrid en las mismas fechas» (X con 1
-  decimal, verificador).
+- **Interpretar:** % de todos los pedidos de Faro del 1 al 14 de octubre hechos en Barcelona → **36,5** (57 de 156).
 - **Reto:** las dos primeras semanas de Barcelona frente a las demás tiendas físicas en las mismas fechas (2026-10-01 a
   2026-10-14): `tienda` (nombre), `pedidos`, `facturacion` (neta), `ticket_medio` (`ROUND` 2), `pct_nuevos` (% de sus
   clientes de esas fechas cuyo primer pedido de siempre cae en ellas, `ROUND` 1), de más a menos `facturacion` → **5**
@@ -1141,8 +1140,9 @@ montar un cuadro de mando parametrizado y convertir resultados en un informe cla
      (de los 82 reembolsos online de esos meses, 69 son suyos; el % de importe, con el verificador).
   2. **Antes, durante y después:** tasa de reembolso online por mes de 2024-01 a 2026-10 (octubre a medias: la tasa sí
      se puede comparar) y su z frente a la **línea base 2024–2025** (media y desviación de esos 24 meses en una CTE, para
-     que el Fantasma no se enmascare a sí mismo, e8-07): `mes`, `tasa`, `z` (`ROUND` 2). igualA. Marzo–septiembre de
-     2026 se disparan; octubre, con `admin_temp` cerrada, vuelve a lo normal. `interpretar`: ¿cuántos meses tienen z > 3?
+     que el Fantasma no se enmascare a sí mismo, e8-07): `mes`, `tasa`, `z` (`ROUND` 2). igualA. 5 meses de 2026 pasan
+     de z 3 (marzo–junio y agosto; julio solo 1,42, septiembre 2,98); octubre, con `admin_temp` cerrada, vuelve a lo
+     normal. `interpretar`: ¿cuántos meses tienen z > 3? → 5.
   3. **¿Adónde fue el dinero?** `abonos` por transferencia agrupados por `cuenta_destino`: `cuenta_destino`, `abonos`,
      `clientes` (distintos), `importe`, de más a menos `abonos` con desempate por cuenta → una cuenta recibe **69** abonos
      de **10** clientes; las demás, uno o dos de un solo cliente. igualA. `interpretar` (con `JOIN fichas_empleados ON
