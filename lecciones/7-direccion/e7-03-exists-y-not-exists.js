@@ -48,6 +48,9 @@ WHERE NOT EXISTS (
   WHERE e.transportista_id = t.id
 )
 ORDER BY t.id;`,
+      trampas: [
+        { si: /\bnot\s+exists\s*\(\s*select\b(?![^()]*\bwhere\b)[^()]*\)/i, mensaje: "Ojo: tu `NOT EXISTS` no está unido a la fila de fuera. Sin `WHERE e.transportista_id = t.id` dentro, pregunta «¿hay algún envío en toda la tabla?», y la respuesta es la misma para todos los transportistas." }
+      ],
       pistas: [
         "Igual que el ejemplo de clientes sin pedidos: fuera `transportistas AS t`, dentro `envios AS e` con `e.transportista_id = t.id`.",
         "SELECT t.id, t.nombre FROM transportistas AS t WHERE NOT EXISTS (SELECT 1 FROM envios AS e WHERE e.transportista_id = t.id) ORDER BY t.id;"

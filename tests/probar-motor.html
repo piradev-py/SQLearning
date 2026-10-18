@@ -91,6 +91,16 @@
         const r = await MOTOR.ejecutar("SELECT e.nombre FROM empleados;");
         return !r.ok && /AS e\b/.test(r.error.explicacion) && !/comillas/.test(r.error.explicacion) || r.error;
       });
+      await prueba("Error traducido: regla UNIQUE (…) sin su coma → «¿falta una coma?»", async () => {
+        const r = await MOTOR.ejecutar("CREATE TABLE t_coma (a int, b date NOT NULL UNIQUE (a, b));");
+        return !r.ok && /falta una coma/i.test(r.error.explicacion) || r.error;
+      });
+      await prueba("Revisor: con verificar y un SELECT final en la solución, sin el SELECT no aprueba", async () => {
+        const paso = { varias: true, solucion: "CREATE TABLE t_sel (a text);\nSELECT * FROM t_sel;", verificar: "SELECT column_name::text FROM information_schema.columns WHERE table_name = 't_sel';" };
+        const sin = await REVISOR.revisarEjercicio(paso, "CREATE TABLE t_sel (a text);");
+        const con = await REVISOR.revisarEjercicio(paso, "CREATE TABLE t_sel (a text); SELECT * FROM t_sel;");
+        return !sin.ok && /SELECT/.test(sin.mensaje) && con.ok || [sin, con];
+      });
       await prueba("Error traducido: división entre cero por división entera → multiplica por 1.0", async () => {
         const a = await MOTOR.ejecutar("SELECT 1 / (2 / 3);"), b = await MOTOR.ejecutar("SELECT 1.0 / 0;");
         return !a.ok && /1\.0/.test(a.error.explicacion) && !b.ok && !/enteros/.test(b.error.explicacion) || [a.error, b.error];

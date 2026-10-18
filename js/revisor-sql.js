@@ -197,6 +197,11 @@
     const claves = orden && esperado ? clavesOrden(fuenteOrden, esperado.columnas) : null;
     const r = comparar(alumno, esperado, { orden, nombres: paso.nombres !== false, claves });
     if (!r.ok) { const c = consejoTrampa(sql, paso); if (c) r.mensaje += " " + c; }
+    // Con `verificar` se compara la tabla creada, no lo que devuelve el alumno: si el enunciado pide comprobarla
+    // con un SELECT al final (la solución acaba en uno), ese SELECT también tiene que estar
+    const ultima = s => MOTOR.sinTextos(MOTOR.sinComentarios(s)).split(";").map(x => x.trim()).filter(Boolean).at(-1) || "";
+    if (r.ok && paso.verificar && /^(select|with)\b/i.test(ultima(paso.solucion)) && !/^(select|with|table)\b/i.test(ultima(sql)))
+      return { ok: false, mensaje: "Casi: falta comprobarlo. Escribe al final, en la misma ejecución, el `SELECT` que pide el enunciado." };
     return r;
   }
 

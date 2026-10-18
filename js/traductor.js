@@ -61,6 +61,10 @@
         return "Al apilar consultas con `UNION`, `INTERSECT` o `EXCEPT` solo puede haber **un** `ORDER BY`, al final del todo.";
       if ((/at end of input/.test(e.mensaje) || (cerca && /^(;|where|order|group|limit|having|join|inner|left|right|full)$/i.test(cerca))) && joinSinOn(s))
         return "A un `JOIN` le falta el `ON`: tienes que decir cómo se emparejan las filas, por ejemplo `JOIN tiendas t ON t.id = e.tienda_id`.";
+      // `dia date NOT NULL UNIQUE (empleado_id, dia)`: una regla de tabla pegada a la columna anterior, sin su coma
+      const regla = cerca === "(" && s.match(/[^,(\s]\s+(unique|primary\s+key|foreign\s+key)\s*\(/i);
+      if (regla)
+        return `¿Falta una coma antes de \`${regla[1].toUpperCase().replace(/\s+/, " ")} (…)\`? Las reglas que afectan a varias columnas van como una línea más de la tabla, separadas por comas: \`…, ${regla[1].toUpperCase().replace(/\s+/, " ")} (columna1, columna2)\`.`;
       if (/at end of input/.test(e.mensaje))
         return "La consulta se corta antes de tiempo: falta algo al final (¿una columna después de la coma? ¿cerrar un paréntesis o una comilla?).";
       if (cerca && /^(FROM|WHERE|ORDER|GROUP|LIMIT|HAVING)$/i.test(cerca))

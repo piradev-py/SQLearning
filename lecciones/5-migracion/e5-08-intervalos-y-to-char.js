@@ -102,6 +102,11 @@ ORDER BY id;`,
           const i = (r?.columnas || []).findIndex(c => String(c).toLowerCase() === "dias_medios");
           return i >= 0 && ["numeric", "double precision", "real"].includes(r?.tipos?.[i]) && (r?.filas || []).every(f => Number(f[i]) > 1 && Number(f[i]) < 4);
         } },
+        { texto: "envios_entregados cuenta solo los envíos con `entrega` (`COUNT(*)` cuenta también los que siguen en camino)", prueba: async (r, db) => {
+          const e = await db.consulta("SELECT al.nombre, COUNT(e.entrega) FROM envios AS e JOIN almacenes AS al ON al.id = e.almacen_id GROUP BY al.nombre");
+          const ia = (r?.columnas || []).indexOf("almacen"), ie = (r?.columnas || []).indexOf("envios_entregados");
+          return ia >= 0 && ie >= 0 && e.filas.every(([n, c]) => (r.filas || []).some(f => f[ia] === n && Number(f[ie]) === Number(c)));
+        } },
         { texto: "Cada almacén con sus envíos entregados y su media, ordenados por almacén", prueba: (r, db) => PRUEBA.igualA(r, db, `SELECT al.nombre AS almacen,
   COUNT(e.entrega) AS envios_entregados,
   ROUND(AVG(EXTRACT(EPOCH FROM e.entrega - e.salida) / 86400), 2) AS dias_medios
