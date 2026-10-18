@@ -153,8 +153,8 @@ quede pendiente y vuelve a pasar los tests.
 ## Al final: detalles visuales (decisión del usuario: primero lo técnico)
 - [x] Prólogo definitivo del usuario (versión corta) en `js/prologo.js`; «cinco tiendas y una tienda online» como dice la locución; los datos tienen una 5.ª tienda física (Barcelona, recién inaugurada, sin pedidos)
 - [x] Prólogo con movimiento reducido: frase a frase con un fundido de opacidad (sin desplazamiento), como sin movimiento reducido
-- [ ] Figuras del ambiente historia (lluvia, carteles, siluetas de personajes, el Fantasma) — ver `docs/ESTILO.md`
-- [ ] Pulido visual de la página de lección, pasos «sobre el papel» y pantalla de diligencia superada
+- [x] Figuras del ambiente historia: retratos en pixel art de los personajes, lluvia, dron, carteles FARO/GETAFE/BAR y la silueta del Fantasma — ver `docs/ESTILO.md`
+- [x] Pulido visual (elegido por el usuario): fichas de cartulina y cajones con etiqueta de latón en «sobre el papel», sello estampado en «Diligencia superada», etiqueta «Explicación» en todos los pasos
 
 ## Decisiones abiertas
 - (ninguna por ahora)

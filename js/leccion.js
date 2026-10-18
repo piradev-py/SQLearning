@@ -294,7 +294,7 @@
     },
 
     explicacion(p, caja, i) {
-      caja.innerHTML = `${p.titulo ? `<h2>${esc(p.titulo)}</h2>` : ""}
+      caja.innerHTML = `<p class="lec-etiqueta">Explicación</p>${p.titulo ? `<h2>${esc(p.titulo)}</h2>` : ""}
         <p>${md(p.texto)}</p>
         ${p.ejemplo && usaSQL ? `<p class="lec-nota">El ejemplo está en el editor: ejecútalo, cámbialo y vuelve a ejecutarlo.</p>` : ""}
         ${p.consejo ? `<aside class="lec-consejo">${cabeceraPersonaje("lucia")}<p>${md(p.consejo)}</p></aside>` : ""}

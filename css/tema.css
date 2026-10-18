@@ -18,6 +18,11 @@
   --texto-suave: #857f9e;
   --acento: #c0508f;              /* magenta polvoriento */
   --acento-fondo: rgb(192 80 143 / 0.1);
+  /* Fichas de cartulina del archivo de 1998 (pasos «sobre el papel»): iguales en los dos temas */
+  --papel: #e6dbc1;
+  --papel-tinta: #2b2333;
+  --papel-borde: #b8a882;
+  --laton: #c9a66b;               /* etiqueta de los cajones del archivo */
   --cian: #4fa3b3;                /* cian de niebla */
   --cian-fondo: rgb(79 163 179 / 0.1);
   --primario: #2c6772;
