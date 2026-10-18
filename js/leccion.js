@@ -256,7 +256,8 @@
   function cabeceraPersonaje(de) {
     const p = PERSONAJES[de];
     if (!p) return "";
-    return `<div class="lec-de"><span class="lec-avatar" aria-hidden="true">${esc(p.nombre[0])}</span>
+    // Retrato en pixel art (herramientas/generar-retratos.mjs); el nombre ya va al lado, así que es decorativo
+    return `<div class="lec-de"><img class="lec-avatar" src="recursos/retratos/${de}.svg" alt="" width="44" height="44">
       <span><strong>${esc(p.nombre)}</strong><small>${esc(p.rol)}</small></span></div>`;
   }
 
@@ -504,7 +505,7 @@
       ${res.subeAutorizacion ? `<p class="lec-final-aut">Nueva autorización: <strong>L${res.subeAutorizacion.nivel} · ${esc(res.subeAutorizacion.nombre)}</strong></p>` : ""}
       ${res.credenciales.length ? `<ul class="lec-final-credenciales">${res.credenciales.map(c => `<li>🪪 Credencial: <strong>${esc(c.nombre)}</strong> — ${esc(c.desc)}</li>`).join("")}</ul>` : ""}
       ${pistaNueva ? `<div class="lec-final-pista"><p class="lec-etiqueta">Nueva pista en el expediente</p><h3>${esc(pista.titulo)}</h3><p>${md(pista.texto)}</p></div>` : ""}
-      ${lec.rumor ? `<div class="lec-final-rumor"><p class="lec-etiqueta">Lucía, en voz baja</p><p>${md(lec.rumor)}</p></div>` : ""}`;
+      ${lec.rumor ? `<div class="lec-final-rumor"><img class="lec-avatar" src="recursos/retratos/lucia.svg" alt="" width="44" height="44"><div><p class="lec-etiqueta">Lucía, en voz baja</p><p>${md(lec.rumor)}</p></div></div>` : ""}`;
     const siguiente = ref.etapa.niveles[ref.indice + 1];
     const enlace = $("[data-final-siguiente]");
     if (siguiente?.listo) { enlace.href = `leccion.html?id=${siguiente.id}`; enlace.hidden = false; }

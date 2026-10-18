@@ -64,8 +64,8 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
 .lec-de strong { display: block; }
 .lec-de small { color: var(--texto-suave); }
 .lec-avatar {
-  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
-  font: 700 15px var(--fuente-titulo); color: var(--cian); border: 1px solid var(--cian);
+  flex: none; width: 44px; height: 44px; border-radius: 6px; border: 1px solid var(--cian);
+  image-rendering: pixelated; box-shadow: 0 0 10px color-mix(in srgb, var(--cian) 35%, transparent);
 }
 .lec-consejo, .lec-motores { margin: 12px 0; padding: 10px 14px; border-radius: var(--radio); background: var(--superficie-2); border: 1px solid var(--borde); }
 .lec-consejo .lec-de { margin-top: 0; }
@@ -181,9 +181,10 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; b
 .lec-final-pista { margin: 14px 0; padding: 12px 14px; border-left: 2px solid var(--acento); background: var(--acento-fondo); }
 .lec-final-pista h3 { margin: 4px 0; }
 /* Nota de pasillo: lo que Lucía te cuenta en voz baja al terminar (trasfondo de la historia) */
-.lec-final-rumor { margin: 14px 0; padding: 10px 14px; border: 1px dashed var(--borde); border-radius: var(--radio); color: var(--texto-suave); font-style: italic; }
+.lec-final-rumor { display: flex; gap: 12px; align-items: flex-start; margin: 14px 0; padding: 10px 14px; border: 1px dashed var(--borde); border-radius: var(--radio); color: var(--texto-suave); font-style: italic; }
 .lec-final-rumor .lec-etiqueta { font-style: normal; }
-.lec-final-rumor p:last-child { margin: 4px 0 0; }
+.lec-final-rumor p { margin: 0; }
+.lec-final-rumor p + p { margin-top: 4px; }
 .lec-final-botones { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
 .boton-enlace {
   display: inline-flex; align-items: center; padding: 8px 16px; border-radius: var(--radio);
