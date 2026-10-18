@@ -26,8 +26,10 @@ Orbitron (marca y títulos, en mayúsculas, con espaciado) · JetBrains Mono (c�
 - ✅ Ciudad neón con el faro de Faro (`herramientas/generar-ciudad.mjs` → `recursos/ciudad-neon.svg`).
 - ✅ Retratos en pixel art de los siete personajes para tickets, consejos y notas de Lucía
   (`herramientas/generar-retratos.mjs` → `recursos/retratos/<id>.svg`), con la luz del retrato grande de Héctor.
-- 🚧 Para la fase 3 (ambiente historia): lluvia fina de neón, carteles luminosos con nombres de las tiendas, la silueta borrosa del **Fantasma** (aparece y desaparece
-  en el expediente), un dron/coche flotante cruzando el cielo, sello «CASO CERRADO».
+- ✅ Lluvia fina de neón y un dron que cruza el cielo (CSS en `css/fondo.css`, solo en el ambiente historia) y carteles
+  FARO, GETAFE y BAR en la ciudad (letras de píxeles en `generar-ciudad.mjs`; la imagen va con `?v=` porque `recursos/` no lleva versión).
+- ✅ Sello «CASO CERRADO» (prólogo y expediente final).
+- 🚧 La silueta borrosa del **Fantasma** (aparece y desaparece en el expediente de pistas).
 - Animaciones lentas y sutiles (parpadeo de neón, lluvia, destello del faro); con `prefers-reduced-motion: reduce`
   quedan quietas (el Windows del usuario lo tiene activado).
 

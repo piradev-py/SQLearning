@@ -76,6 +76,21 @@ function faro() {
   return svg + "</g>";
 }
 
+// Carteles de neón con letras de píxeles (un SVG en <img> no carga fuentes): FARO, el almacén de GETAFE y un BAR
+const LETRAS = { A: "010101111101101", B: "110101110101110", E: "111100110100111", F: "111100110100100",
+  G: "111100101101111", O: "111101101101111", R: "110101110101101", T: "111010010010010" };
+function cartel(texto, x, y, p, color, vertical = false) {
+  const paso = 3 * p + p, alto = 5 * p + p;
+  const w = vertical ? paso + p : texto.length * paso + p, h = vertical ? texto.length * alto + p : alto + p;
+  let svg = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="#06050d" stroke="${color}" stroke-width="1.5"/>`;
+  [...texto].forEach((l, k) => [...LETRAS[l]].forEach((b, n) => {
+    if (b !== "1") return;
+    const x0 = x + p + (vertical ? 0 : k * paso) + (n % 3) * p, y0 = y + p + (vertical ? k * alto : 0) + Math.floor(n / 3) * p;
+    svg += `<rect x="${x0}" y="${y0}" width="${p}" height="${p}" fill="${color}"/>`;
+  }));
+  return svg;
+}
+
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ANCHO} ${ALTO}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
 <defs>
   <filter id="brillo" x="-20%" y="-20%" width="140%" height="140%">
@@ -92,6 +107,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ANCHO} ${ALT
 ${capa({ cantidad: 60, altoMin: 120, altoMax: 330, anchoMin: 28, anchoMax: 70, color: "#2c6672", ventana: "#4fa3b3", opacidad: 0.5, antenas: true })}
 ${faro()}
 ${capa({ cantidad: 60, altoMin: 60, altoMax: 210, anchoMin: 40, anchoMax: 95, color: "#7a3462", ventana: "#b0629a", opacidad: 0.85, antenas: false })}
+<g opacity="0.9">${cartel("FARO", 372, 292, 4, "#d0569f", true)}${cartel("GETAFE", 812, 362, 3, "#4fa3b3")}${cartel("BAR", 1352, 372, 3, "#c9a66b")}</g>
 </g>
 </svg>
 `;

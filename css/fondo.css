@@ -110,3 +110,39 @@
 
 :root[data-theme="light"] .escena-ciudad { opacity: 0.45; filter: invert(1) hue-rotate(180deg) saturate(0.6); animation: none; }  /* siluetas claras con el neón en su tono, no gris */
 :root[data-theme="light"] .escena-cielo::before { display: none; }
+
+/* Ambiente de historia: lluvia fina de neón (gotas como elipses estrechas en tres capas que caen a distinta velocidad)
+   y un dron que cruza el cielo de vez en cuando. Con movimiento reducido la lluvia queda quieta y el dron, fuera de la vista. */
+:root[data-ambiente="historia"] .escena::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% 0;
+  z-index: 1;
+  background-image:
+    radial-gradient(1px 13px at 20% 30%, color-mix(in srgb, var(--cian) 70%, transparent), transparent),
+    radial-gradient(1px 10px at 70% 60%, color-mix(in srgb, var(--acento) 55%, transparent), transparent),
+    radial-gradient(1px 16px at 45% 80%, color-mix(in srgb, var(--cian) 50%, transparent), transparent);
+  background-size: 97px 160px, 131px 210px, 173px 260px;
+  transform: rotate(10deg);
+  opacity: 0.6;
+  animation: lluvia 0.7s linear infinite;
+}
+@keyframes lluvia { to { background-position: 0 160px, 0 210px, 0 260px; } }
+:root[data-ambiente="historia"] .escena-cielo::after {
+  content: "";
+  position: absolute;
+  top: 18%;
+  left: -40px;
+  width: 20px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--acento) 0 3px, #1c1830 3px calc(100% - 3px), var(--cian) calc(100% - 3px));
+  filter: drop-shadow(0 0 3px var(--cian));
+  animation: dron 48s linear infinite;
+}
+@keyframes dron {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(calc(50vw + 40px), 14px); }
+  40%, 100% { transform: translate(calc(100vw + 80px), 0); }
+}
+:root[data-theme="light"] .escena::before, :root[data-theme="light"] .escena-cielo::after { display: none; }
