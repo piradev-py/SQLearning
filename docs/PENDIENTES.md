@@ -143,7 +143,7 @@ quede pendiente y vuelve a pasar los tests.
 - Cierre en el expediente final: una frase de Héctor, su motivo (deudas) y el giro: el rumor de la hipoteca de Iván lo había contado Héctor en la cafetería.
 
 ### C. Publicar
-- [ ] `npm run publicar` (marca la versión y pasa `npm test`) → confirmar con el usuario → `git push` (GitHub Pages)
+- [x] `npm run publicar` (marca la versión y pasa `npm test`) → confirmar con el usuario → `git push` (GitHub Pages)
 
 
 ## Versión publicada
