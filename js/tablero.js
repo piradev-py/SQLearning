@@ -7,6 +7,8 @@
    ============================================================ */
 (function () {
   const esc = s => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  // El texto de las pistas lleva el mismo markdown mínimo que las lecciones (negritas, código y saltos de línea)
+  const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
   const $ = sel => document.querySelector(sel);
   const fmt = n => n.toLocaleString("es");
 
@@ -136,8 +138,9 @@
     const d = PROGRESO.datos();
     $("[data-lista-pistas]").innerHTML = d.expediente.length
       ? d.expediente.map((p, i) => `<li class="pista"><span class="pista-num">PISTA ${String(i + 1).padStart(2, "0")}</span>
-          <h3>${esc(p.titulo)}</h3><p>${esc(p.texto)}</p></li>`).join("")
+          <h3>${esc(p.titulo)}</h3><p>${md(p.texto)}</p></li>`).join("")
       : `<li class="pista-vacia">Aún no hay pistas. Cierra el primer expediente para empezar a reunirlas.</li>`;
+    $("[data-fantasma]").hidden = PROGRESO.casoCerrado();   // con el caso cerrado, el Fantasma ya tiene nombre
   }
 
   function dialogoCredenciales() {

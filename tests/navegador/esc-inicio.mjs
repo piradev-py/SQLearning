@@ -171,6 +171,7 @@ export default async function (b) {
   await b.ir("index.html#expediente");
   await b.esperar(600);
   comprobar("index.html#expediente: hoja de ruta con el expediente de pistas abierto", await b.eval("document.querySelector('[data-prologo]').hidden && document.querySelector('[data-dialogo-expediente]').open"));
+  comprobar("Expediente de pistas con el caso cerrado: sin la silueta del Fantasma", await b.eval("document.querySelector('[data-fantasma]').hidden"));
 
   b.log(fallos.length ? `\n❌ ${fallos.length} comprobaciones fallidas` : "\n✅ Inicio: todo correcto");
 }

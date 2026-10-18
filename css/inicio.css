@@ -393,3 +393,18 @@ body { background: transparent; min-height: 100vh; }
   .exp { padding: 14px; }
   .exp-nodos { gap: 18px 22px; }
 }
+
+/* El Fantasma: silueta encapuchada y borrosa que aparece y desaparece detrás de las pistas */
+.fantasma {
+  position: absolute; right: 24px; bottom: 0; width: 96px; height: 134px; z-index: 0; pointer-events: none;
+  color: var(--acento); filter: blur(1.5px); opacity: 0;
+  animation: fantasma 11s ease-in-out infinite;
+}
+.pistas { position: relative; z-index: 1; }
+[data-dialogo-expediente] { min-height: 240px; }
+@keyframes fantasma {
+  0%, 30%, 100% { opacity: 0; transform: translateY(6px); }
+  55% { opacity: 0.32; transform: translateY(0); }
+  75% { opacity: 0.12; }
+}
+@media (prefers-reduced-motion: reduce) { .fantasma { opacity: 0.18; } }

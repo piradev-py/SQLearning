@@ -29,7 +29,7 @@ Orbitron (marca y títulos, en mayúsculas, con espaciado) · JetBrains Mono (c�
 - ✅ Lluvia fina de neón y un dron que cruza el cielo (CSS en `css/fondo.css`, solo en el ambiente historia) y carteles
   FARO, GETAFE y BAR en la ciudad (letras de píxeles en `generar-ciudad.mjs`; la imagen va con `?v=` porque `recursos/` no lleva versión).
 - ✅ Sello «CASO CERRADO» (prólogo y expediente final).
-- 🚧 La silueta borrosa del **Fantasma** (aparece y desaparece en el expediente de pistas).
+- ✅ La silueta borrosa del **Fantasma**: aparece y desaparece en el expediente de pistas; con el caso cerrado ya no sale.
 - Animaciones lentas y sutiles (parpadeo de neón, lluvia, destello del faro); con `prefers-reduced-motion: reduce`
   quedan quietas (el Windows del usuario lo tiene activado).
 

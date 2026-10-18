@@ -78,6 +78,14 @@
     <dialog class="dialogo" data-dialogo-expediente aria-labelledby="titulo-expediente">
       <header><h2 id="titulo-expediente">📁 Expediente del caso</h2><button type="button" data-cerrar aria-label="Cerrar">✕</button></header>
       <ol class="pistas" data-lista-pistas></ol>
+      <svg class="fantasma" data-fantasma viewBox="0 0 100 140" aria-hidden="true">
+        <defs><linearGradient id="fantasma-capa" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="currentColor" stop-opacity="0.9"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/>
+        </linearGradient></defs>
+        <path fill="url(#fantasma-capa)" d="M50 8C30 8 22 26 22 44c0 14 6 22 8 26C16 80 8 100 4 140h92c-4-40-12-60-26-70 2-4 8-12 8-26C78 26 70 8 50 8Z"/>
+        <path fill="var(--superficie-solida)" d="M50 30c-10 0-14 12-13 22 1 8 7 12 13 12s12-4 13-12c1-10-3-22-13-22Z"/>
+        <circle cx="44" cy="48" r="1.6" fill="var(--cian)"/><circle cx="56" cy="48" r="1.6" fill="var(--cian)"/>
+      </svg>
     </dialog>
     <dialog class="dialogo" data-dialogo-credenciales aria-labelledby="titulo-credenciales">
       <header><h2 id="titulo-credenciales">🪪 Credenciales</h2><button type="button" data-cerrar aria-label="Cerrar">✕</button></header>
