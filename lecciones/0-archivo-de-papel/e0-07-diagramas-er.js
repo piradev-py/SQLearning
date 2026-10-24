@@ -14,18 +14,36 @@ CURSO.registrar({
       tipo: "explicacion",
       titulo: "Cajas y líneas",
       texto: "Un **diagrama entidad-relación** (también **diagrama ER**) es el plano de una base de datos.\nCada **entidad** es una **caja**: arriba, su nombre (`Cliente`); debajo, sus atributos. La clave primaria se marca con una llave 🔑 y las claves foráneas, a menudo, con una flecha o un eslabón.\nCada **relación** es una **línea** entre dos cajas. Se lee como una frase con un verbo: «un cliente **hace** pedidos», «una tienda **tiene** empleados».",
-      consejo: "Lee cada línea en voz alta **en los dos sentidos**: «un cliente hace muchos pedidos» y «cada pedido es de un solo cliente». Si una de las dos frases suena rara, la línea está mal."
+      consejo: "Lee cada línea en voz alta **en los dos sentidos**: «un cliente hace muchos pedidos» y «cada pedido es de un solo cliente». Si una de las dos frases suena rara, la línea está mal.",
+      muestra: {
+        entidades: [{ id: "cliente", nombre: "Cliente", atributos: ["id 🔑", "nombre", "teléfono"] }, { id: "pedido", nombre: "Pedido", atributos: ["id 🔑", "fecha", "cliente_id 🔗"] }],
+        fijas: [{ de: "cliente", a: "pedido", tipo: "1:N" }],
+        pie: "Dos **cajas** (entidades) y una **línea** (relación): «un cliente **hace** pedidos». La 🔑 marca la clave primaria y el 🔗, la clave foránea `cliente_id`."
+      }
     },
     {
       tipo: "explicacion",
       titulo: "La pata de gallo",
-      texto: "¿Cómo dice la línea **cuántos** hay de cada lado? Con unos símbolos en sus extremos: la notación **pata de gallo** (en inglés, *crow's foot*).\n• Una **rayita** cruzada sobre la línea significa **uno**.\n• Tres patitas abiertas, como la huella de un gallo, significan **muchos**.\nEntre `Cliente` y `Pedido`, la rayita va junto a Cliente y la pata junto a Pedido: un cliente, muchos pedidos. La pata siempre se dibuja en el lado de **muchos**, que es también donde vive la clave foránea. Una N:M lleva pata en **los dos** extremos.\nEn la mesa verás `1` y `N` en lugar de dibujos: significan lo mismo."
+      texto: "¿Cómo dice la línea **cuántos** hay de cada lado? Con unos símbolos en sus extremos: la notación **pata de gallo** (en inglés, «crow's foot»).\n• Una **rayita** cruzada sobre la línea significa **uno**.\n• Tres patitas abiertas, como la huella de un gallo, significan **muchos**.\nEntre `Cliente` y `Pedido`, la rayita va junto a Cliente y la pata junto a Pedido: un cliente, muchos pedidos. La pata siempre se dibuja en el lado de **muchos**, que es también donde vive la clave foránea. Una N:M lleva pata en **los dos** extremos.\nMíralo en la mesa. En los ejercicios, debajo del dibujo verás además la relación escrita en corto: `1:N`.",
+      muestra: {
+        columnas: 2,
+        entidades: [{ id: "cliente", nombre: "Cliente", atributos: ["id 🔑", "nombre", "teléfono"] }, { id: "pedido", nombre: "Pedido", atributos: ["id 🔑", "fecha", "cliente_id 🔗"] },
+          { id: "proveedor", nombre: "Proveedor", atributos: ["id 🔑", "nombre"] },
+          { id: "producto", nombre: "Producto", atributos: ["id 🔑", "nombre"] }],
+        fijas: [{ de: "cliente", a: "pedido", tipo: "1:N" }, { de: "proveedor", a: "producto", tipo: "N:M" }],
+        pie: "Arriba, **1:N**: rayita junto a Cliente, pata junto a Pedido. Abajo, **N:M**: pata en los dos extremos, porque un proveedor sirve muchos productos y un producto puede venir de muchos proveedores."
+      }
     },
     {
       tipo: "explicacion",
       titulo: "¿Puede haber cero? Opcional u obligatoria",
-      texto: "Cada extremo lleva **dos** símbolos: el de fuera dice el **máximo** (uno o muchos) y el de dentro, el **mínimo** (la **cardinalidad mínima**).\n• Un **círculo** = cero: la relación es **opcional**.\n• Una **rayita** = al menos uno: es **obligatoria**.\nAsí, junto a Pedido, «círculo + pata» se lee «**cero o muchos**»: un cliente recién dado de alta aún no tiene pedidos. Y junto a Cliente, «rayita + rayita» se lee «**uno y solo uno**»: un pedido sin cliente no existe.",
-      consejo: "La cardinalidad mínima decide si un dato puede quedarse vacío. Si «cada pedido tiene siempre un cliente», el hueco del cliente en el pedido no puede quedarse en blanco."
+      texto: "Cada extremo lleva **dos** símbolos: el pegado a la caja dice el **máximo** (uno o muchos) y el que está más hacia el centro de la línea, el **mínimo** (la **cardinalidad mínima**).\n• Un **círculo** = cero: la relación es **opcional**.\n• Una **rayita** = al menos uno: es **obligatoria**.\nAsí, junto a Pedido, «círculo + pata» se lee «**cero o muchos**»: un cliente recién dado de alta aún no tiene pedidos. Y junto a Cliente, «rayita + rayita» se lee «**uno y solo uno**»: un pedido sin cliente no existe.",
+      consejo: "La cardinalidad mínima decide si un dato puede quedarse vacío. Si «cada pedido tiene siempre un cliente», el hueco del cliente en el pedido no puede quedarse en blanco.",
+      muestra: {
+        entidades: [{ id: "cliente", nombre: "Cliente", atributos: ["id 🔑", "nombre", "teléfono"] }, { id: "pedido", nombre: "Pedido", atributos: ["id 🔑", "fecha", "cliente_id 🔗"] }],
+        fijas: [{ de: "cliente", a: "pedido", tipo: "1:N" }],
+        pie: "Junto a **Cliente**, rayita + rayita: «uno y solo uno» (obligatoria). Junto a **Pedido**, círculo + pata: «cero o muchos» (opcional)."
+      }
     },
     {
       tipo: "quiz",

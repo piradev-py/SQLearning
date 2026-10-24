@@ -83,6 +83,10 @@
             break;
           case "explicacion":
             if (!p.texto) problemas.push(`${donde}: sin texto`);
+            if (p.muestra) {
+              const ids = new Set((p.muestra.entidades || []).map(e => e.id));
+              if ((p.muestra.fijas || []).some(r => !ids.has(r.de) || !ids.has(r.a))) problemas.push(`${donde}: la muestra une entidades que no existen`);
+            }
             if (p.ejemplo && sqlDe(p.ejemplo)) {
               if (!terminaEnPuntoYComa(p.ejemplo)) problemas.push(`${donde}: el ejemplo no termina en ;`);
               const r = await MOTOR.ejecutar(p.ejemplo);

@@ -173,14 +173,22 @@
       return { par: invertir ? `${r.a}|${r.de}` : `${r.de}|${r.a}`, tipo };
     };
 
+    const cajas = () => ent.map(e => `<section class="papel-entidad" data-entidad="${esc(e.id)}">
+      <h3>${esc(e.nombre)}</h3><ul>${(e.atributos || []).map(a => `<li>${esc(a)}</li>`).join("")}</ul></section>`).join("");
+
     function pintar(foco) {
-      const cols = Math.min(3, ent.length);
+      const cols = paso.columnas || Math.min(3, ent.length);
+      if (paso.soloVer) {   // muestra de una explicación: cajas y líneas, sin formulario
+        div.innerHTML = `<div class="papel papel-diagrama"><div class="papel-lienzo" data-lienzo style="grid-template-columns:repeat(${cols},1fr)">
+          <svg class="papel-lineas" data-lineas aria-hidden="true"></svg>${cajas()}</div></div>`;
+        requestAnimationFrame(lineas);
+        return;
+      }
       div.innerHTML = `<div class="papel papel-diagrama">
         <p class="papel-ayuda">Elige dos entidades y el tipo de relación, y pulsa «Unir».</p>
         <div class="papel-lienzo" data-lienzo style="grid-template-columns:repeat(${cols},1fr)">
           <svg class="papel-lineas" data-lineas aria-hidden="true"></svg>
-          ${ent.map(e => `<section class="papel-entidad" data-entidad="${esc(e.id)}">
-            <h3>${esc(e.nombre)}</h3><ul>${(e.atributos || []).map(a => `<li>${esc(a)}</li>`).join("")}</ul></section>`).join("")}
+          ${cajas()}
         </div>
         <form class="papel-unir" data-unir novalidate>
           <label>De <select data-de>${ent.map(e => `<option value="${esc(e.id)}">${esc(e.nombre)}</option>`).join("")}</select></label>
@@ -205,17 +213,31 @@
         const el = lienzo.querySelector(`[data-entidad="${CSS.escape(idE)}"]`);
         if (!el) return null;
         const r = el.getBoundingClientRect();
-        return { x: r.left - caja.left + r.width / 2, y: r.top - caja.top + r.height / 2 };
+        return { x: r.left - caja.left + r.width / 2, y: r.top - caja.top + r.height / 2, w: r.width / 2, h: r.height / 2 };
+      };
+      // Punto donde la recta que sale del centro de la caja en dirección (ux, uy) cruza su borde
+      const borde = (c, ux, uy) => {
+        const t = Math.min(ux ? c.w / Math.abs(ux) : Infinity, uy ? c.h / Math.abs(uy) : Infinity);
+        return { x: c.x + ux * t, y: c.y + uy * t };
       };
       svg.setAttribute("viewBox", `0 0 ${caja.width} ${caja.height}`);
       svg.innerHTML = rels.map(r => {
-        const a = centro(r.de), b = centro(r.a);
-        if (!a || !b) return "";
-        const [ta, tb] = r.tipo === "1:1" ? ["1", "1"] : r.tipo === "1:N" ? ["1", "N"] : ["N", "M"];
-        const p = t => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
-        const pa = p(0.3), pb = p(0.7);
-        return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>
-          <text x="${pa.x}" y="${pa.y - 6}">${ta}</text><text x="${pb.x}" y="${pb.y - 6}">${tb}</text>`;
+        const ca = centro(r.de), cb = centro(r.a);
+        if (!ca || !cb) return "";
+        const [ma, mb] = r.tipo === "1:1" ? [false, false] : r.tipo === "1:N" ? [false, true] : [true, true];
+        const d = Math.hypot(cb.x - ca.x, cb.y - ca.y) || 1, ux = (cb.x - ca.x) / d, uy = (cb.y - ca.y) / d;
+        const a = borde(ca, ux, uy), b = borde(cb, -ux, -uy);
+        // Pata de gallo: junto a la caja, el máximo (rayita = uno, pata = muchos); más adentro, el mínimo
+        // (rayita = uno y solo uno; círculo = cero o muchos). shortcut: los mínimos salen del tipo, no del paso
+        const extremo = (p, sx, sy, muchos) => {
+          const en = t => ({ x: p.x + sx * t, y: p.y + sy * t }), nx = -sy * 8, ny = sx * 8;
+          const raya = t => { const c = en(t); return `<line x1="${c.x + nx}" y1="${c.y + ny}" x2="${c.x - nx}" y2="${c.y - ny}"/>`; };
+          if (!muchos) return raya(8) + raya(16);
+          const v = en(16), o = en(24);
+          return [-1, 0, 1].map(k => `<line x1="${v.x}" y1="${v.y}" x2="${p.x + k * nx}" y2="${p.y + k * ny}"/>`).join("")
+            + `<circle cx="${o.x}" cy="${o.y}" r="5"/>`;
+        };
+        return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>` + extremo(a, ux, uy, ma) + extremo(b, -ux, -uy, mb);
       }).join("");
     }
     div.onsubmit = ev => {

@@ -274,7 +274,14 @@
     actualizarNav();
     if (usaSQL && !PASOS_PAPEL.has(p.tipo)) modoTrabajo("sql"); else if (PASOS_PAPEL.has(p.tipo)) modoTrabajo("mesa"); else modoTrabajo(usaSQL ? "sql" : "mesa");
     if (usaSQL) botonesEditor();
-    if (!usaSQL && !PASOS_PAPEL.has(p.tipo)) $("[data-zona-mesa]").innerHTML = `<div class="lec-mesa-vacia" aria-hidden="true"></div>`;
+    if (!usaSQL && !PASOS_PAPEL.has(p.tipo)) {
+      const mesa = $("[data-zona-mesa]");
+      // Una explicación puede traer un diagrama de muestra para la mesa
+      if (p.muestra) {
+        PAPEL.montar(mesa, { ...p.muestra, tipo: "diagrama", soloVer: true });
+        if (p.muestra.pie) mesa.insertAdjacentHTML("beforeend", `<p class="papel-ayuda papel-pie">${md(p.muestra.pie)}</p>`);
+      } else mesa.innerHTML = `<div class="lec-mesa-vacia" aria-hidden="true"></div>`;
+    }
 
     const pintor = PINTORES[p.tipo];
     if (!pintor) { caja.innerHTML = `<p>Tipo de paso desconocido: ${esc(p.tipo)}</p>`; return; }
