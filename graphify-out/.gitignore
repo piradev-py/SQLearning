@@ -1,0 +1,6 @@
+# Solo se versiona el grafo; caché, ejecuciones fechadas y rutas locales se quedan fuera
+*
+!.gitignore
+!graph.json
+!graph.html
+!GRAPH_REPORT.md
