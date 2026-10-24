@@ -44,7 +44,7 @@ LIMIT 5;`,
     },
     {
       tipo: "explicacion",
-      titulo: "OFFSET: saltar filas y paginar",
+      titulo: "OFFSET: saltar filas y dividir en páginas",
       texto: "**OFFSET** se salta filas antes de empezar a devolver: `LIMIT 3 OFFSET 3` → sáltate 3 y dame las 3 siguientes (la 4.ª, 5.ª y 6.ª).\nAsí funciona la **paginación** de cualquier web: página 1 = `OFFSET 0`, página 2 = `OFFSET 3`, página 3 = `OFFSET 6`… En el ejemplo, la «segunda página» de los productos más caros.",
       ejemplo: `SELECT nombre, precio
 FROM productos
